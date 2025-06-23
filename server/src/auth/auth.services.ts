@@ -59,7 +59,7 @@ const createUserByEmailAndPassword = async (user: any) => {
  * token.
  * @returns - The refreshToken object created by prisma's ORM.
  */
-const addRefreshTokenToWhiteList = ( refreshToken: string, userId: UUID) => {
+const addRefreshTokenToWhiteList = (refreshToken: string, userId: UUID) => {
   return db.refreshToken.create({
     data: {
       hashedToken: authJwt.hashToken(refreshToken),

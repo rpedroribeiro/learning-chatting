@@ -49,23 +49,86 @@ const createUserByEmailAndPassword = async (user: any) => {
 }
 
 /**
+ * This function takes in the refreshToken and the userId and creates 
+ * a token using prisma's ORM and authJwt.hashToken(). The refresh token
+ * is then set to expire in 30 days.
  * 
- * @param refreshToken 
- * @param userId 
- * @returns 
+ * @param refreshToken - The refresh token created that will be hashed into 
+ * the database.
+ * @param userId  - The userId for the schema that conencts the user and their
+ * token.
+ * @returns - The refreshToken object created by prisma's ORM.
  */
 const addRefreshTokenToWhiteList = ( refreshToken: string, userId: UUID) => {
   return db.refreshToken.create({
     data: {
       hashedToken: authJwt.hashToken(refreshToken),
       userId,
-      expireAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+      expireAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30), // 30 Days
+    },
+  })
+}
+
+/**
+ * This funciton finds the refreshToken in the database using a
+ * token string and returns the result.
+ * 
+ * @param token - The token we want to find in the database.
+ * @returns - The refreshToken object found by prisma's ORM.
+ */
+const findRefreshToken = (token: string) => {
+  return db.refreshToken.findUnique({
+    where: {
+      hashedToken: authJwt.hashToken(token)
+    },
+  })
+}
+
+/**
+ * This function takes in the tokenId, finds it in the database,
+ * and then deletes the token.
+ * 
+ * @param tokenId - The id of the token in the refreshToken
+ * @returns - The deleted token object using prisma's ORM.
+ */
+const deleteRefreshTokenById = (tokenId: string) => {
+  return db.refreshToken.update({
+    where: {
+      id: tokenId,
+    },
+    data: {
+      revoked: true,
+    },
+  })
+}
+
+/**
+ * This function takes in the userId of the token, finds it in the
+ * database, and revokes the token access.
+ * 
+ * @param userId - The id of the user that the token is attached
+ * to.
+ * @returns - The revoked token object from prisma's ORM.
+ */
+const revokeTokens = (userId: string) => {
+  return db.refreshToken.update({
+    where: {
+      userId: userId,
+    },
+    data: {
+      revoked: true,
     },
   })
 }
 
 const authServices = {
-
+  findUserByEmail,
+  findUserById,
+  createUserByEmailAndPassword,
+  addRefreshTokenToWhiteList,
+  findRefreshToken,
+  deleteRefreshTokenById,
+  revokeTokens
 }
 
 export default authServices

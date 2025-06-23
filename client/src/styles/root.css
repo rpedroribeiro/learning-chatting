@@ -1,6 +1,9 @@
 :root {
   --background: #222831;
   --textColor: #EEEEEE;
+  --componentColor: #31363F;
+  --button: #76ABAE;
+  --alternateButton: #222831;
 }
 
 @font-face {

@@ -1,0 +1,54 @@
+:root {
+  --background: #222831;
+  --textColor: #EEEEEE;
+}
+
+@font-face {
+  font-family: 'Freight Sans LF Pro';
+  src: url('../assets/fonts/FreightSansLFPro-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Freight Sans LF Pro';
+  src: url('../assets/fonts/FreigSanLFPro-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Freight Sans LF Pro';
+  src: url('../assets/fonts/FreigSanLFPro-Light.ttf') format('truetype');
+  font-weight: light;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Freight Sans LF Pro';
+  src: url('../assets/fonts/FreigSanLFPro-Medium.ttf') format('truetype');
+  font-weight: medium;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Freight Sans LF Pro';
+  src: url('../assets/fonts/FreigSanLFPro-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Freight Sans LF Pro';
+  src: url('../assets/fonts/FreigSanLFPro-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Freight Sans LF Pro', Arial, sans-serif;
+  font-weight: normal;
+}

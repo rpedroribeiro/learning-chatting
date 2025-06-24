@@ -7,28 +7,66 @@ type accountCreationParams = {
   password: string;
 }
 
+type logInParams = {
+  email: string;
+  password: string;
+}
+
+type authResponse = {
+  accessToken: string
+}
+
 /**
  * This function takes in the data from the account creation form and 
  * passes the information into a POST request to create an account.
  * 
  * @param param0 - All the user data needed to pass into the POST request 
- * @returns - The access token supplied by the server
+ * @returns - The access token supplied or error message along with boolean status
  */
-const createAccount = ({firstName, lastName, email, password}: accountCreationParams): string => {
-  axiosClient.post(
+const createAccount = async ({firstName, lastName, email, password}: accountCreationParams): Promise<[boolean, string]> => {
+  try {
+    const response = await axiosClient.post<authResponse>(
       '/api/auth/register',
       { firstName, lastName, email, password },
-      { headers: { 'Content-Type': 'application/json' } }
+      { headers: { 'Content-Type': 'application/json' },
+        withCredentials: true 
+      }
     )
-  .then(res => {
-    const { accessToken } = res.data as { accessToken: string }
-    return accessToken
-  })
-  return ''
+    const accessToken: string = response.data.accessToken
+    return [true, accessToken]
+  } catch (error: any) {
+    console.error(error)
+    return [false, String(error.response.data.message)]
+  }
+}
+
+/**
+ * This function takes in the data from the log in form and 
+ * passes the information into a POST request to log the user in.
+ * 
+ * @param param0 - All the user data needed to pass into the POST request 
+ * @returns - The access token supplied or error message along with boolean status
+ */
+const signIntoAccount = async ({email, password}: logInParams): Promise<[boolean, string]> => {
+  try {
+    const response = await axiosClient.post<authResponse>(
+      '/api/auth/login',
+      { email, password },
+      { headers: { 'Content-Type': 'application/json' },
+        withCredentials: true 
+      }
+    )
+    const accessToken: string = response.data.accessToken
+    return [true, accessToken]
+  } catch (error: any) {
+    console.error(error)
+    return [false, String(error.response.data.message)]
+  }
 }
 
 const authApi = {
-  createAccount
+  createAccount,
+  signIntoAccount
 }
 
 export default authApi

@@ -1,13 +1,13 @@
-import SignUpForm from '../components/SignUpForm'
+import LogInForm from '../components/LogInForm'
 import '../styles/signup.css'
 import '../styles/root.css'
 
-const SignUpPage = () => {
+const LogInPage = () => {
   return (
     <div className="sign-up-page">
-      <SignUpForm />
+      <LogInForm />
     </div>
   )
 }
 
-export default SignUpPage
+export default LogInPage

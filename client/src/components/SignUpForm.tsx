@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import '../styles/signup.css'
+import { Link } from 'react-router-dom'
 import passwordUtils from '../utils/passwordUtils'
 import authApi from '../api/authApi'
 import useAuth from '../hooks/useAuth'
+import '../styles/signup.css'
 
 const SignUpForm = () => {
   const [firstName, setFirstName] = useState<string>('')
@@ -21,7 +22,7 @@ const SignUpForm = () => {
    * @param event - The event is from the form tag and we prevent
    * the page from refreshing on form submit.
    */
-  const handleAccountCreation = (event: any) => {
+  const handleAccountCreation = async (event: any) => {
     event.preventDefault()
     const [passwordVerified, passwordMessage] = passwordUtils.checkPasswordStrength(password)
     if (passwordVerified) {
@@ -32,7 +33,8 @@ const SignUpForm = () => {
         email: email,
         password: password
       }
-      setAccessToken(authApi.createAccount(userData))
+      const [status, result] = await authApi.createAccount(userData)
+      status ? setAccessToken(result) : setErrorMessage(result)
     } else {
       setErrorMessage(passwordMessage)
     }
@@ -68,7 +70,7 @@ const SignUpForm = () => {
         <button>Sign Up With Facebook</button>
         <button>Sign Up With Google</button>
       </div>
-      <span>Already Have an Account? <a>Log In</a></span>
+      <span>Already Have an Account? <Link to='/'>Log in</Link></span>
     </div>
   )
 }

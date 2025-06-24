@@ -1,5 +1,4 @@
 import * as bcrypt from 'bcrypt'
-import { UUID } from 'crypto'
 import db from '../database/prisma'
 import authJwt from './auth.jwt'
 
@@ -25,7 +24,7 @@ const findUserByEmail = async (email: string) => {
  * @param id - The id of the user.
  * @returns - The user object from the db.
  */
-const findUserById = async (id: UUID) => {
+const findUserById = async (id: string) => {
   return await db.user.findUnique({
     where:{
       id,
@@ -59,7 +58,7 @@ const createUserByEmailAndPassword = async (user: any) => {
  * token.
  * @returns - The refreshToken object created by prisma's ORM.
  */
-const addRefreshTokenToWhiteList = (refreshToken: string, userId: UUID) => {
+const addRefreshTokenToWhiteList = (refreshToken: string, userId: string) => {
   return db.refreshToken.create({
     data: {
       hashedToken: authJwt.hashToken(refreshToken),
@@ -111,7 +110,7 @@ const deleteRefreshTokenById = (tokenId: string) => {
  * @returns - The revoked token object from prisma's ORM.
  */
 const revokeTokens = (userId: string) => {
-  return db.refreshToken.update({
+  return db.refreshToken.updateMany({
     where: {
       userId: userId,
     },

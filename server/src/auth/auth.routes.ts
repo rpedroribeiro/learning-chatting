@@ -30,10 +30,12 @@ router.post('/register', async (req, res, next) => {
     const { accessToken, refreshToken } = authJwt.generateTokens(user)
     await authServices.addRefreshTokenToWhiteList(refreshToken, user.id)
 
-    res.status(200).json({
-      accessToken,
-      refreshToken,
+    res.cookie('refreshToken', refreshToken, {
+      'httpOnly': true,
+      'secure': true,
     })
+
+    res.status(200).json({accessToken})
   } catch (error) {
     next(error)
   }
@@ -49,7 +51,7 @@ router.post('/login', async (req, res, next) => {
     const { email, password } = req.body
     const existingUser = await authServices.findUserByEmail(email)
 
-    if (existingUser!) {
+    if (!existingUser || existingUser === null) {
       res.status(403).json({message: 'Invalid Credentials.'})
       throw new Error('Invalid Credentials.')
     }
@@ -63,10 +65,12 @@ router.post('/login', async (req, res, next) => {
     const { accessToken, refreshToken } = authJwt.generateTokens(existingUser)
     await authServices.addRefreshTokenToWhiteList(refreshToken, existingUser.id)
 
-    res.status(200).json({
-      accessToken,
-      refreshToken,
+    res.cookie('refreshToken', refreshToken, {
+      'httpOnly': true,
+      'secure': true,
     })
+
+    res.status(200).json({accessToken})
   } catch (error) {
     next(error)
   }
@@ -94,7 +98,7 @@ router.post('/refreshToken', async (req, res, next) => {
     }
 
     const validUser = await authServices.findUserById(refreshToken.userId)
-    if (validUser!) {
+    if (!validUser || validUser === null) {
       res.status(401)
       throw new Error('Unauthorized')
     }
@@ -103,10 +107,12 @@ router.post('/refreshToken', async (req, res, next) => {
     const { accessToken, refreshToken: newRefreshToken } = authJwt.generateTokens(validUser)
     await authServices.addRefreshTokenToWhiteList(refreshToken, validUser.id)
 
-    res.status(200).json({
-      accessToken,
-      refreshToken,
+    res.cookie('refreshToken', refreshToken, {
+      'httpOnly': true,
+      'secure': true,
     })
+
+    res.status(200).json({accessToken})
 
   } catch (error) {
     next(error)

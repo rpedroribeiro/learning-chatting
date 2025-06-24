@@ -1,14 +1,15 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
-import '../styles/signup.css'
 import authApi from '../api/authApi'
+import '../styles/signup.css'
 
 const LogInForm = () => {
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [errorMessage, setErrorMessage] = useState<string>('')
   const { setAccessToken } = useAuth()
+  const navigate = useNavigate()
 
   const handleLogIn = async (event: any) => {
     event.preventDefault()
@@ -16,8 +17,9 @@ const LogInForm = () => {
       email: email,
       password: password
     }
-    const [status, result] = await authApi.signIntoAccount(userData)
+    const [status, result, userId] = await authApi.signIntoAccount(userData)
     status ? setAccessToken(result) : setErrorMessage(result)
+    navigate(`/${userId}/classrooms`)
   }
 
   return (

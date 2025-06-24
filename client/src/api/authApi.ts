@@ -14,6 +14,7 @@ type logInParams = {
 
 type authResponse = {
   accessToken: string
+  userId: string
 }
 
 /**
@@ -23,7 +24,7 @@ type authResponse = {
  * @param param0 - All the user data needed to pass into the POST request 
  * @returns - The access token supplied or error message along with boolean status
  */
-const createAccount = async ({firstName, lastName, email, password}: accountCreationParams): Promise<[boolean, string]> => {
+const createAccount = async ({firstName, lastName, email, password}: accountCreationParams): Promise<[boolean, string, string]> => {
   try {
     const response = await axiosClient.post<authResponse>(
       '/api/auth/register',
@@ -33,10 +34,11 @@ const createAccount = async ({firstName, lastName, email, password}: accountCrea
       }
     )
     const accessToken: string = response.data.accessToken
-    return [true, accessToken]
+    const userId: string = response.data.userId
+    return [true, accessToken, userId]
   } catch (error: any) {
     console.error(error)
-    return [false, String(error.response.data.message)]
+    return [false, String(error.response.data.message), '']
   }
 }
 
@@ -47,7 +49,7 @@ const createAccount = async ({firstName, lastName, email, password}: accountCrea
  * @param param0 - All the user data needed to pass into the POST request 
  * @returns - The access token supplied or error message along with boolean status
  */
-const signIntoAccount = async ({email, password}: logInParams): Promise<[boolean, string]> => {
+const signIntoAccount = async ({email, password}: logInParams): Promise<[boolean, string, string]> => {
   try {
     const response = await axiosClient.post<authResponse>(
       '/api/auth/login',
@@ -57,10 +59,11 @@ const signIntoAccount = async ({email, password}: logInParams): Promise<[boolean
       }
     )
     const accessToken: string = response.data.accessToken
-    return [true, accessToken]
+    const userId: string = response.data.userId
+    return [true, accessToken, userId]
   } catch (error: any) {
     console.error(error)
-    return [false, String(error.response.data.message)]
+    return [false, String(error.response.data.message), '']
   }
 }
 

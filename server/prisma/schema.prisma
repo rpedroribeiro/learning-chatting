@@ -14,23 +14,43 @@ datasource db {
 }
 
 model User {
-  id            String         @id @unique @default(uuid())
-  email         String         @unique
-  firstName     String
-  lastName      String
-  password      String
-  refreshTokens RefreshToken[]
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id                   String          @id @unique @default(uuid())
+  email                String          @unique
+  firstName            String
+  lastName             String
+  password             String
+  accountType          UserRole
+  refreshTokens        RefreshToken[]
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+  studentClassrooms    Classroom[]     @relation("studentClassrooms")
+  professorClassrooms  Classroom[]     @relation("professorClassrooms")
+}
+
+enum UserRole {
+  Student
+  Professor
 }
 
 model RefreshToken {
-  id          String   @id @unique @default(uuid())
-  hashedToken String   @unique
-  userId      String
-  User        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  revoked     Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  expireAt    DateTime
+  id           String    @id @unique @default(uuid())
+  hashedToken  String    @unique
+  userId       String
+  User         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  revoked      Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  expireAt     DateTime
+}
+
+model Classroom {
+  id           String    @id @unique @default(uuid())
+  classCode    String    @unique
+  sectionId    String    @unique
+  startTime    DateTime
+  endTime      DateTime
+  days         DateTime
+  professorId  String
+  professor    User      @relation("professorClassrooms", fields: [professorId], references: [id])
+  students     User[]    @relation("studentClassrooms")
 }

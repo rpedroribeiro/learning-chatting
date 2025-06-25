@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import passwordUtils from '../utils/passwordUtils'
 import authApi from '../api/authApi'
 import useAuth from '../hooks/useAuth'
@@ -12,6 +12,7 @@ const SignUpForm = () => {
   const [password, setPassword] = useState<string>('')
   const [errorMessage, setErrorMessage] = useState<string>('')
   const { setAccessToken } = useAuth()
+  const navigate = useNavigate()
 
   /**
    * This function is ran upon the form being submitted, it then
@@ -33,8 +34,9 @@ const SignUpForm = () => {
         email: email,
         password: password
       }
-      const [status, result] = await authApi.createAccount(userData)
+      const [status, result, userId] = await authApi.createAccount(userData)
       status ? setAccessToken(result) : setErrorMessage(result)
+      navigate(`/${userId}/classrooms`)
     } else {
       setErrorMessage(passwordMessage)
     }
@@ -70,7 +72,7 @@ const SignUpForm = () => {
         <button>Sign Up With Facebook</button>
         <button>Sign Up With Google</button>
       </div>
-      <span>Already Have an Account? <Link to='/'>Log in</Link></span>
+      <span>Already Have an Account? <Link to='/login'>Log in</Link></span>
     </div>
   )
 }

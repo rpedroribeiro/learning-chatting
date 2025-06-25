@@ -14,17 +14,17 @@ datasource db {
 }
 
 model User {
-  id                   String          @id @unique @default(uuid())
-  email                String          @unique
-  firstName            String
-  lastName             String
-  password             String
-  accountType          UserRole
-  refreshTokens        RefreshToken[]
-  createdAt            DateTime        @default(now())
-  updatedAt            DateTime        @updatedAt
-  studentClassrooms    Classroom[]     @relation("studentClassrooms")
-  professorClassrooms  Classroom[]     @relation("professorClassrooms")
+  id                String          @id @unique @default(uuid())
+  email             String          @unique
+  firstName         String
+  lastName          String
+  password          String
+  accountType       UserRole
+  refreshTokens     RefreshToken[]
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  studentClasses    Classes[]       @relation("studentClasses")
+  professorClasses  Classes[]       @relation("professorClasses")
 }
 
 enum UserRole {
@@ -43,14 +43,13 @@ model RefreshToken {
   expireAt     DateTime
 }
 
-model Classroom {
-  id           String    @id @unique @default(uuid())
-  classCode    String    @unique
-  sectionId    String    @unique
-  startTime    DateTime
-  endTime      DateTime
-  days         DateTime
+model Classes {
+  id           String      @id @unique @default(uuid())
+  classCode    String      @unique
+  sectionId    String      @unique
+  startTimes   DateTime[]
+  endTimes     DateTime[]
   professorId  String
-  professor    User      @relation("professorClassrooms", fields: [professorId], references: [id])
-  students     User[]    @relation("studentClassrooms")
+  professor    User        @relation("professorClasses", fields: [professorId], references: [id])
+  students     User[]      @relation("studentClasses")
 }

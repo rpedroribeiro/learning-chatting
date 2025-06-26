@@ -12,7 +12,7 @@ const router = express.Router()
  */
 router.post('/register', async (req, res, next) => {
   try {
-    const { email, password, firstName, lastName } = req.body
+    const { email, password, firstName, lastName, accountType } = req.body
     const existingUser = await authServices.findUserByEmail(email)
 
     if (existingUser) {
@@ -24,7 +24,8 @@ router.post('/register', async (req, res, next) => {
       email,
       password,
       firstName,
-      lastName
+      lastName,
+      accountType,
     })
 
     const { accessToken, refreshToken } = authJwt.generateTokens(user)
@@ -35,7 +36,7 @@ router.post('/register', async (req, res, next) => {
       'secure': true,
     })
 
-    res.status(200).json({accessToken})
+    res.status(200).json({accessToken: accessToken, userId: user.id})
   } catch (error) {
     next(error)
   }
@@ -70,7 +71,7 @@ router.post('/login', async (req, res, next) => {
       'secure': true,
     })
 
-    res.status(200).json({accessToken})
+    res.status(200).json({accessToken: accessToken, userId: existingUser.id})
   } catch (error) {
     next(error)
   }

@@ -39,6 +39,21 @@
   font-size: 15px;
 }
 
+.form-account-type-select {
+  height: 40px;
+  padding: 5px;
+  font-size: 18px;
+  background-color: var(--textColor);
+  font-family: 'Freight Sans LF Pro', Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  border: none;
+  border-radius: 5px;
+  font-size: 15px;
+}
+
 .sign-up-form-title {
   font-weight: 900;
 }

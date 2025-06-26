@@ -9,6 +9,7 @@ const SignUpForm = () => {
   const [firstName, setFirstName] = useState<string>('')
   const [lastName, setLastName] = useState<string>('')
   const [email, setEmail] = useState<string>('')
+  const [accountType, setAccountType] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [errorMessage, setErrorMessage] = useState<string>('')
   const { setAccessToken } = useAuth()
@@ -32,11 +33,12 @@ const SignUpForm = () => {
         firstName: firstName,
         lastName: lastName,
         email: email,
-        password: password
+        password: password,
+        accountType: accountType
       }
       const [status, result, userId] = await authApi.createAccount(userData)
       status ? setAccessToken(result) : setErrorMessage(result)
-      navigate(`/${userId}/classrooms`)
+      status ? navigate(`/${userId}/classrooms`) : []
     } else {
       setErrorMessage(passwordMessage)
     }
@@ -63,6 +65,19 @@ const SignUpForm = () => {
         <div className='sign-up-form-input-container'>
           <label>Password</label>
           <input type='password' required value={password} onChange={e => setPassword(e.target.value)}/>
+        </div>
+        <div className='sign-up-form-input-container'>
+          <label>Account Type</label>
+          <select 
+            className='form-account-type-select'
+            name='accountType'
+            value={accountType}
+            onChange={(event) => {setAccountType(event.target.value)}}
+          >
+            <option disabled value="">Select Account Type...</option>
+            <option value="Student">Student</option>
+            <option value="Professor">Professor</option>
+          </select>
         </div>
         <button className='sign-up-form-button'>Create Account</button>
         {errorMessage && <span style={{color: 'rgb(217, 61, 61)'}}>{errorMessage}</span>}

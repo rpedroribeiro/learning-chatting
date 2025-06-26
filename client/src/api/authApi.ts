@@ -5,6 +5,7 @@ type accountCreationParams = {
   lastName: string;
   email: string;
   password: string;
+  accountType: string;
 }
 
 type logInParams = {
@@ -24,11 +25,11 @@ type authResponse = {
  * @param param0 - All the user data needed to pass into the POST request 
  * @returns - The access token supplied or error message along with boolean status
  */
-const createAccount = async ({firstName, lastName, email, password}: accountCreationParams): Promise<[boolean, string, string]> => {
+const createAccount = async ({firstName, lastName, email, password, accountType}: accountCreationParams): Promise<[boolean, string, string]> => {
   try {
     const response = await axiosClient.post<authResponse>(
       '/api/auth/register',
-      { firstName, lastName, email, password },
+      { firstName, lastName, email, password, accountType},
       { headers: { 'Content-Type': 'application/json' },
         withCredentials: true 
       }

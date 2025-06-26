@@ -11,6 +11,15 @@ const LogInForm = () => {
   const { setAccessToken } = useAuth()
   const navigate = useNavigate()
 
+  /**
+   * This function uses all the values from the form's states and 
+   * submits it through a POST request to the server to log in the user.
+   * If successful, an authorization token is given, otherwise and error
+   * message is sent back.
+   * 
+   * @param event - Handles the form default behavior of refreshing
+   * the page
+   */
   const handleLogIn = async (event: any) => {
     event.preventDefault()
     const userData = {
@@ -19,7 +28,7 @@ const LogInForm = () => {
     }
     const [status, result, userId] = await authApi.signIntoAccount(userData)
     status ? setAccessToken(result) : setErrorMessage(result)
-    navigate(`/${userId}/classrooms`)
+    status ? navigate(`/${userId}/classrooms`) : []
   }
 
   return (
@@ -42,7 +51,7 @@ const LogInForm = () => {
         <button>Sign Up With Facebook</button>
         <button>Sign Up With Google</button>
       </div>
-      <span>Don't have an Account? <Link to='/signup'>Log in</Link></span>
+      <span>Don't have an Account? <Link to='/signup'>Create An Account</Link></span>
     </div>
   )
 }

@@ -14,7 +14,6 @@ const ClassroomsPage = () => {
   return (
     <div className='classroom-page'>
       <Sidebar />
-      <h1>hello</h1>
     </div>
   )
 }

@@ -94,11 +94,11 @@ const checkConflicts = (
  * function also uses additional helper function like checkConflicts() and 
  * isTimeConfict() to determine.
  * 
- * @param userId 
- * @param days 
- * @param startTime 
- * @param endTime 
- * @returns 
+ * @param userId - The user Id for the person wanting to add the class.
+ * @param days - The days of the week the desired class takes place.
+ * @param startTime - The start time of the desired class.
+ * @param endTime - The end time of the desired class.
+ * @returns - A boolean alongside a message if there is a conflict.
  */
 const checkValidClassTimes = async (
   userId: string,
@@ -121,7 +121,8 @@ const checkValidClassTimes = async (
 
 const classUtils = {
   generateClassId,
-  checkValidClassTimes
+  checkValidClassTimes,
+  weekdayMapping
 }
 
 export default classUtils

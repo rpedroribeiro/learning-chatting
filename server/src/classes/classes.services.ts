@@ -137,7 +137,7 @@ const createClass = async (
     },
     data: {
       professorClasses: {
-        create: newClass
+        connect: { id: newClass.id }
       }
     }
   })
@@ -153,30 +153,27 @@ const createClass = async (
  * @returns - The updated class object from the database.
  */
 const addStudentToClass = async (id: string, studentId: string) => {
-  const user = await authServices.findUserById(studentId)
-  if (user) {
-    const newClass = await db.classes.update({
-      where: {
-        id
-      },
-      data: {
-        students: {
-          create: user
-        }
+  const newClass = await db.classes.update({
+    where: {
+      id
+    },
+    data: {
+      students: {
+        connect: { id: studentId }
       }
-    })
-    await db.user.update({
-      where: {
-        id: studentId
-      },
-      data: {
-        studentClasses: {
-          create: newClass
-        }
+    }
+  })
+  await db.user.update({
+    where: {
+      id: studentId
+    },
+    data: {
+      studentClasses: {
+        connect: { id: id }
       }
-    })
-    return newClass
-  }
+    }
+  })
+  return newClass
 }
 
 const classService = {

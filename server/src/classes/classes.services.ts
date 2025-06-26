@@ -176,6 +176,46 @@ const addStudentToClass = async (id: string, studentId: string) => {
   return newClass
 }
 
+/**
+ * This function looks for the class inside the users class list,
+ * regardless of the role of the user. This function takes in all the
+ * necessary ids to find the right class and return it.
+ * 
+ * @param classId - The id of the desired class.
+ * @param studentId - The id of the student, can be null.
+ * @param professorId - The id of the professor, can be null.
+ * @returns - The class specified from the class id.
+ */
+const findClassByUserIdAndClassId = async (
+  classId: string,
+  studentId: string | null,
+  professorId: string | null
+) => {
+  let currClass
+  if (studentId) {
+    currClass = await db.classes.findUnique({
+      where: {
+        id: classId,
+        students: {
+          some: {
+            id: studentId
+          }
+        }
+      }
+    })
+  } else if (professorId) {
+    currClass = await db.classes.findUnique({
+      where: {
+        id: classId,
+        professor: {
+          id: professorId
+        }
+      }
+    })
+  }
+  return currClass
+}
+
 const classService = {
   findClassById,
   findAllClassesByProfessorId,
@@ -184,7 +224,8 @@ const classService = {
   findAllStudentsByClassId,
   findProfessorByClassId,
   createClass,
-  addStudentToClass
+  addStudentToClass,
+  findClassByUserIdAndClassId
 }
 
 export default classService

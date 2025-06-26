@@ -13,6 +13,10 @@ const findUserByEmail = async (email: string) => {
   return await db.user.findUnique({
     where:{
       email,
+    },
+    include: {
+      studentClasses: true,
+      professorClasses: true
     }
   })
 }
@@ -28,6 +32,10 @@ const findUserById = async (id: string) => {
   return await db.user.findUnique({
     where:{
       id,
+    },
+    include: {
+      studentClasses: true,
+      professorClasses: true
     }
   })
 }

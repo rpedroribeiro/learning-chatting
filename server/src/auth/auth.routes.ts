@@ -12,7 +12,7 @@ const router = express.Router()
  */
 router.post('/register', async (req, res, next) => {
   try {
-    const { email, password, firstName, lastName } = req.body
+    const { email, password, firstName, lastName, accountType } = req.body
     const existingUser = await authServices.findUserByEmail(email)
 
     if (existingUser) {
@@ -24,7 +24,8 @@ router.post('/register', async (req, res, next) => {
       email,
       password,
       firstName,
-      lastName
+      lastName,
+      accountType,
     })
 
     const { accessToken, refreshToken } = authJwt.generateTokens(user)

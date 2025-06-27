@@ -28,8 +28,8 @@
 }
 
 .classroom-card {
-  height: 250px;
-  width: 360px;
+  height: 32vh;
+  width: 25vw;
   padding: 20px;
   display: flex;
   flex-direction: column;

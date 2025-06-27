@@ -12,7 +12,7 @@ const authenticateToken = authJwt.authenticateToken
  * if the desired times for the class fits inside the professor's
  * current schedule. 
  */
-router.post('/:userId/class', authenticateToken, async (req, res, next) => {
+router.post('/:userId/class', async (req, res, next) => {
   try {
     const { sectionId, startTime, endTime, days } = req.body
     const professorId = req.params.userId

@@ -60,7 +60,7 @@ const hashToken = (token: any): string => {
 
 /**
  * This function takes in the request in the route before handling logic
- * and checks for the access token authentication before 
+ * and checks for the access token authentication validity.
  * 
  * @param req - The contents of the request.
  * @param res - The response of the request.

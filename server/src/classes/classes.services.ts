@@ -28,6 +28,9 @@ const findAllClassesByProfessorId = async (professorId: string) => {
   return await db.classes.findMany({
     where: {
       professorId
+    },
+    include: {
+      professor: true
     }
   })
 }
@@ -41,17 +44,18 @@ const findAllClassesByProfessorId = async (professorId: string) => {
  * @returns - An array of class objects from the database.
  */
 const findAllClassesByStudentId = async (studentId: string) => {
-  const student = await authServices.findUserById(studentId)
-  if (student) {
-    return await db.user.findUnique({
-      where: {
-        id: student.id
-      },
-      include: {
-        studentClasses: true
+  return await db.classes.findMany({
+    where: {
+      students: {
+        some: {
+          id: studentId
+        }
       }
-    })
-  }
+    },
+    include: {
+      professor: true
+    }
+  })
 }
 
 /**

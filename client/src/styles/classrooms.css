@@ -7,3 +7,66 @@
   background-color: var(--background);
   color: var(--textColor);
 }
+
+.classroom-grid-container {
+  height: 100vh;
+  padding: 30px 70px;
+  flex-grow: 1;
+}
+
+.classroom-grid-title {
+  font-family: 'Freight Sans LF Pro', Arial, sans-serif;
+  font-weight: 900;
+  font-size: 40px;
+}
+
+.classroom-grid {
+  padding: 50px 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.classroom-card {
+  height: 250px;
+  width: 360px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid #EEEEEE;
+  background-color: #2b313e;
+  border-radius: 20px;
+  box-sizing: border-box;
+  transition: 0.3s ease transform;
+}
+
+.classroom-card:hover {
+  transform: scale(1.02);
+}
+
+.classroom-card-title {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.classroom-card-title h2 {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.classroom-card-title h4 {
+  font-size: 16px;
+}
+
+.classroom-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.classroom-card-times {
+  display: flex;
+  gap: 10px;
+}

@@ -12,7 +12,7 @@ const SignUpForm = () => {
   const [accountType, setAccountType] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [errorMessage, setErrorMessage] = useState<string>('')
-  const { setAccessToken } = useAuth()
+  const { setUserId } = useAuth()
   const navigate = useNavigate()
 
   /**
@@ -36,9 +36,11 @@ const SignUpForm = () => {
         password: password,
         accountType: accountType
       }
-      const [status, result, userId] = await authApi.createAccount(userData)
-      status ? setAccessToken(result) : setErrorMessage(result)
-      status ? navigate(`/${userId}/classrooms`) : []
+      const [status, message, userId] = await authApi.createAccount(userData)
+      status ? (() => {
+        setUserId(userId)
+        navigate(`/${userId}/classrooms`)
+      })() : setErrorMessage(message)
     } else {
       setErrorMessage(passwordMessage)
     }

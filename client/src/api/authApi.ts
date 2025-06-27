@@ -14,8 +14,8 @@ type logInParams = {
 }
 
 type authResponse = {
-  accessToken: string
-  userId: string
+  userId: string;
+  message: string;
 }
 
 /**
@@ -34,12 +34,12 @@ const createAccount = async ({firstName, lastName, email, password, accountType}
         withCredentials: true 
       }
     )
-    const accessToken: string = response.data.accessToken
     const userId: string = response.data.userId
-    return [true, accessToken, userId]
+    const message: string = response.data.message
+    return [true, message, userId]
   } catch (error: any) {
     console.error(error)
-    return [false, String(error.response.data.message), '']
+    return [false, String(error.response.data.message), ""]
   }
 }
 
@@ -59,9 +59,9 @@ const signIntoAccount = async ({email, password}: logInParams): Promise<[boolean
         withCredentials: true 
       }
     )
-    const accessToken: string = response.data.accessToken
+    const message: string = response.data.message
     const userId: string = response.data.userId
-    return [true, accessToken, userId]
+    return [true, message, userId]
   } catch (error: any) {
     console.error(error)
     return [false, String(error.response.data.message), '']

@@ -9,7 +9,7 @@ const ClassroomsGrid = () => {
   const [days, setDays] = useState<string[]>([])
   const [hours, setHours] = useState<string[]>([])
   const [loadedData, setLoadedData] = useState<boolean>(false)
-  const { userId } = useAuth()
+  const { userId, accountType } = useAuth()
 
   useEffect(() => {
     const fetchClasses = async () => {
@@ -30,7 +30,13 @@ const ClassroomsGrid = () => {
 
   return (
     <div className="classroom-grid-container">
-      <h1 className='classroom-grid-title'>Courses</h1>
+      <div style={{display: 'flex', justifyContent: 'space-between'}}>
+        <h1 className='classroom-grid-title'>Courses</h1>
+        {accountType === "Student" ? 
+          <button className='class-form-button'>Add New Class</button> :
+          <button className='class-form-button'>Create New Class</button>
+        }
+      </div>
       <hr style={{marginTop: '10px'}}/>
       <div className='classroom-grid'>
         {loadedData &&

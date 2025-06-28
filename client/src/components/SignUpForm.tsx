@@ -9,10 +9,10 @@ const SignUpForm = () => {
   const [firstName, setFirstName] = useState<string>('')
   const [lastName, setLastName] = useState<string>('')
   const [email, setEmail] = useState<string>('')
-  const [accountType, setAccountType] = useState<string>('')
+  const [typeAccount, setTypeAccount] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [errorMessage, setErrorMessage] = useState<string>('')
-  const { setUserId } = useAuth()
+  const { setUserId, setAccountType } = useAuth()
   const navigate = useNavigate()
 
   /**
@@ -34,11 +34,12 @@ const SignUpForm = () => {
         lastName: lastName,
         email: email,
         password: password,
-        accountType: accountType
+        accountType: typeAccount
       }
-      const [status, message, userId] = await authApi.createAccount(userData)
+      const [status, message, userId, accountType] = await authApi.createAccount(userData)
       status ? (() => {
         setUserId(userId)
+        setAccountType(accountType)
         navigate(`/${userId}/classrooms`)
       })() : setErrorMessage(message)
     } else {
@@ -73,8 +74,8 @@ const SignUpForm = () => {
           <select 
             className='form-account-type-select'
             name='accountType'
-            value={accountType}
-            onChange={(event) => {setAccountType(event.target.value)}}
+            value={typeAccount}
+            onChange={(event) => {setTypeAccount(event.target.value)}}
           >
             <option disabled value="">Select Account Type...</option>
             <option value="Student">Student</option>

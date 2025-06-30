@@ -15,6 +15,10 @@ const ClassroomsGrid = () => {
   const [toggleAddForm, setToggleAddForm] = useState<boolean>(false)
   const { userId, accountType } = useAuth()
 
+  /**
+   * This useEffect sends a GET request for all the classes associated
+   * with the user on component load, and renders them in the grid. 
+   */
   useEffect(() => {
     const fetchClasses = async () => {
       const [fetchedClasses, status, message] = await classesApi.fetchClasses(userId) 
@@ -23,6 +27,10 @@ const ClassroomsGrid = () => {
     fetchClasses()
   }, [userId])
 
+  /**
+   * This useEffect upon populating the classes state, reformats the times
+   * fetched from the db to be presentable for the user.
+   */
   useEffect(() => {
     if (classes && classes.length > 0) {
       const [newDays, newHours] = classesUtils.formatClassTimes(classes)
@@ -51,6 +59,7 @@ const ClassroomsGrid = () => {
               <div className='classroom-card-title'>
                 <h2>{item.className}</h2>
                 <h4>Section ID: {item.sectionId}</h4>
+                {accountType === "Professor" && <h4>Course Code: {item.classCode}</h4>}
               </div>
               <div className='classroom-card-info'>
                 <h4>Professor: {item.professor.firstName} {item.professor.lastName}</h4>

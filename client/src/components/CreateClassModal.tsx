@@ -17,8 +17,10 @@ const CreateClassModal = ({setToggleCreateForm}: createClassModalProps) => {
   const { userId } = useAuth() 
 
   /**
-   * 
-   * @param event 
+   * This function handles the creation of the classroom by calling the
+   * createCourse() function and passing in all the inputs from the form in
+   * the modal, which returns either the object for the new class alongside
+   * a status message.
    */
   const handleCreateCourse = async () => {
     const [newClass, status, message] = await classesApi.createCourse(

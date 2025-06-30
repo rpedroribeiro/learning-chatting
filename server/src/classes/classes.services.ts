@@ -121,6 +121,7 @@ const findProfessorByClassId = async (id: string) => {
  * @returns - The newly created class object from the database.
  */
 const createClass = async (
+  className: string,
   sectionId: string, 
   startTimes: Date[], 
   endTimes: Date[], 
@@ -129,6 +130,7 @@ const createClass = async (
   const newClass = await db.classes.create({
     data: {
       classCode: classroomUtils.generateClassId(),
+      className: className,
       sectionId: sectionId,
       startTimes: startTimes,
       endTimes: endTimes,

@@ -77,16 +77,22 @@ const addStudentToCourse = async (
 }
 
 /**
+ * This function takes in all the inputs collected from the form and 
+ * sends them in a POST request to create a brand new class for the
+ * professor. The cookies containing the refreshToken is also sent.
  * 
- * @param userId 
- * @param sectionId 
- * @param startTime 
- * @param endTime 
- * @param days 
- * @returns 
+ * @param courseName - The desired name of the course.
+ * @param userId - The id of the professor.
+ * @param sectionId - The desired section id of the course.
+ * @param startTime - The time of day the course will start.
+ * @param endTime - The time of day the course will end.
+ * @param days - The days of the week the course will take place
+ * @returns - The newly created object of the course if created, a
+ * boolean status of the request, and a status message.
  */
 const createCourse = async (
   userId: string,
+  courseName: string,
   sectionId: string,
   startTime: string,
   endTime: string,
@@ -96,7 +102,7 @@ const createCourse = async (
     const days = classesUtils.classDaysMapping[daysIndex]
     const response = await axiosClient.post<createCourseResponse>(
       `/api/${userId}/class`,
-      { sectionId, startTime, endTime, days },
+      { sectionId, courseName, startTime, endTime, days },
       { headers: { 
         'Content-Type': 'application/json' 
         },

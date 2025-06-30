@@ -14,7 +14,7 @@ const authenticateToken = authJwt.authenticateToken
  */
 router.post('/:userId/class', async (req, res, next) => {
   try {
-    const { sectionId, startTime, endTime, days } = req.body
+    const { sectionId, courseName, startTime, endTime, days } = req.body
     const professorId = req.params.userId
     const [classValid, validationMessage] = await classUtils.checkValidClassTimes(
       professorId,
@@ -37,6 +37,7 @@ router.post('/:userId/class', async (req, res, next) => {
     }
 
     const newClass = await classService.createClass(
+      courseName,
       sectionId,
       startTimeList,
       endTimeList,

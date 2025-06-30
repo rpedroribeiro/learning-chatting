@@ -49,7 +49,7 @@ const ClassroomsGrid = () => {
           classes.map((item, index) => (
             <div key={item.id} className='classroom-card'>
               <div className='classroom-card-title'>
-                <h2>Class Name</h2>
+                <h2>{item.className}</h2>
                 <h4>Section ID: {item.sectionId}</h4>
               </div>
               <div className='classroom-card-info'>

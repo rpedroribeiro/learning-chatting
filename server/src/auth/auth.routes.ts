@@ -31,7 +31,7 @@ router.post('/register', async (req, res, next) => {
     }, ctx)
 
     const { accessToken, refreshToken } = authJwt.generateTokens(user)
-    await authServices.addRefreshTokenToWhiteList(refreshToken, user.id)
+    await authServices.addRefreshTokenToWhiteList(refreshToken, user.id, ctx)
 
     res.cookie('refreshToken', refreshToken, {
       'httpOnly': true,
@@ -77,7 +77,7 @@ router.post('/login', async (req, res, next) => {
     }
 
     const { accessToken, refreshToken } = authJwt.generateTokens(existingUser)
-    await authServices.addRefreshTokenToWhiteList(refreshToken, existingUser.id)
+    await authServices.addRefreshTokenToWhiteList(refreshToken, existingUser.id, ctx)
 
     res.cookie('refreshToken', refreshToken, {
       'httpOnly': true,
@@ -113,7 +113,7 @@ router.post('/refreshToken', async (req, res, next) => {
       throw new Error('Missing refresh token.')
     }
 
-    const validRefreshToken = await authServices.findRefreshToken(refreshToken)
+    const validRefreshToken = await authServices.findRefreshToken(refreshToken, ctx)
     if (!validRefreshToken
       || validRefreshToken.revoked === true
       || Date.now() > validRefreshToken.expireAt.getTime()
@@ -128,9 +128,9 @@ router.post('/refreshToken', async (req, res, next) => {
       throw new Error('Unauthorized')
     }
 
-    await authServices.deleteRefreshTokenById(refreshToken)
+    await authServices.deleteRefreshTokenById(refreshToken, ctx)
     const { accessToken, refreshToken: newRefreshToken } = authJwt.generateTokens(validUser)
-    await authServices.addRefreshTokenToWhiteList(refreshToken, validUser.id)
+    await authServices.addRefreshTokenToWhiteList(refreshToken, validUser.id, ctx)
 
     res.cookie('refreshToken', refreshToken, {
       'httpOnly': true,
@@ -159,7 +159,7 @@ router.post('/refreshToken', async (req, res, next) => {
  */
 router.post('/revokeRefreshToken', async (req, res, next) => {
   const { userId } = req.body
-  authServices.revokeTokens(userId)
+  authServices.revokeTokens(userId, ctx)
   res.status(200).json({message: `Token revoked for User with Id ${userId}`})
 })
 

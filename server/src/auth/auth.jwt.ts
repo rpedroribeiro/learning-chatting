@@ -1,3 +1,4 @@
+import { Request, Response, NextFunction } from 'express'
 import * as jwt from 'jsonwebtoken'
 import * as crypto from 'crypto'
 import dotenv from 'dotenv'
@@ -44,23 +45,58 @@ const generateTokens = (user: any) => {
   const refreshToken = generateRefreshToken()
   return { accessToken, refreshToken }
 }
+  
 
 /**
  * This function takes in a token stringand returns a SHA-512 hash 
  * of that token in hexadecimal format.
  * 
- * @param token -T he token string to be hashed
+ * @param token - The token string to be hashed
  * @returns - The SHA-512 hash of the token in hexadecimal format
  */
 const hashToken = (token: any): string => {
   return crypto.createHash('sha512').update(token).digest('hex')
 }
 
+/**
+ * This function takes in the request in the route before handling logic
+ * and checks for the access token authentication before 
+ * 
+ * @param req - The contents of the request.
+ * @param res - The response of the request.
+ * @param next - The next function after the request is proccessed.
+ */
+const authenticateToken = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
+  const header = req.headers['authorization']
+  if (!header) {
+    res.sendStatus(401)
+    return
+  }
+  const token = header.split(' ')[1]
+  if (!token) {
+    res.sendStatus(401)
+    return
+  }
+  const jwtSecret: string = process.env.JWT_ACCESS_SECRET!
+  jwt.verify(token, jwtSecret, (err) => {
+    if (err) {
+      res.sendStatus(401)
+      return
+    }
+    next()
+  })
+}
+
 const authJwt = {
   generateAccessToken,
   generateRefreshToken,
   generateTokens,
-  hashToken
+  hashToken,
+  authenticateToken,
 }
 
 export default authJwt

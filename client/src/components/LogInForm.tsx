@@ -1,23 +1,34 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
-import '../styles/signup.css'
 import authApi from '../api/authApi'
+import '../styles/signup.css'
 
 const LogInForm = () => {
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [errorMessage, setErrorMessage] = useState<string>('')
   const { setAccessToken } = useAuth()
+  const navigate = useNavigate()
 
+  /**
+   * This function uses all the values from the form's states and 
+   * submits it through a POST request to the server to log in the user.
+   * If successful, an authorization token is given, otherwise and error
+   * message is sent back.
+   * 
+   * @param event - Handles the form default behavior of refreshing
+   * the page
+   */
   const handleLogIn = async (event: any) => {
     event.preventDefault()
     const userData = {
       email: email,
       password: password
     }
-    const [status, result] = await authApi.signIntoAccount(userData)
+    const [status, result, userId] = await authApi.signIntoAccount(userData)
     status ? setAccessToken(result) : setErrorMessage(result)
+    status ? navigate(`/${userId}/classrooms`) : []
   }
 
   return (
@@ -40,7 +51,7 @@ const LogInForm = () => {
         <button>Sign Up With Facebook</button>
         <button>Sign Up With Google</button>
       </div>
-      <span>Don't have an Account? <Link to='/signup'>Log in</Link></span>
+      <span>Don't have an Account? <Link to='/signup'>Create An Account</Link></span>
     </div>
   )
 }

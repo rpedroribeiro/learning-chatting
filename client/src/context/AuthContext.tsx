@@ -1,6 +1,5 @@
 import { createContext, useMemo, useState, type ReactNode } from "react"
 
-// Prevents type errors when creating context
 type AuthContextType = {
   accessToken: string;
   setAccessToken: React.Dispatch<React.SetStateAction<string>>;

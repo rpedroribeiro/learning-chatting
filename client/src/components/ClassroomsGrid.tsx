@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import classesApi from '../api/classesApi'
 import useAuth from '../hooks/useAuth'
 import classesUtils from '../utils/classesUtils'
+import CreateClassForm from './CreateClassForm'
+import AddClassModal from './AddClassModal'
 import '../styles/classrooms.css'
 
 const ClassroomsGrid = () => {
@@ -9,6 +11,8 @@ const ClassroomsGrid = () => {
   const [days, setDays] = useState<string[]>([])
   const [hours, setHours] = useState<string[]>([])
   const [loadedData, setLoadedData] = useState<boolean>(false)
+  const [toggleCreateForm, setToggleCreateForm] = useState<boolean>(false)
+  const [toggleAddForm, setToggleAddForm] = useState<boolean>(false)
   const { userId, accountType } = useAuth()
 
   useEffect(() => {
@@ -30,11 +34,13 @@ const ClassroomsGrid = () => {
 
   return (
     <div className="classroom-grid-container">
+      {toggleCreateForm ? <CreateClassForm /> : []}
+      {toggleAddForm ? <AddClassModal setToggleAddForm={setToggleAddForm}/> : []}
       <div style={{display: 'flex', justifyContent: 'space-between'}}>
         <h1 className='classroom-grid-title'>Courses</h1>
         {accountType === "Student" ? 
-          <button className='class-form-button'>Add New Class</button> :
-          <button className='class-form-button'>Create New Class</button>
+          <button onClick={() => setToggleAddForm(true)} className='class-form-button'>Add New Class</button> :
+          <button onClick={() => setToggleCreateForm(true)} className='class-form-button'>Create New Class</button>
         }
       </div>
       <hr style={{marginTop: '10px'}}/>

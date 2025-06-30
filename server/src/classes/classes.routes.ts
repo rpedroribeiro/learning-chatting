@@ -83,7 +83,7 @@ router.get('/:userId/class', authenticateToken, async (req, res, next) => {
  */
 router.put('/:userId/class', authenticateToken, async (req, res, next) => {
   try {
-    const { classCode } = req.body
+    const { courseCode } = req.body
     const studentId = req.params.userId
 
     const validUser = await authServices.findUserById(studentId)
@@ -92,7 +92,7 @@ router.put('/:userId/class', authenticateToken, async (req, res, next) => {
       throw new Error("User does not exist")
     }
 
-    const validClass = await classService.findClassByClassCode(classCode)
+    const validClass = await classService.findClassByClassCode(courseCode)
     if (!validClass) {
       res.status(400).json({message: "Class does not exist"})
       throw new Error("Class does not exist")

@@ -4,6 +4,10 @@ type fetchClassesResponse = {
   classList: Object;
 }
 
+type addStudentToClassResponse = {
+  studentClass: Object;
+}
+
 /**
  * 
  * @param param0 
@@ -29,8 +33,36 @@ const fetchClasses = async (
   }
 }
 
+/**
+ * 
+ * @param userId 
+ * @param courseCode 
+ * @returns 
+ */
+const addStudentToCourse = async (
+  userId: string, courseCode: string
+): Promise<[any[] | null, boolean, string]> => {
+  try {
+    const response = await axiosClient.put<addStudentToClassResponse>(
+      `/api/${userId}/class`,
+      { courseCode },
+      { headers: { 
+        'Content-Type': 'application/json' 
+        },
+        withCredentials: true 
+      }
+    )
+    const studentClass: any = response.data.studentClass
+    return [studentClass, true, "Successfuly added student to class"]
+  } catch (error) {
+    console.error(error)
+    return [null, false, "Failed to add student to class"]
+  }
+}
+
 const classesApi = {
-  fetchClasses
+  fetchClasses,
+  addStudentToCourse
 }
 
 export default classesApi

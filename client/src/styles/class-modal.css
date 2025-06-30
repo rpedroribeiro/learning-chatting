@@ -58,11 +58,19 @@
   gap: 10px;
 }
 
-.modal-input-container label {
+.modal-input-half-container {
+  display: flex;
+  font-weight: medium;
+  flex-direction: column;
+  width: 48%;
+  gap: 8px;
+}
+
+.modal-form label {
   font-size: 18px;
 }
 
-.modal-input-container input {
+.modal-form input {
   height: 20px;
   padding: 18px 10px;
   background-color: var(--textColor);

@@ -9,9 +9,13 @@ type addStudentToClassResponse = {
 }
 
 /**
+ * This function uses the axiosClient to send a GET request to fetch 
+ * all classes associated with the user. If the GET request was successful,
+ * all classes are returned, if otherwise a error message is returned.
  * 
- * @param param0 
- * @returns 
+ * @param param0 - The userId used to fetch all associated classes.
+ * @returns - A list of classes, can be null; a status boolean; and a status
+ * message.
  */
 const fetchClasses = async (
   userId: string
@@ -34,10 +38,16 @@ const fetchClasses = async (
 }
 
 /**
+ * This function takes in the userId and the coureCode and sends a PUT
+ * request that adds the student to the class list. If the PUT request
+ * was succesful, the class enrolled is returned, otherwise an error
+ * message will be returned.
  * 
- * @param userId 
- * @param courseCode 
- * @returns 
+ * @param userId - The id of the student.
+ * @param courseCode - The course code of the course the student wants 
+ * to enroll in.
+ * @returns - The class the student enrolled in, can be null; a status 
+ * boolean; and a status message.
  */
 const addStudentToCourse = async (
   userId: string, courseCode: string

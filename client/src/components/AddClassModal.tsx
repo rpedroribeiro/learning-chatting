@@ -12,6 +12,14 @@ const AddClassModal = ({setToggleAddForm}: addClassModalProps) => {
   const [errorMessage, setErrorMessage] = useState<string>('')
   const { userId } = useAuth() 
 
+  /**
+   * This function takes in the course code from the form and passes in the course
+   * code and the userId into a function that makes the PUT request to update the 
+   * class list for the student.
+   * 
+   * @param event - Used to prevent the default behavior of refreshing the page
+   * after form submission.
+   */
   const handleAddCourse = async (event: any) => {
     event.preventDefault()
     const [studentClass, status, message] = await classesApi.addStudentToCourse(

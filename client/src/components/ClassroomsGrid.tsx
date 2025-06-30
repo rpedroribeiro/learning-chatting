@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import classesApi from '../api/classesApi'
 import useAuth from '../hooks/useAuth'
 import classesUtils from '../utils/classesUtils'
-import CreateClassForm from './CreateClassForm'
+import CreateClassModal from './CreateClassModal'
 import AddClassModal from './AddClassModal'
 import '../styles/classrooms.css'
 
@@ -34,7 +34,7 @@ const ClassroomsGrid = () => {
 
   return (
     <div className="classroom-grid-container">
-      {toggleCreateForm ? <CreateClassForm /> : []}
+      {toggleCreateForm ? <CreateClassModal setToggleCreateForm={setToggleCreateForm} /> : []}
       {toggleAddForm ? <AddClassModal setToggleAddForm={setToggleAddForm}/> : []}
       <div style={{display: 'flex', justifyContent: 'space-between'}}>
         <h1 className='classroom-grid-title'>Courses</h1>

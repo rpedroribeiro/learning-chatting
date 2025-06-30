@@ -1,5 +1,5 @@
 interface Dictionary {
-    [key: string]: any
+  [key: string]: any
 }
 
 const weekdayMapping: Dictionary = {
@@ -10,6 +10,30 @@ const weekdayMapping: Dictionary = {
   "5": "Th",
   "6": "F",
   "7": "Sa"
+}
+
+const classDaysMapping: Dictionary = {
+  "MWF": ["Monday", "Wednesday", "Friday"],
+  "TuTh": ["Tuesday", "Thursday"],
+  "MW": ["Monday", "Wednesday"]
+}
+
+/**
+ * This function takes in the UTC time and converts it into
+ * PDT for display as Date objects are stored in UTC time.
+ * 
+ * @param timeString - The UTC time to be converted
+ * @returns - The PDT time
+ */
+const convertUtcToPdt = (timeString: string): string => {
+  let [hour, minute] = timeString.split(":").map(Number);
+  hour -= 8;
+  if (hour < 0) {
+    hour += 24;
+  }
+  const hourStr = hour.toString().padStart(2, "0")
+  const minuteStr = minute.toString().padStart(2, "0")
+  return `${hourStr}:${minuteStr}`
 }
 
 /**
@@ -28,7 +52,9 @@ const formatClassTimes = (classes: any[]): [string[], string[]] => {
   classes.forEach((currClass: any) => {
     const startTime = String(currClass.startTimes[0]).substring(11, 16)
     const endTime = String(currClass.endTimes[0]).substring(11, 16)
-    newHours.push(`${startTime} - ${endTime}`)
+    const pdtStartTime = convertUtcToPdt(startTime)
+    const pdtEndTime = convertUtcToPdt(endTime)
+    newHours.push(`${pdtStartTime} - ${pdtEndTime}`)
 
     let weekdayInitials = ""
     currClass.startTimes.forEach((time: string) => {
@@ -44,7 +70,8 @@ const formatClassTimes = (classes: any[]): [string[], string[]] => {
 }
 
 const classesUtils = {
-  formatClassTimes
+  formatClassTimes,
+  classDaysMapping
 }
 
 export default classesUtils

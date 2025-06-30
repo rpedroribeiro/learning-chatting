@@ -43,7 +43,7 @@ router.post('/:userId/class', async (req, res, next) => {
       professorId
     )
     
-    res.status(200).json({classroom: newClass})
+    res.status(200).json({newClass: newClass})
   } catch (error) {
     next(error)
   }

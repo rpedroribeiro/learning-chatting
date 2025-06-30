@@ -79,6 +79,15 @@
   font-size: 15px;
 }
 
+.modal-form select,
+.modal-form option {
+  margin: 0;
+  padding: 9px;
+  border: none;
+  border-radius: 5px;
+  background-color: var(--textColor);
+}
+
 .modal-form-submit-btn {
   padding: 12px 10px;
   border: none;

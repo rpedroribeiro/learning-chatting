@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import '../styles/class-modal.css'
+import classesApi from '../api/classesApi'
+import useAuth from '../hooks/useAuth'
 
 interface createClassModalProps {
   setToggleCreateForm: React.Dispatch<React.SetStateAction<boolean>>
@@ -12,9 +14,21 @@ const CreateClassModal = ({setToggleCreateForm}: createClassModalProps) => {
   const [days, setDays] = useState<string>('')
   const [sectionId, setSectionId] = useState<string>('')
   const [courseName, setCourseName] = useState<string>('')
+  const { userId } = useAuth() 
 
-  const handleCreateCourse = () => {
-
+  /**
+   * 
+   * @param event 
+   */
+  const handleCreateCourse = async () => {
+    const [newClass, status, message] = await classesApi.createCourse(
+      userId,
+      sectionId,
+      startTime,
+      endTime,
+      days
+    )
+    status ? setToggleCreateForm(false) : setErrorMessage(message)
   }
 
   return (
@@ -48,8 +62,16 @@ const CreateClassModal = ({setToggleCreateForm}: createClassModalProps) => {
           <div style={{display: 'flex', justifyContent: 'space-between'}}>
             <div className='modal-input-half-container'>
               <label>Days</label>
-              <select required>
-
+              <select 
+                required
+                name='days'
+                value={days}
+                onChange={(event) => {setDays(event.target.value)}}
+            >
+                <option disabled value="">Select Days...</option>
+                <option value="MWF">MWF</option>
+                <option value="TuTh">TuTh</option>
+                <option value="MW">MW</option>
               </select>
             </div>
             <div className='modal-input-half-container'>

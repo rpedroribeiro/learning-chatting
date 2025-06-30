@@ -1,3 +1,4 @@
+import classesUtils from "../utils/classesUtils";
 import axiosClient from "./client"
 
 type fetchClassesResponse = {
@@ -6,6 +7,10 @@ type fetchClassesResponse = {
 
 type addStudentToClassResponse = {
   studentClass: Object;
+}
+
+type createCourseResponse = {
+  newClass: Object;
 }
 
 /**
@@ -50,7 +55,8 @@ const fetchClasses = async (
  * boolean; and a status message.
  */
 const addStudentToCourse = async (
-  userId: string, courseCode: string
+  userId: string, 
+  courseCode: string
 ): Promise<[any[] | null, boolean, string]> => {
   try {
     const response = await axiosClient.put<addStudentToClassResponse>(
@@ -70,9 +76,45 @@ const addStudentToCourse = async (
   }
 }
 
+/**
+ * 
+ * @param userId 
+ * @param sectionId 
+ * @param startTime 
+ * @param endTime 
+ * @param days 
+ * @returns 
+ */
+const createCourse = async (
+  userId: string,
+  sectionId: string,
+  startTime: string,
+  endTime: string,
+  daysIndex: string,
+): Promise<[any[] | null, boolean, string]> => {
+  try {
+    const days = classesUtils.classDaysMapping[daysIndex]
+    const response = await axiosClient.post<createCourseResponse>(
+      `/api/${userId}/class`,
+      { sectionId, startTime, endTime, days },
+      { headers: { 
+        'Content-Type': 'application/json' 
+        },
+        withCredentials: true 
+      }
+    )
+    const newClass: any = response.data.newClass
+    return [newClass, true, "Successfuly created new course"]
+  } catch (error) {
+    console.error(error)
+    return [null, false, "Failed to create the course"]
+  }
+}
+
 const classesApi = {
   fetchClasses,
-  addStudentToCourse
+  addStudentToCourse,
+  createCourse
 }
 
 export default classesApi

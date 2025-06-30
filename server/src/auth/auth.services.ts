@@ -70,8 +70,12 @@ const createUserByEmailAndPassword = async (user: any, ctx: Context) => {
  * token.
  * @returns - The refreshToken object created by prisma's ORM.
  */
-const addRefreshTokenToWhiteList = async (refreshToken: string, userId: string) => {
-  return db.refreshToken.create({
+const addRefreshTokenToWhiteList = async (
+  refreshToken: string, 
+  userId: string,
+  ctx: Context
+) => {
+  return ctx.prisma.refreshToken.create({
     data: {
       hashedToken: authJwt.hashToken(refreshToken),
       userId,
@@ -87,8 +91,8 @@ const addRefreshTokenToWhiteList = async (refreshToken: string, userId: string) 
  * @param token - The token we want to find in the database.
  * @returns - The refreshToken object found by prisma's ORM.
  */
-const findRefreshToken = async (token: string) => {
-  return db.refreshToken.findUnique({
+const findRefreshToken = async (token: string, ctx: Context) => {
+  return ctx.prisma.refreshToken.findUnique({
     where: {
       hashedToken: authJwt.hashToken(token)
     },
@@ -102,8 +106,8 @@ const findRefreshToken = async (token: string) => {
  * @param tokenId - The id of the token in the refreshToken
  * @returns - The deleted token object using prisma's ORM.
  */
-const deleteRefreshTokenById = async (tokenId: string) => {
-  return db.refreshToken.update({
+const deleteRefreshTokenById = async (tokenId: string, ctx: Context) => {
+  return ctx.prisma.refreshToken.update({
     where: {
       id: tokenId,
     },
@@ -121,8 +125,8 @@ const deleteRefreshTokenById = async (tokenId: string) => {
  * to.
  * @returns - The revoked token object from prisma's ORM.
  */
-const revokeTokens = async (userId: string) => {
-  return db.refreshToken.updateMany({
+const revokeTokens = async (userId: string, ctx: Context) => {
+  return ctx.prisma.refreshToken.updateMany({
     where: {
       userId: userId,
     },

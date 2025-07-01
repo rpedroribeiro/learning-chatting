@@ -13,6 +13,10 @@ type createCourseResponse = {
   newClass: Object;
 }
 
+type classDetailsResponse = {
+  classDetails: Object
+}
+
 /**
  * This function uses the axiosClient to send a GET request to fetch 
  * all classes associated with the user. If the GET request was successful,
@@ -117,10 +121,41 @@ const createCourse = async (
   }
 }
 
+/**
+ * This function takes in both the the user Id and the classId
+ * in order to fetch all details necessary to render in the class
+ * page.
+ * 
+ * @param userId - The id of the user.
+ * @param classId - The class id of the class to fetch details.
+ * @returns 
+ */
+const getClassDetails = async (
+  userId: string,
+  classId: string
+): Promise<[any | null, boolean, string]> => {
+  try {
+    const response = await axiosClient.get<classDetailsResponse>(
+      `/api/${userId}/class/${classId}`,
+      { headers: { 
+        'Content-Type': 'application/json' 
+        },
+        withCredentials: true 
+      }
+    )
+    const classDetails: any = response.data.classDetails
+    return [classDetails, true, "Successfully fetched course details"]
+  } catch (error) {
+    console.error(error)
+    return [null, false, "Failed to fetch course details"]
+  }
+}
+
 const classesApi = {
   fetchClasses,
   addStudentToCourse,
-  createCourse
+  createCourse,
+  getClassDetails
 }
 
 export default classesApi

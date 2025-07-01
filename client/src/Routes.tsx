@@ -6,7 +6,6 @@ import ClassroomsPage from './pages/Classrooms'
 import FilesDisplay from './components/FilesDisplay'
 import ClassPage from './pages/ClassPage'
 
-
 const AppRoutes = () => (
   <Routes>
     <Route path="signup" element={<SignUpPage />} />
@@ -18,17 +17,16 @@ const AppRoutes = () => (
           <ClassroomsPage />
         </ClassroomProvider>
       }
+    />
+    <Route 
+      path=':userId/classrooms/:classId'
+      element = {
+        <ClassroomProvider>
+          <ClassPage />
+        </ClassroomProvider>
+      }
     >
-      <Route 
-        path=':classroomId'
-        element = {
-          <ClassroomProvider>
-            <ClassPage />
-          </ClassroomProvider>
-        }
-      >
-        <Route path='files' element={<FilesDisplay />}/>
-      </Route>
+      <Route path='files' element={<FilesDisplay />}/>
     </Route>
   </Routes>
 )

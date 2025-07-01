@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { UserRole } from '../utils/UserRole'
 import { Link, useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons'
@@ -34,13 +35,16 @@ const SignUpForm = () => {
   const handleAccountCreation = async (event: any) => {
     event.preventDefault()
     if (passwordVerified) {
+      let userRole: UserRole
+      if (typeAccount === "Student") { userRole = UserRole.Student }
+      else { userRole = UserRole.Professor }
       setErrorMessage('')
       const userData = {
         firstName: firstName,
         lastName: lastName,
         email: email,
         password: password,
-        accountType: typeAccount
+        accountType: userRole
       }
       const [status, message, userId, accountType] = await authApi.createAccount(userData)
       status ? (() => {
@@ -69,7 +73,8 @@ const SignUpForm = () => {
   /**
    * This useEffect checks to update the passwordVerified state every time
    * one of the three requirement states updates. If all the requirement
-   * states are true, so is passwordVerified.
+   * states are true, so is passwordVerified. If one is false, it sets 
+   * passwordVerified back to false.
    */
   useEffect(() => {
     if (passwordLength && checkForUppercase && checkForSpecial) { 

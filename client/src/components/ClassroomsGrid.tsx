@@ -40,6 +40,10 @@ const ClassroomsGrid = () => {
     }
   }, [classes])
 
+  const handleClassCard = () => {
+    
+  }
+
   return (
     <div className="classroom-grid-container">
       {toggleCreateForm ? <CreateClassModal setToggleCreateForm={setToggleCreateForm} /> : []}
@@ -55,7 +59,11 @@ const ClassroomsGrid = () => {
       <div className='classroom-grid'>
         {loadedData &&
           classes.map((item, index) => (
-            <div key={item.id} className='classroom-card'>
+            <div 
+              key={item.id} 
+              className='classroom-card'
+              onClick={handleClassCard}
+            >
               <div className='classroom-card-title'>
                 <h2>{item.className}</h2>
                 <h4>Section ID: {item.sectionId}</h4>

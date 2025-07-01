@@ -5,7 +5,6 @@ import authServices from '../../src/auth/auth.services'
 import authJwt from "../../src/auth/auth.jwt"
 
 let mockCtx: MockContext
-
 beforeEach(() => {
   mockCtx = createMockContext()
 })
@@ -88,6 +87,7 @@ test('deleteRefreshTokenById deletes a refresh token by its ID', async () => {
   const result = await authServices.deleteRefreshTokenById(mockRefreshToken.id, mockCtx)
   expect(result).toMatchObject(deletedToken)
 })
+
 test('revokeTokens revokes all refresh tokens for a user', async () => {
   mockCtx.prisma.refreshToken.updateMany.mockResolvedValue({ count: 2 })
   const result = await authServices.revokeTokens(mockUser.id, mockCtx)

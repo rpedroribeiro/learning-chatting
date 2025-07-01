@@ -8,7 +8,7 @@ const LogInForm = () => {
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [errorMessage, setErrorMessage] = useState<string>('')
-  const { setAccessToken } = useAuth()
+  const { setUserId, setAccountType } = useAuth()
   const navigate = useNavigate()
 
   /**
@@ -26,9 +26,12 @@ const LogInForm = () => {
       email: email,
       password: password
     }
-    const [status, result, userId] = await authApi.signIntoAccount(userData)
-    status ? setAccessToken(result) : setErrorMessage(result)
-    status ? navigate(`/${userId}/classrooms`) : []
+    const [status, message, userId, accountType] = await authApi.signIntoAccount(userData)
+    status ? (() => {
+      setUserId(userId)
+      setAccountType(accountType)
+      navigate(`/${userId}/classrooms`)
+    })() : setErrorMessage(message)
   }
 
   return (

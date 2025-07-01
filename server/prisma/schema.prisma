@@ -47,6 +47,7 @@ model Classes {
   id           String      @id @unique @default(uuid())
   classCode    String      @unique
   sectionId    String      @unique
+  className    String
   startTimes   DateTime[]
   endTimes     DateTime[]
   professorId  String

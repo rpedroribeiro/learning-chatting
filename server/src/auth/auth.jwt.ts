@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express'
+import { RequestHandler } from 'express'
 import * as jwt from 'jsonwebtoken'
 import * as crypto from 'crypto'
 import dotenv from 'dotenv'
@@ -60,31 +60,26 @@ const hashToken = (token: any): string => {
 
 /**
  * This function takes in the request in the route before handling logic
- * and checks for the access token authentication before 
+ * and checks for the access token authentication validity.
  * 
  * @param req - The contents of the request.
  * @param res - The response of the request.
  * @param next - The next function after the request is proccessed.
  */
-const authenticateToken = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void => {
-  const header = req.headers['authorization']
-  if (!header) {
-    res.sendStatus(401)
-    return
-  }
-  const token = header.split(' ')[1]
+export const authenticateToken: RequestHandler = (req, res, next) => {
+  const token = req.cookies.accessToken;
   if (!token) {
-    res.sendStatus(401)
+    res.status(401).json({ message: "No token provided" })
     return
   }
-  const jwtSecret: string = process.env.JWT_ACCESS_SECRET!
-  jwt.verify(token, jwtSecret, (err) => {
+  const jwtSecret = process.env.JWT_ACCESS_SECRET!
+  jwt.verify(token, jwtSecret, (err: any) => {
     if (err) {
-      res.sendStatus(401)
+      if ((err as jwt.TokenExpiredError).name === "TokenExpiredError") {
+        res.status(401).json({ message: "Token expired" })
+      } else {
+        res.status(401).json({ message: "Token is not valid" })
+      }
       return
     }
     next()

@@ -14,8 +14,9 @@ type logInParams = {
 }
 
 type authResponse = {
-  accessToken: string
-  userId: string
+  userId: string;
+  message: string;
+  accountType: string;
 }
 
 /**
@@ -25,7 +26,7 @@ type authResponse = {
  * @param param0 - All the user data needed to pass into the POST request 
  * @returns - The access token supplied or error message along with boolean status
  */
-const createAccount = async ({firstName, lastName, email, password, accountType}: accountCreationParams): Promise<[boolean, string, string]> => {
+const createAccount = async ({firstName, lastName, email, password, accountType}: accountCreationParams): Promise<[boolean, string, string, string]> => {
   try {
     const response = await axiosClient.post<authResponse>(
       '/api/auth/register',
@@ -34,12 +35,12 @@ const createAccount = async ({firstName, lastName, email, password, accountType}
         withCredentials: true 
       }
     )
-    const accessToken: string = response.data.accessToken
     const userId: string = response.data.userId
-    return [true, accessToken, userId]
+    const message: string = response.data.message
+    return [true, message, userId, accountType]
   } catch (error: any) {
     console.error(error)
-    return [false, String(error.response.data.message), '']
+    return [false, String(error.response.data.message), "", accountType]
   }
 }
 
@@ -50,7 +51,7 @@ const createAccount = async ({firstName, lastName, email, password, accountType}
  * @param param0 - All the user data needed to pass into the POST request 
  * @returns - The access token supplied or error message along with boolean status
  */
-const signIntoAccount = async ({email, password}: logInParams): Promise<[boolean, string, string]> => {
+const signIntoAccount = async ({email, password}: logInParams): Promise<[boolean, string, string, string]> => {
   try {
     const response = await axiosClient.post<authResponse>(
       '/api/auth/login',
@@ -59,12 +60,13 @@ const signIntoAccount = async ({email, password}: logInParams): Promise<[boolean
         withCredentials: true 
       }
     )
-    const accessToken: string = response.data.accessToken
+    const message: string = response.data.message
     const userId: string = response.data.userId
-    return [true, accessToken, userId]
+    const accountType: string = response.data.accountType
+    return [true, message, userId, accountType]
   } catch (error: any) {
     console.error(error)
-    return [false, String(error.response.data.message), '']
+    return [false, String(error.response.data.message), "", ""]
   }
 }
 

@@ -34,9 +34,20 @@ router.post('/register', async (req, res, next) => {
     res.cookie('refreshToken', refreshToken, {
       'httpOnly': true,
       'secure': true,
+      'sameSite': 'none'
     })
 
-    res.status(200).json({accessToken: accessToken, userId: user.id})
+    res.cookie('accessToken', accessToken, {
+      'httpOnly': true,
+      'secure': true,
+      'sameSite': 'none',
+    })
+
+    res.status(200).json({
+      userId: user.id,
+      message: "User successfuly logged in",
+      accountType: user.accountType
+    })
   } catch (error) {
     next(error)
   }
@@ -69,9 +80,20 @@ router.post('/login', async (req, res, next) => {
     res.cookie('refreshToken', refreshToken, {
       'httpOnly': true,
       'secure': true,
+      'sameSite': 'none'
     })
 
-    res.status(200).json({accessToken: accessToken, userId: existingUser.id})
+    res.cookie('accessToken', accessToken, {
+      'httpOnly': true,
+      'secure': true,
+      'sameSite': 'none',
+    })
+
+    res.status(200).json({
+      userId: existingUser.id,
+      message: "User successfuly logged in",
+      accountType: existingUser.accountType
+    })
   } catch (error) {
     next(error)
   }
@@ -111,10 +133,20 @@ router.post('/refreshToken', async (req, res, next) => {
     res.cookie('refreshToken', refreshToken, {
       'httpOnly': true,
       'secure': true,
+      'sameSite': 'none'
     })
 
-    res.status(200).json({accessToken})
+    res.cookie('accessToken', accessToken, {
+      'httpOnly': true,
+      'secure': true,
+      'sameSite': 'none',
+    })
 
+    res.status(200).json({
+      userId: validUser.id,
+      message: "User successfuly logged in",
+      accountType: validUser.accountType
+    })
   } catch (error) {
     next(error)
   }

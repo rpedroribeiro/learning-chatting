@@ -36,9 +36,9 @@ const Sidebar = () => {
             <img src={profilePic}/>
           </div>
           {isHovered && (
-                      <div 
-            className={`sidebar-profile-name${isHovered ? ' hovered' : ''}`}
-          >
+            <div 
+              className={`sidebar-profile-name${isHovered ? ' hovered' : ''}`}
+            >
             <span>Pedro</span>
             <span>Ribeiro</span>
           </div>

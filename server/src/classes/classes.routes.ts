@@ -12,9 +12,9 @@ const authenticateToken = authJwt.authenticateToken
  * if the desired times for the class fits inside the professor's
  * current schedule. 
  */
-router.post('/:userId/class', authenticateToken, async (req, res, next) => {
+router.post('/:userId/class', async (req, res, next) => {
   try {
-    const { sectionId, startTime, endTime, days } = req.body
+    const { sectionId, courseName, startTime, endTime, days } = req.body
     const professorId = req.params.userId
     const [classValid, validationMessage] = await classUtils.checkValidClassTimes(
       professorId,
@@ -37,13 +37,14 @@ router.post('/:userId/class', authenticateToken, async (req, res, next) => {
     }
 
     const newClass = await classService.createClass(
+      courseName,
       sectionId,
       startTimeList,
       endTimeList,
       professorId
     )
     
-    res.status(200).json({classroom: newClass})
+    res.status(200).json({newClass: newClass})
   } catch (error) {
     next(error)
   }
@@ -83,7 +84,7 @@ router.get('/:userId/class', authenticateToken, async (req, res, next) => {
  */
 router.put('/:userId/class', authenticateToken, async (req, res, next) => {
   try {
-    const { classCode } = req.body
+    const { courseCode } = req.body
     const studentId = req.params.userId
 
     const validUser = await authServices.findUserById(studentId)
@@ -92,7 +93,7 @@ router.put('/:userId/class', authenticateToken, async (req, res, next) => {
       throw new Error("User does not exist")
     }
 
-    const validClass = await classService.findClassByClassCode(classCode)
+    const validClass = await classService.findClassByClassCode(courseCode)
     if (!validClass) {
       res.status(400).json({message: "Class does not exist"})
       throw new Error("Class does not exist")

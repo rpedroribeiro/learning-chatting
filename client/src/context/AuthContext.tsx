@@ -1,8 +1,10 @@
-import { createContext, useMemo, useState, type ReactNode } from "react"
+import { createContext, useEffect, useMemo, useState, type ReactNode } from "react"
 
 type AuthContextType = {
-  accessToken: string;
-  setAccessToken: React.Dispatch<React.SetStateAction<string>>;
+  userId: string;
+  setUserId: React.Dispatch<React.SetStateAction<string>>;
+  accountType: string;
+  setAccountType: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -12,11 +14,23 @@ type AuthContextChildren = {
 }
 
 export const AuthProvider = ({children}: AuthContextChildren) => {
-  const [accessToken, setAccessToken] = useState<string>('')
+  const [userId, setUserId] = useState<string>(() => localStorage.getItem('userId') || '')
+  const [accountType, setAccountType] = useState<string>(() => localStorage.getItem('accountType') || '')
+
+  useEffect(() => {
+    localStorage.setItem('userId', userId)
+  }, [userId])
+
+  useEffect(() => {
+    localStorage.setItem('accountType', accountType)
+  }, [accountType])
+
   const value = useMemo(() => ({
-    accessToken,
-    setAccessToken
-  }), [accessToken])
+    userId,
+    setUserId,
+    accountType,
+    setAccountType
+  }), [userId, accountType])
 
   return (
     <AuthContext.Provider value={value}>

@@ -1,5 +1,4 @@
 import * as bcrypt from 'bcrypt'
-import db from '../database/prisma'
 import authJwt from './auth.jwt'
 import { Context } from '../context/context'
 
@@ -8,7 +7,7 @@ import { Context } from '../context/context'
  * prisma's ORM to return a user object.
  * 
  * @param email - The email of the user.
- * @param ctx - The context that this function is being used in.
+ * @param ctx - The prisma context that this function is being used in.
  * @returns - The user object from the db.
  */
 const findUserByEmail = async (email: string, ctx: Context) => {
@@ -28,7 +27,7 @@ const findUserByEmail = async (email: string, ctx: Context) => {
  * prisma's ORM to return a user object.
  * 
  * @param id - The id of the user.
- * @param ctx - The context that this function is being used in.
+ * @param ctx - The prisma context that this function is being used in.
  * @returns - The user object from the db.
  */
 const findUserById = async (id: string, ctx: Context) => {
@@ -49,7 +48,7 @@ const findUserById = async (id: string, ctx: Context) => {
  * 
  * @param user - All the user information to create an
  * account
- * @param ctx - The context that this function is being used in.
+ * @param ctx - The prisma context that this function is being used in.
  * @returns - The user object from prisma's ORM
  */
 const createUserByEmailAndPassword = async (user: any, ctx: Context) => {
@@ -68,6 +67,7 @@ const createUserByEmailAndPassword = async (user: any, ctx: Context) => {
  * the database.
  * @param userId  - The userId for the schema that conencts the user and their
  * token.
+ * @param ctx - The prisma context that this function is being used in.
  * @returns - The refreshToken object created by prisma's ORM.
  */
 const addRefreshTokenToWhiteList = async (
@@ -89,6 +89,7 @@ const addRefreshTokenToWhiteList = async (
  * token string and returns the result.
  * 
  * @param token - The token we want to find in the database.
+ * @param ctx - The prisma context that this function is being used in.
  * @returns - The refreshToken object found by prisma's ORM.
  */
 const findRefreshToken = async (token: string, ctx: Context) => {
@@ -104,6 +105,7 @@ const findRefreshToken = async (token: string, ctx: Context) => {
  * and then deletes the token.
  * 
  * @param tokenId - The id of the token in the refreshToken
+ * @param ctx - The prisma context that this function is being used in.
  * @returns - The deleted token object using prisma's ORM.
  */
 const deleteRefreshTokenById = async (tokenId: string, ctx: Context) => {
@@ -123,6 +125,7 @@ const deleteRefreshTokenById = async (tokenId: string, ctx: Context) => {
  * 
  * @param userId - The id of the user that the token is attached
  * to.
+ * @param ctx - The prisma context that this function is being used in.
  * @returns - The revoked token object from prisma's ORM.
  */
 const revokeTokens = async (userId: string, ctx: Context) => {

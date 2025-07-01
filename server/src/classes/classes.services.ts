@@ -1,5 +1,4 @@
 import classroomUtils from "./classes.utils"
-import db from "../database/prisma"
 import { Context } from '../context/context'
 
 /**
@@ -7,6 +6,7 @@ import { Context } from '../context/context'
  * Prisma's ORM to return the class object.
  * 
  * @param id - The id of the class.
+ * @param ctx - The prisma context that this function is being used in.
  * @returns - The class object from the database.
  */
 const findClassById = async (id: string, ctx: Context) => {
@@ -22,6 +22,7 @@ const findClassById = async (id: string, ctx: Context) => {
  * Prisma's ORM to return all class taught by that professor.
  * 
  * @param professorId - The id of the professor.
+ * @param ctx - The prisma context that this function is being used in.
  * @returns - An array of class objects from the database.
  */
 const findAllClassesByProfessorId = async (professorId: string, ctx: Context) => {
@@ -63,6 +64,7 @@ const findAllClassesByStudentId = async (studentId: string, ctx: Context) => {
  * Prisma's ORM to return the class object.
  *
  * @param classCode - The code of the class.
+ * @param ctx - The prisma context that this function is being used in.
  * @returns - The class object from the database.
  */
 const findClassByClassCode = async (classCode: string, ctx: Context) => {
@@ -78,6 +80,7 @@ const findClassByClassCode = async (classCode: string, ctx: Context) => {
  * Prisma's ORM to return all students in that class.
  * 
  * @param id - The id of the class.
+ * @param ctx - The prisma context that this function is being used in.
  * @returns - An array of student objects from the database.
  */
 const findAllStudentsByClassId = async (id: string, ctx: Context) => {
@@ -96,6 +99,7 @@ const findAllStudentsByClassId = async (id: string, ctx: Context) => {
  * Prisma's ORM to return the professor of that class.
  * 
  * @param id - The id of the class.
+ * @param ctx - The prisma context that this function is being used in.
  * @returns - The professor object from the database.
  */
 const findProfessorByClassId = async (id: string, ctx: Context) => {
@@ -118,6 +122,7 @@ const findProfessorByClassId = async (id: string, ctx: Context) => {
  * @param endTimes - A list of the end times of the class.
  * @param days - The days the class meets.
  * @param professorId - The id of the professor teaching the class.
+ * @param ctx - The prisma context that this function is being used in.
  * @returns - The newly created class object from the database.
  */
 const createClass = async (
@@ -157,6 +162,7 @@ const createClass = async (
  * 
  * @param id - The id of the class.
  * @param studentId - The id of the student to add.
+ * @param ctx - The prisma context that this function is being used in.
  * @returns - The updated class object from the database.
  */
 const addStudentToClass = async (id: string, studentId: string, ctx: Context) => {
@@ -191,6 +197,7 @@ const addStudentToClass = async (id: string, studentId: string, ctx: Context) =>
  * @param classId - The id of the desired class.
  * @param studentId - The id of the student, can be null.
  * @param professorId - The id of the professor, can be null.
+ * @param ctx - The prisma context that this function is being used in.
  * @returns - The class specified from the class id.
  */
 const findClassByUserIdAndClassId = async (

@@ -54,3 +54,18 @@ model Classes {
   professor    User        @relation("professorClasses", fields: [professorId], references: [id])
   students     User[]      @relation("studentClasses")
 }
+
+enum FileType {
+  File
+  Folder
+}
+
+model FileSystemItem {
+  id        String           @id @unique @default(uuid())
+  name      String
+  type      FileType
+  parentId  String
+  parent    FileSystemItem   @relation("FileToFile", fields: [parentId], references: [id])
+  fileURL   String
+  children  FileSystemItem[] @relation("FileToFile")
+}

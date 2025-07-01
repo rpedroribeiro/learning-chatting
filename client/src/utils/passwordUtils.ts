@@ -1,21 +1,35 @@
 /**
- * The function takes in a password and checks if the 
- * password passes the strength requirements.
  * 
- * @param password - The password we want to verify.
- * @returns A boolean that represents if the password has
- * been verified and an error message.
+ * @param password 
+ * @returns 
  */
-const checkPasswordStrength = (password: string): [boolean, string] => {
+const checkPasswordLength = (password: string): boolean => {
+  return password.length >= 8
+}
+
+/**
+ * 
+ * @param password 
+ * @returns 
+ */
+const checkForUpperCase = (password: string): boolean => {
+  return password !== password.toLowerCase()
+}
+
+/**
+ * 
+ * @param password 
+ * @returns 
+ */
+const checkForSpecialCharacter = (password: string): boolean => {
   const specialCharacters = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/
-  if (password.length < 8) return [false, "Password Must Be 8 Characters Long"]
-  if (password === password.toLowerCase()) return [false, "Password Must Contain One Uppercase Character"]
-  if (!specialCharacters.test(password)) return [false, "Password Must Contain One Special Character"]
-  return [true, 'it worked']
+  return specialCharacters.test(password)
 }
 
 const passwordUtils = {
-  checkPasswordStrength
+  checkPasswordLength,
+  checkForUpperCase,
+  checkForSpecialCharacter
 }
 
 export default passwordUtils

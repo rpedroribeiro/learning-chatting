@@ -1,5 +1,7 @@
 import classroomUtils from "./classes.utils"
 import { Context } from '../context/context'
+import { FileType } from "@prisma/client"
+import fileSystemServices from "../filesystem/filesystem.services"
 
 /**
  * This function takes in a class id and uses
@@ -140,9 +142,17 @@ const createClass = async (
       sectionId: sectionId,
       startTimes: startTimes,
       endTimes: endTimes,
-      professorId: professorId
+      professorId: professorId,
     }
   })
+  await fileSystemServices.createFileSystemItem(
+    '/',
+    '/',
+    FileType.Folder,
+    null,
+    newClass.id,
+    ctx
+  )
   await ctx.prisma.user.update({
     where: {
       id: professorId

@@ -1,7 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowDown } from '@fortawesome/free-solid-svg-icons'
 import { FileType } from '../utils/FileType'
+import fileSystemApi from '../api/fileSystemApi'
+import useAuth from '../hooks/useAuth'
+import useClassroom from '../hooks/useClassroom'
 import '../styles/class-modal.css'
 
 interface addFileItemProps {
@@ -9,20 +12,53 @@ interface addFileItemProps {
 }
 
 const FileItemModal = ({setToggleAddItemForm}: addFileItemProps) => {
-
   const [errorMessage, setErrorMessage] = useState<string>('')
+  const [newFileName, setNewFileName] = useState<string>('')
   const [fileType, setFileType] = useState<string>('')
-  const [fileName, setFileName] = useState<string>('');
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+  const [actualFileName, setActualFileName] = useState<string>('')
+  const [file, setFile] = useState<File | null>(null)
+  const { userId } = useAuth()
+  const { currClass } = useClassroom()
+
+  /**
+   * This function handles the change of value in the file input tag,
+   * setting the file object in the file tag and its actual name for 
+   * display.
+   * 
+   * @param event - Used to access the file stored.
+   */
+  const handleFileChange = (event: any) => {
+    const file = event.target.files?.[0]
     if (file) {
-      setFileName(file.name);
+      setFile(file)
+      setActualFileName(file.name)
     }
   }
 
-  const handleAddFileItem = (event: any) => {
+  /**
+   * This function uses all the states that were updated based off the
+   * form and sends them through the fileSystemApi to make the POST request
+   * that creates the FileSystemItem and adds it to the bucket.
+   * 
+   * @param event - Prevents default behavior of page reloading after
+   * form submission.
+   */
+  const handleAddFileItem = async (event: any) => {
     event.preventDefault()
-    
+    if (fileType) {
+      let formFileType: FileType
+      if (fileType === "Folder") { formFileType = FileType.Folder }
+      else { formFileType = FileType.File}
+      const response = await fileSystemApi.uploadFileSystemItel(
+        userId,
+        currClass.id,
+        file,
+        newFileName,
+        formFileType,
+        '1adb6946-eea8-4fe5-ba26-e21f63fa8e56'
+      )
+    }
+
   }
 
   return (
@@ -41,7 +77,11 @@ const FileItemModal = ({setToggleAddItemForm}: addFileItemProps) => {
         <form onSubmit={handleAddFileItem} className='modal-form'>
           <div className='modal-input-container'>
             <label>File Name</label>
-            <input required />
+            <input
+              required
+              value={newFileName}
+              onChange={(event) => {setNewFileName(event.target.value)}}
+            />
           </div>
           <div style={{display: 'flex', justifyContent: 'space-between'}}>
             <div className='modal-input-half-container'>
@@ -59,17 +99,22 @@ const FileItemModal = ({setToggleAddItemForm}: addFileItemProps) => {
             </div>
             <div className='modal-input-half-container'>
                 <label>Upload File</label>
-                <input type='file' id='upload-file-btn' style={{display: 'none'}} onChange={handleFileChange}/>
+                <input 
+                  required={fileType==="File"} 
+                  type='file' id='upload-file-btn' 
+                  style={{display: 'none'}} 
+                  onChange={handleFileChange}
+                />
                 <label className='upload-file-btn' htmlFor='upload-file-btn'>
-                  {fileName ? 
+                  {actualFileName ? 
                     <span>Chosen File</span> : 
                     <div>
                       <span>Choose File</span> <FontAwesomeIcon icon={faArrowDown}/>
                     </div>
                   }
                 </label>
-                {fileName && (
-                  <p style={{fontSize: '12px'}}>Selected File: {fileName}</p>
+                {actualFileName && (
+                  <p style={{fontSize: '12px'}}>Selected File: {actualFileName}</p>
                 )}
             </div>
           </div>

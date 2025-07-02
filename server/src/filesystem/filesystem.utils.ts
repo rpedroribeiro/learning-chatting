@@ -6,26 +6,36 @@ const storage = new Storage()
 const bucketName: string = process.env.GOOGLE_BUCKET_NAME!
 
 /**
- * This function takes the desired filepath and the filename of the
- * file we want to store in the GCB.
+ * This fnction takes in the desired path in the bucket and the path
+ * to the local file and stores the file in the bucket.
  * 
- * @param filePath - The new path of the file to be uploaded.
- * @param fileName - The desired file name for the bucket.
+ * @param destinationPath - The path that will be put in the bucket.
+ * @param localFilePath - The local file used to access the file.
  */
-const uploadFileToFileSystem = async (filePath: string, fileName: string) => {
-  const destFileName = `file_system/${fileName}`
+const uploadFileToFileSystem = async (destinationPath: string, localFilePath: string) => {
   const options = {
-    destination: destFileName,
+    destination: destinationPath,
   }
+  await storage.bucket(bucketName).upload(localFilePath, options)
+}
 
-  await storage.bucket(bucketName).upload(filePath, options)
+/**
+ * This function takes the desired folder path for the bucket and
+ * places it in the bucket. 
+ * 
+ * @param folderName - The desired path for the folder in the bucket.
+ */
+const addFolderToFileSystem = async (folderPath: string) => {
+  const bucket = storage.bucket(bucketName)
+  const folder = bucket.file(`${folderPath}`)
+  await folder.save('')
 }
 
 /**
  * This generates a url that allows the server to access the private
  * GCB for the next hour.
  * 
- * @param fileName - The name of the file desired.
+ * @param fileName - The name of the file desired in the bucket.
  */
 const generateV4ReadSignedUrl = async (fileName: string) => {
   const options = {
@@ -41,3 +51,11 @@ const generateV4ReadSignedUrl = async (fileName: string) => {
 
   return url
 }
+
+const fileSystemUtil = {
+  uploadFileToFileSystem,
+  generateV4ReadSignedUrl,
+  addFolderToFileSystem,
+}
+
+export default fileSystemUtil

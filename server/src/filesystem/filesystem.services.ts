@@ -50,9 +50,26 @@ const findFileSystemItemById = async (id: string, ctx: Context) => {
   })
 }
 
+/**
+ * This funcction takes in the id of the current item and returns all of
+ * its direct children one level below.
+ * 
+ * @param id - The id of the parent.
+ * @param ctx - The prisma context that this function is being used in.
+ * @returns - A list of all the children inside the parent.
+ */
+const findAllChidrenForFileSystemItem = async (id: string, ctx: Context) => {
+  return await ctx.prisma.fileSystemItem.findMany({
+    where: {
+      parentId: id
+    }
+  })
+}
+
 const fileSystemServices = {
   createFileSystemItem,
-  findFileSystemItemById
+  findFileSystemItemById,
+  findAllChidrenForFileSystemItem
 }
 
 export default fileSystemServices

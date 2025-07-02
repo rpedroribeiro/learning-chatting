@@ -1,3 +1,4 @@
+import type { UserRole } from "../utils/UserRole";
 import axiosClient from "./client"
 
 type accountCreationParams = {
@@ -5,7 +6,7 @@ type accountCreationParams = {
   lastName: string;
   email: string;
   password: string;
-  accountType: string;
+  accountType: UserRole | null;
 }
 
 type logInParams = {
@@ -16,7 +17,7 @@ type logInParams = {
 type authResponse = {
   userId: string;
   message: string;
-  accountType: string;
+  accountType: UserRole | null;
 }
 
 /**
@@ -26,7 +27,7 @@ type authResponse = {
  * @param param0 - All the user data needed to pass into the POST request 
  * @returns - The access token supplied or error message along with boolean status
  */
-const createAccount = async ({firstName, lastName, email, password, accountType}: accountCreationParams): Promise<[boolean, string, string, string]> => {
+const createAccount = async ({firstName, lastName, email, password, accountType}: accountCreationParams): Promise<[boolean, string, string, UserRole | null]> => {
   try {
     const response = await axiosClient.post<authResponse>(
       '/api/auth/register',
@@ -51,7 +52,7 @@ const createAccount = async ({firstName, lastName, email, password, accountType}
  * @param param0 - All the user data needed to pass into the POST request 
  * @returns - The access token supplied or error message along with boolean status
  */
-const signIntoAccount = async ({email, password}: logInParams): Promise<[boolean, string, string, string]> => {
+const signIntoAccount = async ({email, password}: logInParams): Promise<[boolean, string, string, UserRole | null]> => {
   try {
     const response = await axiosClient.post<authResponse>(
       '/api/auth/login',
@@ -62,11 +63,11 @@ const signIntoAccount = async ({email, password}: logInParams): Promise<[boolean
     )
     const message: string = response.data.message
     const userId: string = response.data.userId
-    const accountType: string = response.data.accountType
+    const accountType = response.data.accountType
     return [true, message, userId, accountType]
   } catch (error: any) {
     console.error(error)
-    return [false, String(error.response.data.message), "", ""]
+    return [false, String(error.response.data.message), "", null]
   }
 }
 

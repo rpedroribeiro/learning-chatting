@@ -1,16 +1,17 @@
 import * as bcrypt from 'bcrypt'
-import db from '../database/prisma'
 import authJwt from './auth.jwt'
+import { Context } from '../context/context'
 
 /**
  * This funciton takes in the user email and uses
  * prisma's ORM to return a user object.
  * 
  * @param email - The email of the user.
+ * @param ctx - The prisma context that this function is being used in.
  * @returns - The user object from the db.
  */
-const findUserByEmail = async (email: string) => {
-  return await db.user.findUnique({
+const findUserByEmail = async (email: string, ctx: Context) => {
+  return await ctx.prisma.user.findUnique({
     where:{
       email,
     },
@@ -26,10 +27,11 @@ const findUserByEmail = async (email: string) => {
  * prisma's ORM to return a user object.
  * 
  * @param id - The id of the user.
+ * @param ctx - The prisma context that this function is being used in.
  * @returns - The user object from the db.
  */
-const findUserById = async (id: string) => {
-  return await db.user.findUnique({
+const findUserById = async (id: string, ctx: Context) => {
+  return await ctx.prisma.user.findUnique({
     where:{
       id,
     },
@@ -46,11 +48,12 @@ const findUserById = async (id: string) => {
  * 
  * @param user - All the user information to create an
  * account
+ * @param ctx - The prisma context that this function is being used in.
  * @returns - The user object from prisma's ORM
  */
-const createUserByEmailAndPassword = async (user: any) => {
+const createUserByEmailAndPassword = async (user: any, ctx: Context) => {
   user.password = bcrypt.hashSync(user.password, 12)
-  return db.user.create({
+  return ctx.prisma.user.create({
     data: user,
   })
 }
@@ -64,10 +67,15 @@ const createUserByEmailAndPassword = async (user: any) => {
  * the database.
  * @param userId  - The userId for the schema that conencts the user and their
  * token.
+ * @param ctx - The prisma context that this function is being used in.
  * @returns - The refreshToken object created by prisma's ORM.
  */
-const addRefreshTokenToWhiteList = async (refreshToken: string, userId: string) => {
-  return db.refreshToken.create({
+const addRefreshTokenToWhiteList = async (
+  refreshToken: string, 
+  userId: string,
+  ctx: Context
+) => {
+  return ctx.prisma.refreshToken.create({
     data: {
       hashedToken: authJwt.hashToken(refreshToken),
       userId,
@@ -81,10 +89,11 @@ const addRefreshTokenToWhiteList = async (refreshToken: string, userId: string) 
  * token string and returns the result.
  * 
  * @param token - The token we want to find in the database.
+ * @param ctx - The prisma context that this function is being used in.
  * @returns - The refreshToken object found by prisma's ORM.
  */
-const findRefreshToken = async (token: string) => {
-  return db.refreshToken.findUnique({
+const findRefreshToken = async (token: string, ctx: Context) => {
+  return ctx.prisma.refreshToken.findUnique({
     where: {
       hashedToken: authJwt.hashToken(token)
     },
@@ -96,10 +105,11 @@ const findRefreshToken = async (token: string) => {
  * and then deletes the token.
  * 
  * @param tokenId - The id of the token in the refreshToken
+ * @param ctx - The prisma context that this function is being used in.
  * @returns - The deleted token object using prisma's ORM.
  */
-const deleteRefreshTokenById = async (tokenId: string) => {
-  return db.refreshToken.update({
+const deleteRefreshTokenById = async (tokenId: string, ctx: Context) => {
+  return ctx.prisma.refreshToken.update({
     where: {
       id: tokenId,
     },
@@ -115,10 +125,11 @@ const deleteRefreshTokenById = async (tokenId: string) => {
  * 
  * @param userId - The id of the user that the token is attached
  * to.
+ * @param ctx - The prisma context that this function is being used in.
  * @returns - The revoked token object from prisma's ORM.
  */
-const revokeTokens = async (userId: string) => {
-  return db.refreshToken.updateMany({
+const revokeTokens = async (userId: string, ctx: Context) => {
+  return ctx.prisma.refreshToken.updateMany({
     where: {
       userId: userId,
     },

@@ -2,8 +2,10 @@ import express from 'express'
 import * as bcrypt from 'bcrypt'
 import authJwt from './auth.jwt'
 import authServices from './auth.services'
+import { prisma } from '../context/context'
 
 const router = express.Router()
+const ctx = { prisma }
 
 /**
  * Registers a new user with email, password, first name, and last name.
@@ -13,7 +15,7 @@ const router = express.Router()
 router.post('/register', async (req, res, next) => {
   try {
     const { email, password, firstName, lastName, accountType } = req.body
-    const existingUser = await authServices.findUserByEmail(email)
+    const existingUser = await authServices.findUserByEmail(email, ctx)
 
     if (existingUser) {
       res.status(400).json({message: 'Email already in use.'})
@@ -26,10 +28,10 @@ router.post('/register', async (req, res, next) => {
       firstName,
       lastName,
       accountType,
-    })
+    }, ctx)
 
     const { accessToken, refreshToken } = authJwt.generateTokens(user)
-    await authServices.addRefreshTokenToWhiteList(refreshToken, user.id)
+    await authServices.addRefreshTokenToWhiteList(refreshToken, user.id, ctx)
 
     res.cookie('refreshToken', refreshToken, {
       'httpOnly': true,
@@ -61,7 +63,7 @@ router.post('/register', async (req, res, next) => {
 router.post('/login', async (req, res, next) => {
   try {
     const { email, password } = req.body
-    const existingUser = await authServices.findUserByEmail(email)
+    const existingUser = await authServices.findUserByEmail(email, ctx)
 
     if (!existingUser || existingUser === null) {
       res.status(403).json({message: 'Invalid Credentials.'})
@@ -75,7 +77,7 @@ router.post('/login', async (req, res, next) => {
     }
 
     const { accessToken, refreshToken } = authJwt.generateTokens(existingUser)
-    await authServices.addRefreshTokenToWhiteList(refreshToken, existingUser.id)
+    await authServices.addRefreshTokenToWhiteList(refreshToken, existingUser.id, ctx)
 
     res.cookie('refreshToken', refreshToken, {
       'httpOnly': true,
@@ -111,7 +113,7 @@ router.post('/refreshToken', async (req, res, next) => {
       throw new Error('Missing refresh token.')
     }
 
-    const validRefreshToken = await authServices.findRefreshToken(refreshToken)
+    const validRefreshToken = await authServices.findRefreshToken(refreshToken, ctx)
     if (!validRefreshToken
       || validRefreshToken.revoked === true
       || Date.now() > validRefreshToken.expireAt.getTime()
@@ -120,15 +122,15 @@ router.post('/refreshToken', async (req, res, next) => {
       throw new Error('Unauthorized')
     }
 
-    const validUser = await authServices.findUserById(refreshToken.userId)
+    const validUser = await authServices.findUserById(refreshToken.userId, ctx)
     if (!validUser || validUser === null) {
       res.status(401)
       throw new Error('Unauthorized')
     }
 
-    await authServices.deleteRefreshTokenById(refreshToken)
+    await authServices.deleteRefreshTokenById(refreshToken, ctx)
     const { accessToken, refreshToken: newRefreshToken } = authJwt.generateTokens(validUser)
-    await authServices.addRefreshTokenToWhiteList(refreshToken, validUser.id)
+    await authServices.addRefreshTokenToWhiteList(refreshToken, validUser.id, ctx)
 
     res.cookie('refreshToken', refreshToken, {
       'httpOnly': true,
@@ -157,7 +159,7 @@ router.post('/refreshToken', async (req, res, next) => {
  */
 router.post('/revokeRefreshToken', async (req, res, next) => {
   const { userId } = req.body
-  authServices.revokeTokens(userId)
+  authServices.revokeTokens(userId, ctx)
   res.status(200).json({message: `Token revoked for User with Id ${userId}`})
 })
 

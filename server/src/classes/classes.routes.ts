@@ -3,9 +3,12 @@ import classService from './classes.services'
 import classUtils from './classes.utils'
 import authServices from '../auth/auth.services'
 import authJwt from '../auth/auth.jwt'
+import { UserRole } from '@prisma/client'
+import { prisma } from '../context/context'
 
 const router = express.Router()
 const authenticateToken = authJwt.authenticateToken
+const ctx = { prisma }
 
 /**
  * This route creates a new class for a professor and validates
@@ -41,7 +44,8 @@ router.post('/:userId/class', async (req, res, next) => {
       sectionId,
       startTimeList,
       endTimeList,
-      professorId
+      professorId,
+      ctx
     )
     
     res.status(200).json({newClass: newClass})
@@ -58,7 +62,7 @@ router.post('/:userId/class', async (req, res, next) => {
 router.get('/:userId/class', authenticateToken, async (req, res, next) => {
   try {
     const userId = req.params.userId
-    const validUser = await authServices.findUserById(userId)
+    const validUser = await authServices.findUserById(userId, ctx)
 
     if (!validUser) {
       res.status(400).json({message: "User does not exist"})
@@ -66,10 +70,10 @@ router.get('/:userId/class', authenticateToken, async (req, res, next) => {
     }
 
     let classList
-    if (validUser.accountType === "Student") {
-      classList = await classService.findAllClassesByStudentId(userId)
+    if (validUser.accountType === UserRole.Student) {
+      classList = await classService.findAllClassesByStudentId(userId, ctx)
     } else {
-      classList = await classService.findAllClassesByProfessorId(userId)
+      classList = await classService.findAllClassesByProfessorId(userId, ctx)
     }
 
     res.status(200).json({classList: classList})
@@ -87,19 +91,19 @@ router.put('/:userId/class', authenticateToken, async (req, res, next) => {
     const { courseCode } = req.body
     const studentId = req.params.userId
 
-    const validUser = await authServices.findUserById(studentId)
+    const validUser = await authServices.findUserById(studentId, ctx)
     if (!validUser) {
       res.status(400).json({message: "User does not exist"})
       throw new Error("User does not exist")
     }
 
-    const validClass = await classService.findClassByClassCode(courseCode)
+    const validClass = await classService.findClassByClassCode(courseCode, ctx)
     if (!validClass) {
       res.status(400).json({message: "Class does not exist"})
       throw new Error("Class does not exist")
     }
 
-    const studentClass = await classService.addStudentToClass(validClass.id, studentId)
+    const studentClass = await classService.addStudentToClass(validClass.id, studentId, ctx)
     res.status(200).json({studentClass: studentClass})
   } catch (error) {
     next(error)
@@ -116,7 +120,7 @@ router.get('/:userId/class/:classId', authenticateToken, async (req, res, next) 
     const userId = req.params.boardId
     const classId = req.params.classId
 
-    const currUser = await authServices.findUserById(userId)
+    const currUser = await authServices.findUserById(userId, ctx)
     if (!currUser) {
       res.status(400).json({message: "User does not exist"})
       throw new Error("User does not exist")
@@ -124,12 +128,12 @@ router.get('/:userId/class/:classId', authenticateToken, async (req, res, next) 
 
     let studentId = null
     let professorId = null
-    if (currUser.accountType === "Student") { studentId = userId }
-    else if (currUser.accountType === "Professor") { professorId = userId }
+    if (currUser.accountType === UserRole.Student) { studentId = userId }
+    else if (currUser.accountType === UserRole.Professor) { professorId = userId }
 
 
     const selectedClass = await classService
-      .findClassByUserIdAndClassId(classId, studentId, professorId)
+      .findClassByUserIdAndClassId(classId, studentId, professorId, ctx)
 
     res.status(200).json({class: selectedClass})
   } catch (error) {

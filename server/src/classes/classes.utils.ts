@@ -1,6 +1,7 @@
-import { start } from "repl"
+import { prisma } from '../context/context'
 import authServices from "../auth/auth.services"
 
+const ctx = { prisma }
 interface Dictionary {
   [key: string]: any
 }
@@ -106,7 +107,7 @@ const checkValidClassTimes = async (
   startTime: string,
   endTime: string
 ): Promise<[boolean, string]> => {
-  const user = await authServices.findUserById(userId)
+  const user = await authServices.findUserById(userId, ctx)
   if (!user) {
     return [false, "User does not exist"]
   }

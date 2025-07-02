@@ -1,16 +1,16 @@
 import classroomUtils from "./classes.utils"
-import authServices from "../auth/auth.services"
-import db from "../database/prisma"
+import { Context } from '../context/context'
 
 /**
  * This function takes in a class id and uses
  * Prisma's ORM to return the class object.
  * 
  * @param id - The id of the class.
+ * @param ctx - The prisma context that this function is being used in.
  * @returns - The class object from the database.
  */
-const findClassById = async (id: string) => {
-  return await db.classes.findUnique({
+const findClassById = async (id: string, ctx: Context) => {
+  return await ctx.prisma.classes.findUnique({
     where: {
       id
     }
@@ -22,10 +22,11 @@ const findClassById = async (id: string) => {
  * Prisma's ORM to return all class taught by that professor.
  * 
  * @param professorId - The id of the professor.
+ * @param ctx - The prisma context that this function is being used in.
  * @returns - An array of class objects from the database.
  */
-const findAllClassesByProfessorId = async (professorId: string) => {
-  return await db.classes.findMany({
+const findAllClassesByProfessorId = async (professorId: string, ctx: Context) => {
+  return await ctx.prisma.classes.findMany({
     where: {
       professorId
     },
@@ -43,8 +44,8 @@ const findAllClassesByProfessorId = async (professorId: string) => {
  * @param userId - The id of the professor.
  * @returns - An array of class objects from the database.
  */
-const findAllClassesByStudentId = async (studentId: string) => {
-  return await db.classes.findMany({
+const findAllClassesByStudentId = async (studentId: string, ctx: Context) => {
+  return await ctx.prisma.classes.findMany({
     where: {
       students: {
         some: {
@@ -63,10 +64,11 @@ const findAllClassesByStudentId = async (studentId: string) => {
  * Prisma's ORM to return the class object.
  *
  * @param classCode - The code of the class.
+ * @param ctx - The prisma context that this function is being used in.
  * @returns - The class object from the database.
  */
-const findClassByClassCode = async (classCode: string) => {
-  return await db.classes.findUnique({
+const findClassByClassCode = async (classCode: string, ctx: Context) => {
+  return await ctx.prisma.classes.findUnique({
     where: {
       classCode
     }
@@ -78,10 +80,11 @@ const findClassByClassCode = async (classCode: string) => {
  * Prisma's ORM to return all students in that class.
  * 
  * @param id - The id of the class.
+ * @param ctx - The prisma context that this function is being used in.
  * @returns - An array of student objects from the database.
  */
-const findAllStudentsByClassId = async (id: string) => {
-  return await db.classes.findUnique({
+const findAllStudentsByClassId = async (id: string, ctx: Context) => {
+  return await ctx.prisma.classes.findUnique({
     where: {
       id
     },
@@ -96,10 +99,11 @@ const findAllStudentsByClassId = async (id: string) => {
  * Prisma's ORM to return the professor of that class.
  * 
  * @param id - The id of the class.
+ * @param ctx - The prisma context that this function is being used in.
  * @returns - The professor object from the database.
  */
-const findProfessorByClassId = async (id: string) => {
-  return await db.classes.findUnique({
+const findProfessorByClassId = async (id: string, ctx: Context) => {
+  return await ctx.prisma.classes.findUnique({
     where: {
       id
     },
@@ -118,6 +122,7 @@ const findProfessorByClassId = async (id: string) => {
  * @param endTimes - A list of the end times of the class.
  * @param days - The days the class meets.
  * @param professorId - The id of the professor teaching the class.
+ * @param ctx - The prisma context that this function is being used in.
  * @returns - The newly created class object from the database.
  */
 const createClass = async (
@@ -125,9 +130,10 @@ const createClass = async (
   sectionId: string, 
   startTimes: Date[], 
   endTimes: Date[], 
-  professorId: string
+  professorId: string,
+  ctx: Context
 ) => {
-  const newClass = await db.classes.create({
+  const newClass = await ctx.prisma.classes.create({
     data: {
       classCode: classroomUtils.generateClassId(),
       className: className,
@@ -137,7 +143,7 @@ const createClass = async (
       professorId: professorId
     }
   })
-  await db.user.update({
+  await ctx.prisma.user.update({
     where: {
       id: professorId
     },
@@ -156,10 +162,11 @@ const createClass = async (
  * 
  * @param id - The id of the class.
  * @param studentId - The id of the student to add.
+ * @param ctx - The prisma context that this function is being used in.
  * @returns - The updated class object from the database.
  */
-const addStudentToClass = async (id: string, studentId: string) => {
-  const newClass = await db.classes.update({
+const addStudentToClass = async (id: string, studentId: string, ctx: Context) => {
+  const newClass = await ctx.prisma.classes.update({
     where: {
       id
     },
@@ -169,7 +176,7 @@ const addStudentToClass = async (id: string, studentId: string) => {
       }
     }
   })
-  await db.user.update({
+  await ctx.prisma.user.update({
     where: {
       id: studentId
     },
@@ -190,16 +197,18 @@ const addStudentToClass = async (id: string, studentId: string) => {
  * @param classId - The id of the desired class.
  * @param studentId - The id of the student, can be null.
  * @param professorId - The id of the professor, can be null.
+ * @param ctx - The prisma context that this function is being used in.
  * @returns - The class specified from the class id.
  */
 const findClassByUserIdAndClassId = async (
   classId: string,
   studentId: string | null,
-  professorId: string | null
+  professorId: string | null,
+  ctx: Context
 ) => {
   let currClass
   if (studentId) {
-    currClass = await db.classes.findUnique({
+    currClass = await ctx.prisma.classes.findUnique({
       where: {
         id: classId,
         students: {
@@ -210,7 +219,7 @@ const findClassByUserIdAndClassId = async (
       }
     })
   } else if (professorId) {
-    currClass = await db.classes.findUnique({
+    currClass = await ctx.prisma.classes.findUnique({
       where: {
         id: classId,
         professor: {

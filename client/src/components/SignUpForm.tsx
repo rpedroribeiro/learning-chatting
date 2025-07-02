@@ -1,5 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { UserRole } from '../utils/UserRole'
 import { Link, useNavigate } from 'react-router-dom'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons'
 import passwordUtils from '../utils/passwordUtils'
 import authApi from '../api/authApi'
 import useAuth from '../hooks/useAuth'
@@ -12,6 +15,11 @@ const SignUpForm = () => {
   const [typeAccount, setTypeAccount] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [errorMessage, setErrorMessage] = useState<string>('')
+  const [passwordLength, setPasswordLength] = useState<boolean>(false)
+  const [checkForUppercase, setCheckForUppercase] = useState<boolean>(false)
+  const [checkForSpecial, setCheckForSpecial] = useState<boolean>(false)
+  const [showPasswordRequirements, setShowPasswordRequirements] = useState<boolean>(false)
+  const [passwordVerified, setPasswordVerified] = useState<boolean>(false)
   const { setUserId, setAccountType } = useAuth()
   const navigate = useNavigate()
 
@@ -26,15 +34,17 @@ const SignUpForm = () => {
    */
   const handleAccountCreation = async (event: any) => {
     event.preventDefault()
-    const [passwordVerified, passwordMessage] = passwordUtils.checkPasswordStrength(password)
     if (passwordVerified) {
+      let userRole: UserRole
+      if (typeAccount === "Student") { userRole = UserRole.Student }
+      else { userRole = UserRole.Professor }
       setErrorMessage('')
       const userData = {
         firstName: firstName,
         lastName: lastName,
         email: email,
         password: password,
-        accountType: typeAccount
+        accountType: userRole
       }
       const [status, message, userId, accountType] = await authApi.createAccount(userData)
       status ? (() => {
@@ -43,9 +53,36 @@ const SignUpForm = () => {
         navigate(`/${userId}/classrooms`)
       })() : setErrorMessage(message)
     } else {
-      setErrorMessage(passwordMessage)
+      setErrorMessage('Password Does Not Meet Requirements')
     }
   }
+
+  /**
+   * This useEffect runs every time the password state updates. It
+   * gives visiblity to the password requirements once the user types
+   * out any password, and changes the state of each password requirement
+   * using functions for passwordUtils.
+   */
+  useEffect(() => {
+    (password.length > 0 && showPasswordRequirements === false) && setShowPasswordRequirements(true)
+    setPasswordLength(passwordUtils.checkPasswordLength(password))
+    setCheckForUppercase(passwordUtils.checkForUpperCase(password))
+    setCheckForSpecial(passwordUtils.checkForSpecialCharacter(password))
+  }, [password])
+
+  /**
+   * This useEffect checks to update the passwordVerified state every time
+   * one of the three requirement states updates. If all the requirement
+   * states are true, so is passwordVerified. If one is false, it sets 
+   * passwordVerified back to false.
+   */
+  useEffect(() => {
+    if (passwordLength && checkForUppercase && checkForSpecial) { 
+      setPasswordVerified(true) 
+    } else {
+      setPasswordVerified(false)
+    }
+  }, [passwordLength, checkForUppercase, checkForSpecial])
 
   return (
     <div className='sign-up-section'>
@@ -69,6 +106,22 @@ const SignUpForm = () => {
           <label>Password</label>
           <input type='password' required value={password} onChange={e => setPassword(e.target.value)}/>
         </div>
+        {showPasswordRequirements && (
+          <div className='sign-up-form-input-container fade-in'>
+            <p>Password Requirements:</p>
+            <div style={{display: 'flex', gap: '50px'}}>
+              <p style={ passwordLength ? {color: 'rgb(61, 179, 78)'} : {color: 'rgb(217, 61, 61)'}}>
+                {passwordLength ? <FontAwesomeIcon icon={faCheck}/> : <FontAwesomeIcon icon={faXmark}/>} 8 Characters Long
+              </p>
+              <p style={ checkForSpecial ? {color: 'rgb(61, 179, 78)'} : {color: 'rgb(217, 61, 61)'}}>
+                {checkForSpecial ? <FontAwesomeIcon icon={faCheck}/> : <FontAwesomeIcon icon={faXmark}/>} One Special Character
+              </p>
+              <p style={ checkForUppercase ? {color: 'rgb(61, 179, 78)'} : {color: 'rgb(217, 61, 61)'}}>
+                {checkForUppercase ? <FontAwesomeIcon icon={faCheck}/> : <FontAwesomeIcon icon={faXmark}/>} One Uppercarse Character
+              </p>
+            </div>
+          </div>
+        )}
         <div className='sign-up-form-input-container'>
           <label>Account Type</label>
           <select 

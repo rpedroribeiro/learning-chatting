@@ -96,3 +96,16 @@
   background-color: var(--button);
   color: var(--textColor);
 }
+
+.upload-file-btn {
+  height: 20px;
+  padding: 18px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--textColor);
+  border: none;
+  border-radius: 5px;
+  font-size: 15px;
+  color: black;
+}

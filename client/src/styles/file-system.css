@@ -1,0 +1,21 @@
+.file-system-grid {
+  height: 100vh;
+  padding: 30px 70px;
+  flex-grow: 1;
+}
+
+.file-system-grid-title {
+  font-family: 'Freight Sans LF Pro', Arial, sans-serif;
+  font-weight: 900;
+  font-size: 40px;
+}
+
+.file-system-grid-button {
+  padding: 10px 15px;
+  background-color: var(--button);
+  color: var(--textColor);
+  font-size: 15px;
+  border: none;
+  border: 1px solid var(--textColor);
+  border-radius: 5px;
+}

@@ -5,6 +5,10 @@ type uploadFileSytemItemResponse = {
   fileItem: Object;
 }
 
+type allItemChildrenResponse = {
+  allChildren: object
+}
+
 /**
  * This function takes in all the necessary parameters and sends a
  * POST request to create a new FileSystemItem and saved the image
@@ -18,7 +22,7 @@ type uploadFileSytemItemResponse = {
  * @param parentId - THe id of the parent FileSystemItem.
  * @returns 
  */
-const uploadFileSystemItel = async (
+const uploadFileSystemItem = async (
   userId: string,
   classId: string,
   file: File | null,
@@ -42,8 +46,39 @@ const uploadFileSystemItel = async (
   }
 }
 
+/**
+ * This function takes in the id of the current directory and sends
+ * a GET request to collect all children. The children are either a
+ * folder or a file, with the path to the file from the GCP bucket.
+ * 
+ * @param userId - The id of the user.
+ * @param classId - The id of the current class.
+ * @param parentId - The id of the item to fetch the children from.
+ * @returns - All current children from the parent.
+ */
+const getAllChidrenFromItemId = async (
+  userId: string,
+  classId: string,
+  parentId: string
+): Promise<[any | null, boolean, string]> => {
+  try {
+    const response = await axiosClient.get<allItemChildrenResponse>(
+      `/api/${userId}/class/${classId}/filesystem/${parentId}`,
+      { headers: { 'Content-Type': 'application/json' },
+        withCredentials: true 
+      }
+    )
+    const allChildren: any = response.data.allChildren
+    return [allChildren, true, "Successfulyy fetched all children"]
+  } catch (error) {
+    console.error(error)
+    return [null, false, "Failed to fetch all children"]
+  }
+}
+
 const fileSystemApi = {
-  uploadFileSystemItel
+  uploadFileSystemItem,
+  getAllChidrenFromItemId
 }
 
 export default fileSystemApi

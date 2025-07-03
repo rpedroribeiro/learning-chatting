@@ -1,10 +1,15 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import FileItemModal from './FileItemModal'
 import '../styles/file-system.css'
+import useClassroom from '../hooks/useClassroom'
 
 const FilesDisplay = () => {
-
   const [toggleAddItemForm, setToggleAddItemForm] = useState<boolean>(false)
+  const { currClass, currFileItem, setCurrFileItem } = useClassroom()
+
+  useEffect(() => {
+    setCurrFileItem(currClass.rootFile)
+  }, [currClass])
 
   return (
     <div className="file-system-grid">

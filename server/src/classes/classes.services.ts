@@ -226,6 +226,9 @@ const findClassByUserIdAndClassId = async (
             id: studentId
           }
         }
+      },
+      include: {
+        rootFile: true
       }
     })
   } else if (professorId) {
@@ -235,6 +238,9 @@ const findClassByUserIdAndClassId = async (
         professor: {
           id: professorId
         }
+      },
+      include: {
+        rootFile: true
       }
     })
   }

@@ -49,7 +49,7 @@ const FileItemModal = ({setToggleAddItemForm}: addFileItemProps) => {
       let formFileType: FileType
       if (fileType === "Folder") { formFileType = FileType.Folder }
       else { formFileType = FileType.File}
-      const response = await fileSystemApi.uploadFileSystemItel(
+      const response = await fileSystemApi.uploadFileSystemItem(
         userId,
         currClass.id,
         file,

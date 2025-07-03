@@ -19,3 +19,7 @@
   border: 1px solid var(--textColor);
   border-radius: 5px;
 }
+
+.file-system-grid-container {
+  padding: 50px 0;
+}

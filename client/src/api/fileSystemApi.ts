@@ -2,7 +2,7 @@ import axiosClient from "./client"
 import { FileType } from "../utils/FileType"
 
 type uploadFileSytemItemResponse = {
-  fileItem: Object;
+  fileSystemItem: any;
 }
 
 type allItemChildrenResponse = {
@@ -11,6 +11,10 @@ type allItemChildrenResponse = {
 
 type FileSystemItemResponse = {
   fileSystemItem: Object
+}
+
+type signedUrlResponse = {
+  signedUrl: Object;
 }
 
 /**
@@ -44,7 +48,7 @@ const uploadFileSystemItem = async (
       formData,
       { withCredentials: true }
     )
-    return response
+    return response.data.fileSystemItem
   } catch (error) {
     console.error(error)
   }
@@ -109,10 +113,40 @@ const getFileSystemItemFromItemId = async (
   }
 }
 
+/**
+ * This api call sends a GET request to get the signedUrl from the
+ * bucket, and returns it to be used to open the file.
+ * 
+ * @param userId - The id of the user sending the request.
+ * @param classId - The id of the class of the FileSystemItem.
+ * @param itemId - The id of to fetch the signedUrl.
+ * @returns 
+ */
+const getSignedUrlForFile = async (
+  userId: string,
+  classId: string,
+  itemId: string
+): Promise<[any | null, boolean, string]> => {
+  try {
+    const response = await axiosClient.get<signedUrlResponse>(
+      `/api/${userId}/class/${classId}/filesystem/${itemId}/url`,
+      { headers: { 'Content-Type': 'application/json' },
+        withCredentials: true 
+      }
+    )
+    const signedUrl = response.data.signedUrl
+    return [signedUrl, true, "Url was successfully fetched"]
+  } catch (error) {
+    console.error(error)
+    return [null, false, "Failed to fetch the url"]
+  }
+}
+
 const fileSystemApi = {
   uploadFileSystemItem,
   getAllChidrenFromItemId,
-  getFileSystemItemFromItemId
+  getFileSystemItemFromItemId,
+  getSignedUrlForFile
 }
 
 export default fileSystemApi

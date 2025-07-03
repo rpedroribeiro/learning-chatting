@@ -5,6 +5,7 @@ import fileSystemApi from '../api/fileSystemApi'
 import useAuth from '../hooks/useAuth'
 import useClassroom from '../hooks/useClassroom'
 import '../styles/file-system.css'
+import { FileType } from '../utils/FileType'
 
 interface fileSytemItemProps {
   props: any;
@@ -16,18 +17,27 @@ const FileSystemItem = ({props, setCurrItemChildren}: fileSytemItemProps) => {
   const { currClass, currFileItem, setCurrFileItem } = useClassroom()
   const { userId } = useAuth()
 
-  const handleItemNavigation = async () => {
-    setCurrFileItem(props)
-    const [allChildren, status, message] = await fileSystemApi.getAllChidrenFromItemId(
-      userId,
-      currClass.id,
-      props.id,
-    )
-    status ? setCurrItemChildren(allChildren) : setErrorMessage(message)
+  const handleItemClick = async () => {
+    if (props.type === FileType.Folder) {
+      setCurrFileItem(props)
+      const [allChildren, status, message] = await fileSystemApi.getAllChidrenFromItemId(
+        userId,
+        currClass.id,
+        props.id,
+      )
+      status ? setCurrItemChildren(allChildren) : setErrorMessage(message)
+    } else {
+      const [url, status, message] = await fileSystemApi.getSignedUrlForFile(
+        userId,
+        currClass.id,
+        props.id
+      )
+      status ? window.open(url, '_blank') : setErrorMessage(message)
+    }
   }
 
   return (
-    <div className='file-system-item' onClick={handleItemNavigation}>
+    <div className='file-system-item' onClick={handleItemClick}>
       <div className='file-system-item-icon-conatiner'>
           <FontAwesomeIcon size='lg' icon={props.type === "Folder" ? faFolder : faFile}/>
       </div>

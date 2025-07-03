@@ -8,10 +8,11 @@ import useClassroom from '../hooks/useClassroom'
 import '../styles/class-modal.css'
 
 interface addFileItemProps {
-  setToggleAddItemForm: React.Dispatch<React.SetStateAction<boolean>>
+  setToggleAddItemForm: React.Dispatch<React.SetStateAction<boolean>>;
+  setCurrItemChildren: React.Dispatch<React.SetStateAction<any>>;
 }
 
-const FileItemModal = ({setToggleAddItemForm}: addFileItemProps) => {
+const FileItemModal = ({setToggleAddItemForm, setCurrItemChildren}: addFileItemProps) => {
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [newFileName, setNewFileName] = useState<string>('')
   const [fileType, setFileType] = useState<string>('')
@@ -38,7 +39,8 @@ const FileItemModal = ({setToggleAddItemForm}: addFileItemProps) => {
   /**
    * This function uses all the states that were updated based off the
    * form and sends them through the fileSystemApi to make the POST request
-   * that creates the FileSystemItem and adds it to the bucket.
+   * that creates the FileSystemItem and adds it to the bucket, sends another
+   * GET request to refresh the list.
    * 
    * @param event - Prevents default behavior of page reloading after
    * form submission.
@@ -49,7 +51,7 @@ const FileItemModal = ({setToggleAddItemForm}: addFileItemProps) => {
       let formFileType: FileType
       if (fileType === "Folder") { formFileType = FileType.Folder }
       else { formFileType = FileType.File}
-      const response = await fileSystemApi.uploadFileSystemItem(
+      const newFileSystemItem = await fileSystemApi.uploadFileSystemItem(
         userId,
         currClass.id,
         file,
@@ -57,6 +59,14 @@ const FileItemModal = ({setToggleAddItemForm}: addFileItemProps) => {
         formFileType,
         currFileItem.id
       )
+      if (newFileSystemItem) {
+        const [allChildren, status, message] = await fileSystemApi.getAllChidrenFromItemId(
+          userId,
+          currClass.id,
+          currFileItem.id,
+        )
+        status ? setCurrItemChildren(allChildren) : setErrorMessage(message)
+      }
     }
     setToggleAddItemForm(false)
   }

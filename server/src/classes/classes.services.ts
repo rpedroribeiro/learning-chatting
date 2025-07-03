@@ -2,6 +2,7 @@ import classroomUtils from "./classes.utils"
 import { Context } from '../context/context'
 import { FileType } from "@prisma/client"
 import fileSystemServices from "../filesystem/filesystem.services"
+import fileSystemUtil from "../filesystem/filesystem.utils"
 
 /**
  * This function takes in a class id and uses
@@ -146,13 +147,14 @@ const createClass = async (
     }
   })
   await fileSystemServices.createFileSystemItem(
-    '/',
-    '/',
+    `${sectionId}_root`,
+    `file_system/${sectionId}_root/`,
     FileType.Folder,
     null,
     newClass.id,
     ctx
   )
+  await fileSystemUtil.addFolderToFileSystem(`file_system/${sectionId}_root/`)
   await ctx.prisma.user.update({
     where: {
       id: professorId
@@ -226,6 +228,9 @@ const findClassByUserIdAndClassId = async (
             id: studentId
           }
         }
+      },
+      include: {
+        rootFile: true
       }
     })
   } else if (professorId) {
@@ -235,6 +240,9 @@ const findClassByUserIdAndClassId = async (
         professor: {
           id: professorId
         }
+      },
+      include: {
+        rootFile: true
       }
     })
   }

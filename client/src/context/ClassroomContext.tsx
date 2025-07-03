@@ -4,7 +4,9 @@ type ClassroomContextType = {
   isClassroom: boolean
   setIsClassroom: React.Dispatch<React.SetStateAction<boolean>>
   currClass: any
-  setCurrClass: React.Dispatch<React.SetStateAction<any>>
+  setCurrClass: React.Dispatch<React.SetStateAction<any>>;
+  currFileItem: any;
+  setCurrFileItem: React.Dispatch<React.SetStateAction<any>>;
 }
 
 const ClassroomContext = createContext<ClassroomContextType | undefined>(undefined)
@@ -26,6 +28,11 @@ export const ClassroomProvider = ({ children }: ClassroomContextChildren) => {
     return stored ? JSON.parse(stored) : null
   })
 
+  const [currFileItem, setCurrFileItem] = useState<any>(() => {
+    const stored = localStorage.getItem('currFileItem')
+    return stored ? JSON.parse(stored): null
+  })
+
   useEffect(() => {
     localStorage.setItem('isClassroom', String(isClassroom))
   }, [isClassroom])
@@ -38,12 +45,22 @@ export const ClassroomProvider = ({ children }: ClassroomContextChildren) => {
     }
   }, [currClass])
 
+  useEffect(() => {
+    if (currFileItem) {
+      localStorage.setItem('currFileItem', JSON.stringify(currFileItem))
+    } else {
+      localStorage.removeItem('currFileItem')
+    }
+  }, [currFileItem])
+
   const value = useMemo(() => ({
     isClassroom,
     setIsClassroom,
     currClass,
-    setCurrClass
-  }), [isClassroom, currClass])
+    setCurrClass,
+    currFileItem,
+    setCurrFileItem
+  }), [isClassroom, currClass, currFileItem])
 
   return (
     <ClassroomContext.Provider value={value}>

@@ -77,4 +77,27 @@ router.post('/:userId/class/:classId/filesystem', upload.single('file'), authent
   }
 })
 
+/**
+ * This route is a GET request that uses the id of the current FileSystemItem
+ * to get all of its children. It also checks if the root of the item id is
+ * in the same classs as the one in the route.
+ */
+router.get('/:userId/class/:classId/filesystem/:parentId',authenticateToken, async (req, res, next) => {
+  try {
+    const classId = req.params.classId
+    const parentId = req.params.parentId
+
+    const rootFileSystemItem = await fileSystemServices.findRootFileSystemItem(parentId, ctx)
+    if (rootFileSystemItem?.classId !== classId) {
+      res.status(400).json({message: "Root directory is not connected to the same class or any class"})
+      throw new Error('Root directory is not connected to the same class or any class')
+    }
+
+    const allFileSystemItemChildren = await fileSystemServices.findAllChidrenForFileSystemItem(parentId, ctx)
+    res.status(200).json({allChildren: allFileSystemItemChildren})
+  } catch (error) {
+    console.error(error)
+  }
+})
+
 export default router

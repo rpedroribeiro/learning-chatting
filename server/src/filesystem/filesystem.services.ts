@@ -66,10 +66,39 @@ const findAllChidrenForFileSystemItem = async (id: string, ctx: Context) => {
   })
 }
 
+/**
+ * This function takes in the currId of the FileSystemItem and uses it to
+ * continuously navigate until the root FileSystemItem and returns it.
+ * 
+ * @param currId - The id of the current FileSystemItem
+ * @param ctx - The prisma context that this function is being used in.
+ * @returns 
+ */
+const findRootFileSystemItem = async (currId: string, ctx: Context) => {
+  let currentFileSystemItem = await ctx.prisma.fileSystemItem.findUnique({
+    where: {
+      id: currId
+    }
+  })
+
+  while (currentFileSystemItem?.parentId) {
+    currentFileSystemItem = await ctx.prisma.fileSystemItem.findUnique({
+      where: {
+        id: currentFileSystemItem.parentId
+      },
+      include: {
+        parent: true
+      }
+    })
+  }
+  return currentFileSystemItem
+}
+
 const fileSystemServices = {
   createFileSystemItem,
   findFileSystemItemById,
-  findAllChidrenForFileSystemItem
+  findAllChidrenForFileSystemItem,
+  findRootFileSystemItem
 }
 
 export default fileSystemServices

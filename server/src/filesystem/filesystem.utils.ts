@@ -37,7 +37,7 @@ const addFolderToFileSystem = async (folderPath: string) => {
  * This generates a url that allows the server to access the private
  * GCB for the next hour.
  * 
- * @param fileName - The name of the file desired in the bucket.
+ * @param filePath - The path of the desired file in the bucekt..
  */
 const generateV4ReadSignedUrl = async (fileName: string) => {
   const options = {
@@ -57,7 +57,7 @@ const generateV4ReadSignedUrl = async (fileName: string) => {
 /**
  * This function takes in the desired file and file name or just the
  * folder name along with the parent url to create the object in the
- * GCP bucket.
+ * GCP bucket. It then returns a usable url to store in the database.
  * 
  * @param file - The multer file item.
  * @param fileSystemItemName - The new desired file/folder name.
@@ -68,12 +68,14 @@ const createNewFileSystemItem = async (
   file: Express.Multer.File | undefined,
   fileSystemItemName: string,
   parentUrl: string | null
-): Promise<string> => {
+): Promise<[string, string]> => {
   let dbUrl
+  let dbFileName
   if (!file) {
     const newFileName = fileSystemItemName + '/'
     const folderPath = `${parentUrl}${newFileName}`
     await addFolderToFileSystem(folderPath)
+    dbFileName = fileSystemItemName
     dbUrl = folderPath
   } else {
     const originalExt = path.extname(file.originalname)
@@ -82,9 +84,10 @@ const createNewFileSystemItem = async (
     const destinationPath = `${parentUrl}${newFileName}`
     await uploadFileToFileSystem(destinationPath, localFilePath)
     fs.unlink(localFilePath, (err) => { if (err) { console.error('Failed to delete file', err) } })
+    dbFileName = newFileName
     dbUrl = destinationPath
   }
-  return dbUrl
+  return [dbUrl, dbFileName]
 }
 
 const fileSystemUtil = {

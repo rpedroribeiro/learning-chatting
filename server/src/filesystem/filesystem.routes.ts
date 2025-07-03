@@ -51,14 +51,14 @@ router.post('/:userId/class/:classId/filesystem', upload.single('file'), authent
       }
     }
 
-    const dbUrl = await fileSystemUtil.createNewFileSystemItem(
+    const [dbUrl, dbFileName] = await fileSystemUtil.createNewFileSystemItem(
       req.file,
       fileName,
       validParent.fileURL
     )
 
     const newFileSystemItem = await fileSystemServices.createFileSystemItem(
-      fileName,
+      dbFileName,
       dbUrl,
       fileType,
       parentId,
@@ -96,7 +96,8 @@ router.get('/:userId/class/:classId/filesystem/:parentId/children', authenticate
 })
 
 /**
- * 
+ * This route takes the id of the desired FileSytemItem and returns all the 
+ * attributes for it.
  */
 router.get('/:userId/class/:classId/filesystem/:itemId', authenticateToken, async (req, res, next) => {
   try {
@@ -111,6 +112,28 @@ router.get('/:userId/class/:classId/filesystem/:itemId', authenticateToken, asyn
 
     const currFileSystemItem = await fileSystemServices.findFileSystemItemById(itemId, ctx)
     res.status(200).json({fileSystemItem: currFileSystemItem})
+  } catch (error) {
+    console.error(error)
+  }
+})
+
+router.get('/:userId/class/:classId/filesystem/:itemId/url', authenticateToken, async (req, res, next) => {
+  try {
+    const itemId = req.params.itemId
+
+    const validItem = await fileSystemServices.findFileSystemItemById(itemId, ctx)
+    if (validItem?.type === FileType.Folder) {
+      res.status(400).json({message: "Cannot get signed url for a folder"})
+      throw new Error('Cannot get signed url for a folder')
+    }
+
+    if (!validItem?.fileURL) {
+      res.status(400).json({message: "Cannot get signed url for a folder"})
+      throw new Error('Cannot get signed url for a folder')
+    }
+
+    const signedUrl = await fileSystemUtil.generateV4ReadSignedUrl(validItem?.fileURL)
+    res.status(200).json({signedUrl: signedUrl})
   } catch (error) {
     console.error(error)
   }

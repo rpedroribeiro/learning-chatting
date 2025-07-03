@@ -18,7 +18,7 @@ const FileItemModal = ({setToggleAddItemForm}: addFileItemProps) => {
   const [actualFileName, setActualFileName] = useState<string>('')
   const [file, setFile] = useState<File | null>(null)
   const { userId } = useAuth()
-  const { currClass } = useClassroom()
+  const { currClass, currFileItem } = useClassroom()
 
   /**
    * This function handles the change of value in the file input tag,
@@ -55,10 +55,10 @@ const FileItemModal = ({setToggleAddItemForm}: addFileItemProps) => {
         file,
         newFileName,
         formFileType,
-        '1adb6946-eea8-4fe5-ba26-e21f63fa8e56'
+        currFileItem.id
       )
     }
-
+    setToggleAddItemForm(false)
   }
 
   return (

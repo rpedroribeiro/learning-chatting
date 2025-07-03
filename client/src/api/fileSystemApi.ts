@@ -6,7 +6,11 @@ type uploadFileSytemItemResponse = {
 }
 
 type allItemChildrenResponse = {
-  allChildren: object
+  allChildren: Object
+}
+
+type FileSystemItemResponse = {
+  fileSystemItem: Object
 }
 
 /**
@@ -20,7 +24,7 @@ type allItemChildrenResponse = {
  * @param fileName - The desired file name in the db and the bucket.
  * @param fileType - Folder or File.
  * @param parentId - THe id of the parent FileSystemItem.
- * @returns 
+ * @returns - The new uploaded file.
  */
 const uploadFileSystemItem = async (
   userId: string,
@@ -63,22 +67,52 @@ const getAllChidrenFromItemId = async (
 ): Promise<[any | null, boolean, string]> => {
   try {
     const response = await axiosClient.get<allItemChildrenResponse>(
-      `/api/${userId}/class/${classId}/filesystem/${parentId}`,
+      `/api/${userId}/class/${classId}/filesystem/${parentId}/children`,
       { headers: { 'Content-Type': 'application/json' },
         withCredentials: true 
       }
     )
     const allChildren: any = response.data.allChildren
-    return [allChildren, true, "Successfulyy fetched all children"]
+    return [allChildren, true, "Successfully fetched all children"]
   } catch (error) {
     console.error(error)
     return [null, false, "Failed to fetch all children"]
   }
 }
 
+/**
+ * This api call sends a GET request to get all the attributes from the
+ * desired FileSystemItem. 
+ * 
+ * @param userId - The id of the user sending the request.
+ * @param classId - The id of the class of the FileSystemItem.
+ * @param itemId - The id of the desired FileSystemItem.
+ * @returns - The fetched FileSystemItem.
+ */
+const getFileSystemItemFromItemId = async (
+  userId: string,
+  classId: string,
+  itemId: string,
+): Promise<[any | null, boolean, string]> => {
+  try {
+    const response = await axiosClient.get<FileSystemItemResponse>(
+      `/api/${userId}/class/${classId}/filesystem/${itemId}/`,
+      { headers: { 'Content-Type': 'application/json' },
+        withCredentials: true 
+      }
+    )
+    const fileSystemItem = response.data.fileSystemItem
+    return [fileSystemItem, true, "Successfully fetched the desired item"]
+  } catch (error) {
+    console.error(error)
+    return [null, false, "Failed to fetch the desired item"]
+  }
+}
+
 const fileSystemApi = {
   uploadFileSystemItem,
-  getAllChidrenFromItemId
+  getAllChidrenFromItemId,
+  getFileSystemItemFromItemId
 }
 
 export default fileSystemApi

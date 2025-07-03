@@ -1,25 +1,47 @@
-import { useEffect, useReducer, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faArrowLeftLong } from '@fortawesome/free-solid-svg-icons'
 import FileItemModal from './FileItemModal'
-import '../styles/file-system.css'
 import useClassroom from '../hooks/useClassroom'
 import fileSystemApi from '../api/fileSystemApi'
 import useAuth from '../hooks/useAuth'
 import FileSystemItem from './FileSystemItem'
+import '../styles/file-system.css'
 
 const FilesDisplay = () => {
   const [toggleAddItemForm, setToggleAddItemForm] = useState<boolean>(false)
   const [currItemChildren, setCurrItemChildren] = useState<any>()
   const [errorMessage, setErrorMessage] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(true)
   const { userId } = useAuth()
   const { currClass, currFileItem, setCurrFileItem } = useClassroom()
-  const initialRender = useRef(true)
 
   /**
    * Updates the current file item to the root based off the class id on reload.
    */
-  useEffect(() => {
-    setCurrFileItem(currClass.rootFile)
-  }, [currClass])
+  const fetchAllChildren = async (itemId: string) => {
+    const [allChildren, status, message] = await fileSystemApi.getAllChidrenFromItemId(
+      userId,
+      currClass.id,
+      itemId
+    )
+    if (status) {
+      setCurrItemChildren(allChildren)
+      const [newFileSystemItem, itemStatus, itemMessage] = await fileSystemApi.getFileSystemItemFromItemId(
+        userId,
+        currClass.id,
+        itemId
+      )
+      if (itemStatus) {
+        setCurrFileItem(newFileSystemItem)
+      } else {
+        setErrorMessage(itemMessage)
+      }
+    } else {
+      setErrorMessage(message)
+    }
+    setLoading(false)
+  }
 
   /**
    * Fetches all the children from the root file of the class on render, sets
@@ -27,31 +49,37 @@ const FilesDisplay = () => {
    * not successful, the error message is also stored in a state.
    */
   useEffect(() => {
-    const fetchAllChildren = async () => {
-      const [allChildren, status, message] = await fileSystemApi.getAllChidrenFromItemId(
-        userId,
-        currClass.id,
-        currFileItem.id,
-      )
-      status ? setCurrItemChildren(allChildren) : setErrorMessage(message)
-    }
-    if (initialRender.current) { initialRender.current = false } else { fetchAllChildren() }
-  }, [currFileItem])
+    fetchAllChildren(currClass.rootFile.id)
+  }, [])
 
   return (
-    <div className="file-system-grid">
+    (!loading && (
+<div className="file-system-grid">
       {toggleAddItemForm ? <FileItemModal setToggleAddItemForm={setToggleAddItemForm}/> : []}
       <div style={{display: 'flex', justifyContent: 'space-between'}}>
-        <h1 className='file-system-grid-title'>File System</h1>
+        <div style={{display: 'flex', alignItems: 'center', gap: '1.5vw'}}>
+          <h1 className='file-system-grid-title'>File System</h1>
+        </div>
         <button onClick={() => setToggleAddItemForm(true)} className='file-system-grid-button'>Add New Item</button>
       </div>
       <hr style={{marginTop: '10px'}}/>
+      <div style={{display: 'flex', alignItems: 'center', gap: '1vw', padding: '4vh 0 0 0'}}>
+        {(currFileItem && currFileItem.classId === null) && (
+          <>
+            <FontAwesomeIcon onClick={() => fetchAllChildren(currFileItem.parentId)} size='lg' icon={faArrowLeftLong}/>
+            <h3>|</h3>
+          </>
+        )}
+        <h3>Current Directory: {currFileItem.name}</h3>
+      </div>
       <div className='file-system-grid-container'>
-        {currItemChildren ? currItemChildren.map((item: any, key: any) => (
-          <FileSystemItem key={key} props={item} />
-        )) : []}
+        {(currItemChildren && currItemChildren.length > 0) ? currItemChildren.map((item: any, key: any) => (
+          <FileSystemItem key={key} props={item} setCurrItemChildren={setCurrItemChildren} />
+        )) : <h4>No files or folders in this directory</h4>}
       </div>
     </div>
+    ))
+    
   )
 }
 

@@ -16,9 +16,6 @@ const FileSystemItem = ({props, setCurrItemChildren}: fileSytemItemProps) => {
   const { currClass, currFileItem, setCurrFileItem } = useClassroom()
   const { userId } = useAuth()
 
-  /**
-   * 
-   */
   const handleItemNavigation = async () => {
     setCurrFileItem(props)
     const [allChildren, status, message] = await fileSystemApi.getAllChidrenFromItemId(

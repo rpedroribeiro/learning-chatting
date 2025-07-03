@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import classesApi from '../api/classesApi'
 import useAuth from '../hooks/useAuth'
+import useClassroom from '../hooks/useClassroom'
 import classesUtils from '../utils/classesUtils'
 import CreateClassModal from './CreateClassModal'
 import AddClassModal from './AddClassModal'
@@ -13,7 +15,10 @@ const ClassroomsGrid = () => {
   const [loadedData, setLoadedData] = useState<boolean>(false)
   const [toggleCreateForm, setToggleCreateForm] = useState<boolean>(false)
   const [toggleAddForm, setToggleAddForm] = useState<boolean>(false)
+  const [errorMessage, setErrorMessage] = useState<string>('')
   const { userId, accountType } = useAuth()
+  const { setCurrClass } = useClassroom()
+  const navigate = useNavigate()
 
   /**
    * This useEffect sends a GET request for all the classes associated
@@ -40,6 +45,21 @@ const ClassroomsGrid = () => {
     }
   }, [classes])
 
+  /**
+   * This function finds all the class details necessary using classApi and
+   * then navigates to the class page, if fetch request failed it displays
+   * and error message.
+   * 
+   * @param classId - The id of the classId which was clicked.
+   */
+  const handleClassCard = async (classId: string) => {
+    const [classDetails, status, message] = await classesApi.getClassDetails(userId, classId)
+    status ? (() => {
+      setCurrClass(classDetails)
+      navigate(`/${userId}/classrooms/${classId}/files`) 
+    })() : setErrorMessage(message)
+  }
+
   return (
     <div className="classroom-grid-container">
       {toggleCreateForm ? <CreateClassModal setToggleCreateForm={setToggleCreateForm} /> : []}
@@ -47,15 +67,27 @@ const ClassroomsGrid = () => {
       <div style={{display: 'flex', justifyContent: 'space-between'}}>
         <h1 className='classroom-grid-title'>Courses</h1>
         {accountType === "Student" ? 
-          <button onClick={() => setToggleAddForm(true)} className='class-form-button'>Add New Class</button> :
-          <button onClick={() => setToggleCreateForm(true)} className='class-form-button'>Create New Class</button>
+          (
+            <div style={{display: 'flex', gap: '20px', alignItems: 'flex-end'}}>
+              <h4>{errorMessage}</h4>
+              <button onClick={() => setToggleAddForm(true)} className='class-form-button'>Add New Class</button>
+            </div>
+          ) :
+          <div style={{display: 'flex', gap: '20px', alignItems: 'flex-end'}}>
+            <h4>{errorMessage}</h4>
+            <button onClick={() => setToggleCreateForm(true)} className='class-form-button'>Create New Class</button>
+          </div>
         }
       </div>
       <hr style={{marginTop: '10px'}}/>
       <div className='classroom-grid'>
         {loadedData &&
           classes.map((item, index) => (
-            <div key={item.id} className='classroom-card'>
+            <div 
+              key={item.id} 
+              className='classroom-card'
+              onClick={() => handleClassCard(item.id)}
+            >
               <div className='classroom-card-title'>
                 <h2>{item.className}</h2>
                 <h4>Section ID: {item.sectionId}</h4>

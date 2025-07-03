@@ -7,10 +7,7 @@ import '../styles/classrooms.css'
 const ClassroomsPage = () => {
   
   const { setIsClassroom } = useClassroom()
-
-  useEffect(() => {
-    setIsClassroom(false)
-  }, [])
+  useEffect(() => { setIsClassroom(false) }, [])
 
   return (
     <div className='classroom-page'>

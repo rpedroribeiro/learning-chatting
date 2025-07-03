@@ -44,13 +44,31 @@ model RefreshToken {
 }
 
 model Classes {
-  id           String      @id @unique @default(uuid())
-  classCode    String      @unique
-  sectionId    String      @unique
+  id           String           @id @unique @default(uuid())
+  classCode    String           @unique
+  sectionId    String           @unique
   className    String
   startTimes   DateTime[]
   endTimes     DateTime[]
   professorId  String
-  professor    User        @relation("professorClasses", fields: [professorId], references: [id])
-  students     User[]      @relation("studentClasses")
+  professor    User             @relation("professorClasses", fields: [professorId], references: [id])
+  students     User[]           @relation("studentClasses")
+  rootFile     FileSystemItem?  @relation("classRootFile")
+}
+
+enum FileType {
+  File
+  Folder
+}
+
+model FileSystemItem {
+  id        String           @id @unique @default(uuid())
+  name      String
+  type      FileType
+  classId   String?          @unique
+  class     Classes?         @relation("classRootFile", fields: [classId], references: [id])
+  parentId  String?
+  parent    FileSystemItem?   @relation("FileToFile", fields: [parentId], references: [id])
+  fileURL   String?
+  children  FileSystemItem[] @relation("FileToFile")
 }

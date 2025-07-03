@@ -15,7 +15,7 @@ const ctx = { prisma }
  * if the desired times for the class fits inside the professor's
  * current schedule. 
  */
-router.post('/:userId/class', async (req, res, next) => {
+router.post('/:userId/class', authenticateToken, async (req, res, next) => {
   try {
     const { sectionId, courseName, startTime, endTime, days } = req.body
     const professorId = req.params.userId
@@ -117,7 +117,7 @@ router.put('/:userId/class', authenticateToken, async (req, res, next) => {
  */
 router.get('/:userId/class/:classId', authenticateToken, async (req, res, next) => {
   try {
-    const userId = req.params.boardId
+    const userId = req.params.userId
     const classId = req.params.classId
 
     const currUser = await authServices.findUserById(userId, ctx)
@@ -135,7 +135,7 @@ router.get('/:userId/class/:classId', authenticateToken, async (req, res, next) 
     const selectedClass = await classService
       .findClassByUserIdAndClassId(classId, studentId, professorId, ctx)
 
-    res.status(200).json({class: selectedClass})
+    res.status(200).json({classDetails: selectedClass})
   } catch (error) {
     next(error)
   }

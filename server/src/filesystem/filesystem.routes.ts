@@ -36,6 +36,11 @@ router.post('/:userId/class/:classId/filesystem', upload.single('file'), authent
       res.status(400).json({message: "Cannot create new item under a file, must be under a folder"})
       throw new Error('Cannot create new item under a file, must be under a folder')
     }
+
+    if (!validParent?.fileURL) {
+      res.status(400).json({message: "Cannot create new item under a file, must be under a folder"})
+      throw new Error('Cannot create new item under a file, must be under a folder')
+    }
     
     const allParentChildren: any = await fileSystemServices.findAllChidrenForFileSystemItem(parentId, ctx)
     for (const key in allParentChildren) {
@@ -46,21 +51,11 @@ router.post('/:userId/class/:classId/filesystem', upload.single('file'), authent
       }
     }
 
-    let dbUrl
-    if (!req.file) {
-      const newFileName = fileName + '/'
-      const folderPath = `file_system${validParent?.fileURL}${newFileName}`
-      await fileSystemUtil.addFolderToFileSystem(folderPath)
-      dbUrl = folderPath
-    } else {
-      const originalExt = path.extname(req.file.originalname)
-      const newFileName = fileName + originalExt
-      const localFilePath = req.file.path
-      const destinationPath = `file_system${validParent?.fileURL}${newFileName}`
-      await fileSystemUtil.uploadFileToFileSystem(destinationPath, localFilePath)
-      fs.unlink(localFilePath, (err) => { if (err) { console.error('Failed to delete file', err) } })
-      dbUrl = destinationPath
-    }
+    const dbUrl = await fileSystemUtil.createNewFileSystemItem(
+      req.file,
+      fileName,
+      validParent.fileURL
+    )
 
     const newFileSystemItem = await fileSystemServices.createFileSystemItem(
       fileName,
@@ -82,7 +77,7 @@ router.post('/:userId/class/:classId/filesystem', upload.single('file'), authent
  * to get all of its children. It also checks if the root of the item id is
  * in the same classs as the one in the route.
  */
-router.get('/:userId/class/:classId/filesystem/:parentId',authenticateToken, async (req, res, next) => {
+router.get('/:userId/class/:classId/filesystem/:parentId/children', authenticateToken, async (req, res, next) => {
   try {
     const classId = req.params.classId
     const parentId = req.params.parentId
@@ -95,6 +90,27 @@ router.get('/:userId/class/:classId/filesystem/:parentId',authenticateToken, asy
 
     const allFileSystemItemChildren = await fileSystemServices.findAllChidrenForFileSystemItem(parentId, ctx)
     res.status(200).json({allChildren: allFileSystemItemChildren})
+  } catch (error) {
+    console.error(error)
+  }
+})
+
+/**
+ * 
+ */
+router.get('/:userId/class/:classId/filesystem/:itemId', authenticateToken, async (req, res, next) => {
+  try {
+    const classId = req.params.classId
+    const itemId = req.params.itemId
+
+    const rootFileSystemItem = await fileSystemServices.findRootFileSystemItem(itemId, ctx)
+    if (rootFileSystemItem?.classId !== classId) {
+      res.status(400).json({message: "Root directory is not connected to the same class or any class"})
+      throw new Error('Root directory is not connected to the same class or any class')
+    }
+
+    const currFileSystemItem = await fileSystemServices.findFileSystemItemById(itemId, ctx)
+    res.status(200).json({fileSystemItem: currFileSystemItem})
   } catch (error) {
     console.error(error)
   }

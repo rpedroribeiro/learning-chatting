@@ -46,6 +46,9 @@ const findFileSystemItemById = async (id: string, ctx: Context) => {
   return await ctx.prisma.fileSystemItem.findUnique({
     where: {
       id
+    },
+    include: {
+      children: true
     }
   })
 }

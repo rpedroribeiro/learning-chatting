@@ -6,6 +6,8 @@ import submissionServices from './submission.services'
 import authServices from '../auth/auth.services'
 import { UserRole } from '@prisma/client'
 import gcpBucketUtils from '../gcpbucket/gcpbucket.utils'
+import submissionUtils from './submission.utils'
+import assignmentServices from '../assignments/assignments.services'
 
 const router = express.Router()
 const ctx = { prisma }
@@ -22,6 +24,18 @@ router.post('/:userId/class/:classId/assignment/:assignmentId/uploadfiles', uplo
     const userId = req.params.userId
     const assignmentId = req.params.assignmentId
 
+    const assignment = await assignmentServices.findAssignmentById(
+      userId,
+      assignmentId,
+      ctx
+    )
+
+    if (!assignment) {
+      res.status(400).json({message: "Assignment requested does not exist"})
+      throw new Error('Assignment requested does not exist')
+    }
+    
+    const assignmentName = assignment?.name
     const currSubmission = await submissionServices.findSubmissionWithUserIdAndAssignmentId(
       userId,
       assignmentId,
@@ -45,12 +59,17 @@ router.post('/:userId/class/:classId/assignment/:assignmentId/uploadfiles', uplo
       throw new Error('No file sent on request')
     }
 
-    const filePath = file.path
+    const dbFilePath = await submissionUtils.uploadSubmissionFiles(
+      file,
+      assignmentName,
+      currUser.firstName,
+      currUser.lastName,
+    )
 
     const submission = await submissionServices.uploadSubmissionFile(
       userId,
       assignmentId,
-      filePath,
+      dbFilePath,
       ctx
     )
     res.status(200).json({submission: submission})

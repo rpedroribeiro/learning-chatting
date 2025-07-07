@@ -1,4 +1,4 @@
-import { UserRole } from "@prisma/client"
+import { UserRole, FileType } from "@prisma/client"
 import { createMockContext, MockContext } from "../../src/context/mockContext"
 import classService from "../../src/classes/classes.services"
 
@@ -8,16 +8,19 @@ beforeEach(() => {
 })
 
 const currentDate = new Date()
+
 const startTimes = [
   new Date('2025-09-01T08:00:00Z'),
   new Date('2025-09-03T08:00:00Z'),
   new Date('2025-09-05T08:00:00Z'),
 ]
+
 const endTimes = [
   new Date('2025-09-01T09:30:00Z'),
   new Date('2025-09-03T09:30:00Z'),
   new Date('2025-09-05T09:30:00Z'),
 ]
+
 const mockProfessor = {
   id: "1",
   email: 'professor@gmail.com',
@@ -28,6 +31,7 @@ const mockProfessor = {
   createdAt: currentDate,
   updatedAt: currentDate
 }
+
 const mockStudent = {
   id: "2",
   email: 'student@gmail.com',
@@ -38,6 +42,18 @@ const mockStudent = {
   createdAt: currentDate,
   updatedAt: currentDate
 }
+
+const mockRootFile = {
+  id: "1",
+  name: "root",
+  type: FileType.Folder,
+  classId: "1",
+  parentId: null,
+  parent: null,
+  fileURL: "example/path/to/folder/",
+  children: null
+}
+
 const mockClass = {
   id: "1",
   classCode: "2FU4Z1",
@@ -48,6 +64,7 @@ const mockClass = {
   professorId: "1",
   professor: mockProfessor,
   students: [mockStudent],
+  rootFile: mockRootFile
 }
 
 test('findClassById returns the class with the matching Id', async () => {
@@ -142,6 +159,9 @@ test('findClassByUserIdAndClassId with student ID', async () => {
           id: mockStudent.id
         }
       }
+    },
+    include: {
+      rootFile: true
     }
   })
 })
@@ -161,6 +181,9 @@ test('findClassByUserIdAndClassId with professor ID', async () => {
       professor: {
         id: mockProfessor.id
       }
+    },
+    include: {
+      rootFile: true
     }
   })
 })

@@ -13,14 +13,13 @@ import submissionServices from "./submission.services"
  * @param dueDate - The date the assignment is due.
  * @param files - Any supporting files needed to complete the assignment.
  * @param ctx - The prisma context that this function is being used in.
- * @returns 
  */
 const createNewAssignment = async (
   assignmentName: string,
   assignmentDescription: string,
   classId: string,
   dueDate: Date,
-  files: string[],
+  files: string[] | undefined,
   ctx: Context
 ) => {
   const classStudents = await classService.findAllStudentsByClassId(classId, ctx)

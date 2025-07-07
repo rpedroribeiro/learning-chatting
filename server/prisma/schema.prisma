@@ -25,6 +25,7 @@ model User {
   updatedAt         DateTime        @updatedAt
   studentClasses    Classes[]       @relation("studentClasses")
   professorClasses  Classes[]       @relation("professorClasses")
+  submissions       Submission[]    @relation("studentSubmission")
 }
 
 enum UserRole {
@@ -54,6 +55,7 @@ model Classes {
   professor    User             @relation("professorClasses", fields: [professorId], references: [id])
   students     User[]           @relation("studentClasses")
   rootFile     FileSystemItem?  @relation("classRootFile")
+  assignments  Assignment[]     @relation("classAssignments")
 }
 
 enum FileType {
@@ -71,4 +73,26 @@ model FileSystemItem {
   parent    FileSystemItem?   @relation("FileToFile", fields: [parentId], references: [id])
   fileURL   String?
   children  FileSystemItem[] @relation("FileToFile")
+}
+
+model Assignment {
+  id           String        @id @unique @default(uuid())
+  classId      String
+  class        Classes       @relation("classAssignments", fields: [classId], references: [id])
+  name         String 
+  description  String
+  dueDate      DateTime
+  files        String[]
+  submissions  Submission[]  @relation("assignmentSubmissions")
+}
+
+model Submission {
+  id              String      @id @unique @default(uuid())
+  assignmentId    String
+  assignment      Assignment  @relation("assignmentSubmissions", fields: [assignmentId], references: [id])
+  studentId       String
+  student         User        @relation("studentSubmission", fields: [studentId], references: [id])
+  submitted       Boolean
+  submissionTime  DateTime?
+  uploadedFiles   String[]
 }

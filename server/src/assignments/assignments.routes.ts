@@ -150,7 +150,9 @@ router.delete('/:userId/class/:classId/assignment/:assignmentId/uploadfiles', au
 })
 
 /**
- * 
+ * This PUT request updates the submission status of the student's submission of the current assignement
+ * opened. It makes sure the user sending this request is a student and that the student has not already
+ * submitted the assignment.
  */
 router.put('/:userId/class/:classId/assignment/:assignmentId/submit', authenticateToken, async (req, res, next) => {
   try {
@@ -181,6 +183,54 @@ router.put('/:userId/class/:classId/assignment/:assignmentId/submit', authentica
     )
 
     res.status(200).json({submission: updatedSubmission})
+  } catch (error) {
+    console.error(error)
+  }
+})
+
+/**
+ * This GET route is used to get the assignment information necessary. If the user making
+ * this request is a student, only the assignment information alongside the submission files
+ * are returned. If the professor is making this request, all the assignments information,
+ * all submission information, and the student's name associated with the submission is returned.
+ */
+router.get('/:userId/class/:classId/assignment/:assignmentId', authenticateToken, async (req, res, next) => {
+  try {
+    const userId = req.params.userId
+    const assignmentId = req.params.assignmentId
+
+    const currUser = await authServices.findUserById(userId, ctx)
+    if (currUser?.accountType === UserRole.Professor) {
+      const assignment = await assignmentServices.findAllSubmissionByAssignmentId(
+        assignmentId,
+        ctx  
+      )
+      res.status(200).json({assignment: assignment})
+    } else {
+      const assignment = await assignmentServices.findAssignmentById(
+        userId,
+        assignmentId,
+        ctx  
+      )
+      res.status(200).json({assignment: assignment})
+    }
+  } catch (error) {
+    console.error(error)
+  }
+})
+
+/**
+ * This GET route returns a list of all the assignments related to the class. The same
+ * information is returned regardless whether the user is a sudent or a professor.
+ */
+router.get('/:userId/class/:classId/assignment', authenticateToken, async (req, res, next) => {
+  try {
+    const classId = req.params.classId
+    const assignments = await assignmentServices.findAllAssignmentsByClassId(
+      classId,
+      ctx
+    )
+    res.status(200).json({assignments: assignments})
   } catch (error) {
     console.error(error)
   }

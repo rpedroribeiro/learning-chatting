@@ -9,3 +9,13 @@
   font-weight: 900;
   font-size: 40px;
 }
+
+.assignments-create-button {
+  padding: 10px 15px;
+  background-color: var(--button);
+  color: var(--textColor);
+  font-size: 15px;
+  border: none;
+  border: 1px solid var(--textColor);
+  border-radius: 5px;
+}

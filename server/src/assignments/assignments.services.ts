@@ -43,8 +43,91 @@ const createNewAssignment = async (
   }
 }
 
+/**
+ * This functions finds and returns all the assignments instances related
+ * to the class using the class id.
+ * 
+ * @param classId - The classId used to find all related assignments.
+ * @param ctx - The prisma context that this function is being used in.
+ * @returns - A list of all the assignments for the class
+ */
+const findAllAssignmentsByClassId = async (
+  classId: string,
+  ctx: Context
+) => {
+  return await ctx.prisma.assignment.findMany({
+    where: {
+      classId: classId
+    }
+  })
+}
+
+/**
+ * This functions finds and returns all the submissions instances related
+ * to the assignment using the assignment id, also includes basic student
+ * information for each submission.
+ * 
+ * @param assignmentId - The assignmentId used to find all related submissions.
+ * @param ctx - The prisma context that this function is being used in.
+ * @returns - A list of all the submission for the assignment
+ */
+const findAllSubmissionByAssignmentId = async (
+  assignmentId: string,
+  ctx: Context
+) => {
+  return await ctx.prisma.assignment.findUnique({
+    where: {
+      id: assignmentId
+    },
+     select: {
+      submissions: {
+        include: {
+          student: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true
+            }
+          }
+        }
+      }
+    }
+  })
+}
+
+/**
+ * This function returns all the assignment information necessary for the
+ * student, which includes the assignment name, description, uploaded files,
+ * and the student's already uploaded files before/after submission.
+ * 
+ * @param assignmentId - The assignmentId used to find all assignment information.
+ * @param ctx - The prisma context that this function is being used in.
+ * @returns - A detailed object of the assignment and the student's submission.
+ */
+const findAssignmentById = async (
+  studentId: string,
+  assignmentId: string,
+  ctx: Context
+) => {
+  return await ctx.prisma.assignment.findUnique({
+    where: {
+      id: assignmentId
+    },
+    include: {
+      submissions: {
+        where: {
+          studentId: studentId
+        }
+      }
+    }
+  })
+}
+
 const assignmentServices = {
-  createNewAssignment
+  createNewAssignment,
+  findAllAssignmentsByClassId,
+  findAllSubmissionByAssignmentId,
+  findAssignmentById
 }
 
 export default assignmentServices

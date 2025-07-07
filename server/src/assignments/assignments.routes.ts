@@ -98,3 +98,5 @@ router.get('/:userId/class/:classId/assignment', authenticateToken, async (req, 
     console.error(error)
   }
 })
+
+export default router

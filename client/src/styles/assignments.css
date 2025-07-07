@@ -1,0 +1,11 @@
+.assignments-list {
+  height: 100vh;
+  padding: 30px 70px;
+  flex-grow: 1;
+}
+
+.assignments-list-title {
+  font-family: 'Freight Sans LF Pro', Arial, sans-serif;
+  font-weight: 900;
+  font-size: 40px;
+}

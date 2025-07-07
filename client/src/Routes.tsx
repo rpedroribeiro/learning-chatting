@@ -4,6 +4,7 @@ import SignUpPage from './pages/SignUp'
 import LogInPage from './pages/LogIn'
 import ClassroomsPage from './pages/Classrooms'
 import FilesDisplay from './components/FilesDisplay'
+import AssignmentsDisplay from './components/AssignmentsDisplay'
 import ClassPage from './pages/ClassPage'
 
 const AppRoutes = () => (
@@ -27,6 +28,7 @@ const AppRoutes = () => (
       }
     >
       <Route path='files' element={<FilesDisplay />}/>
+      <Route path='assignments' element={<AssignmentsDisplay />}/>
     </Route>
   </Routes>
 )

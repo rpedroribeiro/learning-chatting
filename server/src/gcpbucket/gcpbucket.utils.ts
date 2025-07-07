@@ -5,7 +5,6 @@ dotenv.config()
 const storage = new Storage()
 const bucketName: string = process.env.GOOGLE_BUCKET_NAME!
 
-
 /**
  * This function takes in the desired path in the bucket and the path
  * to the local file and stores the file in the bucket.
@@ -14,10 +13,14 @@ const bucketName: string = process.env.GOOGLE_BUCKET_NAME!
  * @param localFilePath - The local file used to access the file.
  */
 const uploadFileToFileSystem = async (destinationPath: string, localFilePath: string) => {
-  const options = {
-    destination: destinationPath,
+  try {
+    const options = {
+      destination: destinationPath,
+    }
+    await storage.bucket(bucketName).upload(localFilePath, options)
+  } catch (error) {
+    console.error(error)
   }
-  await storage.bucket(bucketName).upload(localFilePath, options)
 }
 
 /**
@@ -27,9 +30,13 @@ const uploadFileToFileSystem = async (destinationPath: string, localFilePath: st
  * @param folderName - The desired path for the folder in the bucket.
  */
 const addFolderToFileSystem = async (folderPath: string) => {
-  const bucket = storage.bucket(bucketName)
-  const folder = bucket.file(`${folderPath}`)
-  await folder.save('')
+  try {
+    const bucket = storage.bucket(bucketName)
+    const folder = bucket.file(`${folderPath}`)
+    await folder.save('')
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 /**
@@ -39,24 +46,44 @@ const addFolderToFileSystem = async (folderPath: string) => {
  * @param filePath - The path of the desired file in the bucekt..
  */
 const generateV4ReadSignedUrl = async (fileName: string) => {
-  const options = {
-    version: 'v4' as const,
-    action: 'read' as const,
-    expires: new Date(Date.now() + 15 * 60 * 1000),
+  try {
+    const options = {
+      version: 'v4' as const,
+      action: 'read' as const,
+      expires: new Date(Date.now() + 15 * 60 * 1000),
+    }
+
+    const [url] = await storage
+      .bucket(bucketName)
+      .file(fileName)
+      .getSignedUrl(options)
+
+    return url
+  } catch (error) {
+    console.error(error)
   }
+}
 
-  const [url] = await storage
-    .bucket(bucketName)
-    .file(fileName)
-    .getSignedUrl(options)
-
-  return url
+/**
+ * This function deletes the desired object from the GCP bucket
+ * using the object's path.
+ * 
+ * @param objectPath - The path of the object being deleted.
+ */
+const deleteObjectFromBucket = async (objectPath: string) => {
+  try {
+    const bucket = storage.bucket(bucketName)
+    await bucket.file(objectPath).delete()
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 const gcpBucketUtils = {
   uploadFileToFileSystem,
   addFolderToFileSystem,
-  generateV4ReadSignedUrl
+  generateV4ReadSignedUrl,
+  deleteObjectFromBucket
 }
 
 export default gcpBucketUtils

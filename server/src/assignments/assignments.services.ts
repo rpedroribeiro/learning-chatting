@@ -1,6 +1,6 @@
 import { Context } from "../context/context"
 import classService from "../classes/classes.services"
-import submissionServices from "./submission.services"
+import submissionServices from "../submissions/submission.services"
 
 /**
  * This function takes in all the necessary information to create a new

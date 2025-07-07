@@ -56,6 +56,7 @@ const ClassroomsGrid = () => {
     const [classDetails, status, message] = await classesApi.getClassDetails(userId, classId)
     status ? (() => {
       setCurrClass(classDetails)
+      
       navigate(`/${userId}/classrooms/${classId}/files`) 
     })() : setErrorMessage(message)
   }

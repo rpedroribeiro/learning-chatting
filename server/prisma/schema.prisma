@@ -95,4 +95,5 @@ model Submission {
   submitted       Boolean
   submissionTime  DateTime?
   uploadedFiles   String[]
+  @@unique([assignmentId, studentId])
 }

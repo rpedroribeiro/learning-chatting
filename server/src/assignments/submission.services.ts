@@ -125,11 +125,42 @@ const deleteSubmissionFile = async (
   return null
 }
 
+/**
+ * This function queries the submission object with the student id and 
+ * the assignment id provided and updates the submitted attribute to be
+ * true and record the time of the submission. Returns the updated
+ * submission object
+ * 
+ * @param assignmentId - The assignmentId of the submission instance.
+ * @param studentId - The id of the student of the submission instance
+ * @param ctx - The prisma context that this function is being used in.
+ * @returns - The updated submission object.
+ */
+const updateSubmissionStatus = async (
+  studentId: string,
+  assignmentId: string,
+  ctx: Context
+) => {
+  return await ctx.prisma.submission.update({
+    where: {
+      assignmentId_studentId: {
+        assignmentId: assignmentId,
+        studentId: studentId
+      }
+    },
+    data: {
+      submitted: true,
+      submissionTime: new Date()
+    }
+  })
+}
+
 const submissionServices = {
   createSubmissionForAssignment,
   uploadSubmissionFile,
   deleteSubmissionFile,
-  findSubmissionWithUserIdAndAssignmentId
+  findSubmissionWithUserIdAndAssignmentId,
+  updateSubmissionStatus
 }
 
 export default submissionServices

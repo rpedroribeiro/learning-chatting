@@ -5,10 +5,8 @@ import multer from 'multer'
 import classService from '../classes/classes.services'
 import assignmentUtils from './assignments.utils'
 import assignmentServices from './assignments.services'
-import submissionServices from './submission.services'
 import authServices from '../auth/auth.services'
 import { UserRole } from '@prisma/client'
-import gcpBucketUtils from '../gcpbucket/gcpbucket.utils'
 
 const router = express.Router()
 const ctx = { prisma }
@@ -21,118 +19,82 @@ const upload = multer({ dest: 'uploads/assignments'})
  * information provided.
  */
 router.post('/:userId/class/:classId/assignment', upload.array('uploadedFiles'), authenticateToken, async (req, res, next) => {
-  const { assignmentName, assignmentDescription, dueDate } = req.body
-  const classId = req.params.classId
-  const userId = req.params.userId
+  try {
+    const { assignmentName, assignmentDescription, dueDate } = req.body
+    const classId = req.params.classId
+    const userId = req.params.userId
 
-  const currClass = await classService.findProfessorByClassId(classId, ctx)
-  if (currClass?.professor.id !== userId) {
-    res.status(400).json({message: "Only the professor of this course can create an assignment"})
-    throw new Error('Only the professor of this course can create an assignment')
+    const currClass = await classService.findProfessorByClassId(classId, ctx)
+    if (currClass?.professor.id !== userId) {
+      res.status(400).json({message: "Only the professor of this course can create an assignment"})
+      throw new Error('Only the professor of this course can create an assignment')
+    }
+
+    let filesUrls
+    const files = req.files as Express.Multer.File[]
+    if (files !== undefined && files.length > 0) {
+      filesUrls = await assignmentUtils.uploadAssignmentFiles(files, assignmentName)
+    }
+
+    const newAssignment = await assignmentServices.createNewAssignment(
+      assignmentName,
+      assignmentDescription,
+      classId,
+      dueDate,
+      filesUrls || undefined,
+      ctx
+    )
+
+    res.status(200).json({assignment: newAssignment})
+  } catch (error) {
+    console.error(error)
   }
-
-  let filesUrls
-  const files = req.files as Express.Multer.File[]
-  if (files !== undefined && files.length > 0) {
-    filesUrls = await assignmentUtils.uploadAssignmentFiles(files, assignmentName)
-  }
-
-  const newAssignment = await assignmentServices.createNewAssignment(
-    assignmentName,
-    assignmentDescription,
-    classId,
-    dueDate,
-    filesUrls || undefined,
-    ctx
-  )
-
-  res.status(200).json({assignment: newAssignment})
 })
 
 /**
- * This POST request uploads files the student inputed into their submissions instance
- * and also adds them to the GCP bucket. This route does not submit the assignment, but
- * rather gets the files ready for when the assignment is submitted. This request cannot be
- * made once the submission is submitted.
+ * This GET route is used to get the assignment information necessary. If the user making
+ * this request is a student, only the assignment information alongside the submission files
+ * are returned. If the professor is making this request, all the assignments information,
+ * all submission information, and the student's name associated with the submission is returned.
  */
-router.post('/:userId/class/:classId/assignment/:assignmentId/uploadfiles', upload.single('uploadedFiles'), authenticateToken, async (req, res, next) => {
-  const userId = req.params.userId
-  const assignmentId = req.params.assignmentId
+router.get('/:userId/class/:classId/assignment/:assignmentId', authenticateToken, async (req, res, next) => {
+  try {
+    const userId = req.params.userId
+    const assignmentId = req.params.assignmentId
 
-  const currSubmission = await submissionServices.findSubmissionWithUserIdAndAssignmentId(
-    userId,
-    assignmentId,
-    ctx
-  )
-
-  if (currSubmission?.submitted === true) {
-    res.status(400).json({message: "Cannot make this request when assignment is already submitted"})
-    throw new Error('Cannot make this request when assignment is already submitted')
+    const currUser = await authServices.findUserById(userId, ctx)
+    if (currUser?.accountType === UserRole.Professor) {
+      const assignment = await assignmentServices.findAllSubmissionByAssignmentId(
+        assignmentId,
+        ctx  
+      )
+      res.status(200).json({assignment: assignment})
+    } else {
+      const assignment = await assignmentServices.findAssignmentById(
+        userId,
+        assignmentId,
+        ctx  
+      )
+      res.status(200).json({assignment: assignment})
+    }
+  } catch (error) {
+    console.error(error)
   }
-
-  const currUser = await authServices.findUserById(userId, ctx)
-  if (!currUser || currUser.accountType !== UserRole.Student) {
-    res.status(400).json({message: "User is not a student or does not exist"})
-    throw new Error('User is not a student or does not exist')
-  }
-
-  const file = req.file
-  if (!file) {
-    res.status(400).json({message: "No file sent on request"})
-    throw new Error('No file sent on request')
-  }
-
-  const filePath = file.path
-
-  const submission = await submissionServices.uploadSubmissionFile(
-    userId,
-    assignmentId,
-    filePath,
-    ctx
-  )
-  res.status(200).json({submission: submission})
 })
 
 /**
- * This DELETE requeest removes the desired filed from the list of uplaoded files from
- * both the submission instance in the db and also in the GCP bucket. This request cannot
- * be made once the submission is submitted.
+ * This GET route returns a list of all the assignments related to the class. The same
+ * information is returned regardless whether the user is a sudent or a professor.
  */
-router.delete('/:userId/class/:classId/assignment/:assignmentId/uploadfiles', authenticateToken, async (req, res, next) => {
-  const userId = req.params.userId
-  const assignmentId = req.params.assignmentId
-  const { filePath } = req.body
-
-  const currSubmission = await submissionServices.findSubmissionWithUserIdAndAssignmentId(
-    userId,
-    assignmentId,
-    ctx
-  )
-
-  if (currSubmission?.submitted === true) {
-    res.status(400).json({message: "Cannot make this request when assignment is already submitted"})
-    throw new Error('Cannot make this request when assignment is already submitted')
+router.get('/:userId/class/:classId/assignment', authenticateToken, async (req, res, next) => {
+  try {
+    const classId = req.params.classId
+    const assignments = await assignmentServices.findAllAssignmentsByClassId(
+      classId,
+      ctx
+    )
+    res.status(200).json({assignments: assignments})
+  } catch (error) {
+    console.error(error)
   }
-
-  const currUser = await authServices.findUserById(userId, ctx)
-  if (!currUser || currUser.accountType !== UserRole.Student) {
-    res.status(400).json({message: "User is not a student or does not exist"})
-    throw new Error('User is not a student or does not exist')
-  }
-
-  await gcpBucketUtils.deleteObjectFromBucket(filePath)
-
-  const updatedSubmission = await submissionServices.deleteSubmissionFile(
-    userId,
-    assignmentId,
-    filePath,
-    ctx
-  )
-
-  if (updatedSubmission === null) {
-    res.status(400).json({message: "Issue removing the file from the submission"})
-    throw new Error('Issue removing the file from the submission')
-  }
-
-  res.status(200).json({submission: updatedSubmission})
 })

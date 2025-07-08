@@ -1,0 +1,88 @@
+.submission-page {
+  min-height: 100vh;
+  padding: 30px 70px;
+  flex-grow: 1;
+}
+
+.submission-page-title {
+  font-family: 'Freight Sans LF Pro', Arial, sans-serif;
+  font-weight: 900;
+  font-size: 40px;
+}
+
+.submission-information-container {
+  padding: 4vh 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4vh;
+}
+
+.submission-information-container-date-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1vh;
+}
+
+.submission-information-container-date-due {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.submission-information-container-date {
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 0.8vw;
+}
+
+.submission-information-container-description h3 {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.submission-information-container-description p {
+  font-size: 18px;
+}
+
+.submission-information-container-files-list h3 {
+  margin: 0;
+  padding: 0;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.submission-information-container-file-name {
+  font-size: 18px;
+}
+
+.submission-information-container-upload-button {
+  height: 18vh;
+  border: none;
+  background-color: var(--componentColor);
+  border: 1px solid var(--textColor);
+  border-radius: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1vw;
+  color: var(--textColor);
+  font-size: 25px;
+  cursor: pointer;
+  transition: font-size 0.3s ease;
+}
+
+.submission-information-container-upload-button:hover {
+ background-color: #262a30;
+ font-size: 27px;
+}
+
+.submission-information-container-submit-button {
+  width: 20vw;
+  padding: 2vh 0;
+  font-size: 18px;
+  border: none;
+  color: var(--textColor);
+  border: 1px solid var(--textColor);
+  border-radius: 10px;
+  background-color: var(--button);
+}

@@ -30,7 +30,6 @@ const getAllAssignmentsByClassId = async (
       }
     )
     const assignments = response.data.assignments
-    console.log(assignments)
     return [assignments, true, "Successfully fetched all assignments"]
   } catch (error) {
     console.error(error)

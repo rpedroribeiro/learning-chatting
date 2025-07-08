@@ -47,6 +47,7 @@ router.post('/:userId/class/:classId/assignment', upload.array('files'), authent
     )
 
     const updatedAssignmentsList = await assignmentServices.findAllAssignmentsByClassId(
+      null,
       classId,
       ctx
     )
@@ -94,12 +95,25 @@ router.get('/:userId/class/:classId/assignment/:assignmentId', authenticateToken
  */
 router.get('/:userId/class/:classId/assignment', authenticateToken, async (req, res, next) => {
   try {
+    const userId = req.params.userId
     const classId = req.params.classId
-    const assignments = await assignmentServices.findAllAssignmentsByClassId(
-      classId,
-      ctx
-    )
-    res.status(200).json({assignments: assignments})
+
+    const currUser = await authServices.findUserById(userId, ctx)
+    if (currUser?.accountType === UserRole.Professor) {
+      const assignments = await assignmentServices.findAllAssignmentsByClassId(
+        null,
+        classId,
+        ctx
+      )
+      res.status(200).json({assignments: assignments})
+    } else {
+      const assignments = await assignmentServices.findAllAssignmentsByClassId(
+        userId,
+        classId,
+        ctx
+      )
+      res.status(200).json({assignments: assignments})
+    }
   } catch (error) {
     console.error(error)
   }

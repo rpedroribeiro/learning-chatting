@@ -25,7 +25,10 @@ const AssignmentsDisplay = () => {
 
   return (
     <div className="assignments-list">
-      {toggleCreateAssignment && (<CreateAssignmentModal setToggleCreateAssignment={setToggleCreateAssignment}/>)}
+      {toggleCreateAssignment && (<CreateAssignmentModal 
+        setToggleCreateAssignment={setToggleCreateAssignment}
+        setAssignments={setAssignments}
+      />)}
       <div style={{display: 'flex', justifyContent: 'space-between'}}>
         <div style={{display: 'flex', alignItems: 'center', gap: '1.5vw'}}>
           <h1 className='assignments-list-title'>Assignments</h1>

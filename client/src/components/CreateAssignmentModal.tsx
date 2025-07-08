@@ -2,17 +2,23 @@ import { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowDown } from '@fortawesome/free-solid-svg-icons/faArrowDown';
 import '../styles/modal.css'
+import assignmentsApi from '../api/assignmentsApi';
+import useAuth from '../hooks/useAuth';
+import useClassroom from '../hooks/useClassroom';
 
 interface createAssignmentModalProps {
   setToggleCreateAssignment: React.Dispatch<React.SetStateAction<boolean>>;
+  setAssignments: React.Dispatch<React.SetStateAction<any>>;
 }
 
-const CreateAssignmentModal = ({setToggleCreateAssignment}: createAssignmentModalProps) => {
+const CreateAssignmentModal = ({setToggleCreateAssignment, setAssignments}: createAssignmentModalProps) => {
   const [assignmentName, setAssignmentName] = useState<string>('')
   const [assignmentDescription, setAssignmentDescription] = useState<string>('')
   const [dueDate, setDueDate] = useState<string>('')
   const [files, setFiles] = useState<File[]>([])
   const [errorMessage, setErrorMessage] = useState<string>('')
+  const { userId } = useAuth()
+  const { currClass } = useClassroom()
 
   const handleFileChange = (event: any) => {
     const file = event.target.files?.[0]
@@ -21,8 +27,22 @@ const CreateAssignmentModal = ({setToggleCreateAssignment}: createAssignmentModa
     }
   }
 
-  const handleAssignmentCreation = async () => {
-
+  const handleAssignmentCreation = async (event: any) => {
+    event.preventDefault()
+    const assignments = await assignmentsApi.createAssignment(
+      userId,
+      currClass.id,
+      assignmentName,
+      assignmentDescription,
+      dueDate,
+      files
+    )
+    if (assignments) {
+      setAssignments(assignments)
+      setToggleCreateAssignment(false)
+    } else {
+      setErrorMessage("Could not create a new assignment")
+    }
   }
 
   return (

@@ -4,6 +4,10 @@ type getAllAssignmentsResponse = {
   assignments: any
 }
 
+type createAssignmentResponse = {
+  updatedAssignmentsList: any
+}
+
 /**
  * This function takes in the users id and the class id to find all the 
  * assignments listed under the class. The function then returns the result
@@ -34,8 +38,53 @@ const getAllAssignmentsByClassId = async (
   }
 }
 
+/**
+ * This functions makes a POST request to create a new assignment in the 
+ * database and to store all the files in the GCP bucket. It returns the 
+ * updated assignment list if successful, else it will return null.
+ * 
+ * @param userId - The id of the professor creating the assignment.
+ * @param classId - The id of the class where the assignment will be made.
+ * @param assignmentName - The desired name of the assignment.
+ * @param assignmentDescription - The desired description of the assignment.
+ * @param dueDate - The desired due date of the assignment.
+ * @param files - The desired helper files of the assignment.
+ */
+const createAssignment = async (
+  userId: string,
+  classId: string,
+  assignmentName: string,
+  assignmentDescription: string,
+  dueDate: string,
+  files: File[]
+): Promise<any | null> => {
+  try {
+    const formData = new FormData()
+    files.forEach((file) => {
+      formData.append('files', file)
+    })
+    const jsonBody = JSON.stringify({
+      assignmentName,
+      assignmentDescription,
+      dueDate
+    })
+    formData.append('data', jsonBody)
+    const response = await axiosClient.post<createAssignmentResponse>(
+      `api/${userId}/class/${classId}/assignment`,
+      formData,
+      { withCredentials: true }
+    ) 
+    const newAssignmentList = response.data.updatedAssignmentsList
+    return newAssignmentList
+  } catch (error) {
+    console.error(error)
+    return null
+  }
+}
+
 const assignmentsApi = {
-  getAllAssignmentsByClassId
+  getAllAssignmentsByClassId,
+  createAssignment
 }
 
 export default assignmentsApi

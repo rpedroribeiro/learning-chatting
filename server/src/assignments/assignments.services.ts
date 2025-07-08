@@ -40,6 +40,7 @@ const createNewAssignment = async (
         ctx
       )
     }
+    return newAssignemt
   }
 }
 

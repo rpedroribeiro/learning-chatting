@@ -18,9 +18,10 @@ const upload = multer({ dest: 'uploads/assignments'})
  * uploades them to the GCP bucket, and creates the assignment with the rest of the
  * information provided.
  */
-router.post('/:userId/class/:classId/assignment', upload.array('uploadedFiles'), authenticateToken, async (req, res, next) => {
+router.post('/:userId/class/:classId/assignment', upload.array('files'), authenticateToken, async (req, res, next) => {
   try {
-    const { assignmentName, assignmentDescription, dueDate } = req.body
+    const data = JSON.parse(req.body.data)
+    const { assignmentName, assignmentDescription, dueDate } = data
     const classId = req.params.classId
     const userId = req.params.userId
 
@@ -40,12 +41,17 @@ router.post('/:userId/class/:classId/assignment', upload.array('uploadedFiles'),
       assignmentName,
       assignmentDescription,
       classId,
-      dueDate,
+      new Date(dueDate),
       filesUrls || undefined,
       ctx
     )
 
-    res.status(200).json({assignment: newAssignment})
+    const updatedAssignmentsList = await assignmentServices.findAllAssignmentsByClassId(
+      classId,
+      ctx
+    )
+
+    res.status(200).json({updatedAssignmentsList: updatedAssignmentsList})
   } catch (error) {
     console.error(error)
   }

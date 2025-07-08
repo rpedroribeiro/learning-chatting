@@ -16,13 +16,13 @@ const uploadAssignmentFiles = async (
 ) => {
   let filesUrls = []
   const folderName = `assignments/${assignmentName}/assignmentFiles/`
-  gcpBucketUtils.addFolderToFileSystem(folderName)
+  await gcpBucketUtils.addFolderToFileSystem(folderName)
   for (const file of files) {
     const fileDestination = folderName + file.originalname
     const localFilePath = file.path
-    gcpBucketUtils.uploadFileToFileSystem(fileDestination, localFilePath)
-    fs.unlink(localFilePath, (err) => { if (err) { console.error('Failed to delete file', err) } })
+    await gcpBucketUtils.uploadFileToFileSystem(fileDestination, localFilePath)
     filesUrls.push(fileDestination)
+    fs.unlink(localFilePath, (err) => { if (err) { console.error('Failed to delete file', err) } })
   }
   return filesUrls
 }

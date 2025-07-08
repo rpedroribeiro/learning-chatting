@@ -5,6 +5,9 @@ import useAuth from '../hooks/useAuth'
 import '../styles/assignments.css'
 import { UserRole } from '../utils/UserRole'
 import { useEffect, useState } from 'react'
+import assignmentsApi from '../api/assignmentsApi'
+import useClassroom from '../hooks/useClassroom'
+import { useNavigate } from 'react-router-dom'
 
 
 interface assignmentItemProps {
@@ -15,7 +18,9 @@ interface assignmentItemProps {
 const AssignmentItem = ({assignment, status}: assignmentItemProps) => {
   const [icon, setIcon] = useState<any>()
   const [color, setColor] = useState<any>()
-  const { accountType } = useAuth()
+  const { userId, accountType } = useAuth()
+  const { currClass, setCurrAssignment } = useClassroom()
+  const navigate = useNavigate()
 
   /**
    * On render this useEffect decides what color/icon should be displayed
@@ -40,8 +45,19 @@ const AssignmentItem = ({assignment, status}: assignmentItemProps) => {
     }
   }, [])
   
-  const handleItemClick = () => {
-
+  /**
+   * This function fetches all the necessary information for the assignment and navigates
+   * to a page display said information. Pages are different based off if the user is a 
+   * student or a professor.
+   */
+  const handleItemClick = async () => {
+    const fetchedAssignment = await assignmentsApi.fetchStudentAssignmentAndSubmission(
+      userId,
+      currClass.id,
+      assignment.id
+    )
+    setCurrAssignment(fetchedAssignment)
+    accountType === UserRole.Student ? navigate(`/${userId}/classrooms/${currClass.id}/assignments/${fetchedAssignment.id}`) : []
   }
 
   return (

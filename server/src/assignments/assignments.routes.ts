@@ -77,12 +77,12 @@ router.get('/:userId/class/:classId/assignment/:assignmentId', authenticateToken
       )
       res.status(200).json({assignment: assignment})
     } else {
-      const assignment = await assignmentServices.findAssignmentById(
+      const assignmentWithSubmission = await assignmentServices.findAssignmentById(
         userId,
         assignmentId,
         ctx  
       )
-      res.status(200).json({assignment: assignment})
+      res.status(200).json({assignmentWithSubmission: assignmentWithSubmission})
     }
   } catch (error) {
     console.error(error)

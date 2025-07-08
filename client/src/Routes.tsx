@@ -6,6 +6,7 @@ import ClassroomsPage from './pages/Classrooms'
 import FilesDisplay from './components/FilesDisplay'
 import AssignmentsDisplay from './components/AssignmentsDisplay'
 import ClassPage from './pages/ClassPage'
+import StudentSubmission from './components/StudentSubmission'
 
 const AppRoutes = () => (
   <Routes>
@@ -29,6 +30,7 @@ const AppRoutes = () => (
     >
       <Route path='files' element={<FilesDisplay />}/>
       <Route path='assignments' element={<AssignmentsDisplay />}/>
+      <Route path='assignments/:assignmentId' element={<StudentSubmission />} />
     </Route>
   </Routes>
 )

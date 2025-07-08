@@ -8,6 +8,10 @@ type createAssignmentResponse = {
   updatedAssignmentsList: any
 }
 
+type fetchAssignmentAndSubmissionResponse = {
+  assignmentWithSubmission: any
+}
+
 /**
  * This function takes in the users id and the class id to find all the 
  * assignments listed under the class. The function then returns the result
@@ -81,9 +85,29 @@ const createAssignment = async (
   }
 }
 
+const fetchStudentAssignmentAndSubmission = async (
+  userId: string,
+  classId: string,
+  assignmentId: string
+) => {
+  try {
+    const response = await axiosClient.get<fetchAssignmentAndSubmissionResponse>(
+      `api/${userId}/class/${classId}/assignment/${assignmentId}`,
+      { headers: { 'Content-Type': 'application/json' },
+        withCredentials: true 
+      }
+    )
+    return response.data.assignmentWithSubmission
+  } catch (error) {
+    console.error(error)
+    return null
+  }
+}
+
 const assignmentsApi = {
   getAllAssignmentsByClassId,
-  createAssignment
+  createAssignment,
+  fetchStudentAssignmentAndSubmission
 }
 
 export default assignmentsApi

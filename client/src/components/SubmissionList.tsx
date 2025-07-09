@@ -1,14 +1,11 @@
 import { useEffect } from "react"
 import useClassroom from "../hooks/useClassroom"
 import '../styles/submission.css'
+import SubmissionStudentItem from "./SubmissionStudentItem"
 
 const SubmissionList = () => {
   const { currAssignment } = useClassroom()
-
-  useEffect(() => {
-    console.log(currAssignment.submissions)
-  }, [])
-
+  
   return (
     <div className="submission-page">
       <h1 className="submission-page-title">{currAssignment.name} - Submissions</h1>
@@ -16,7 +13,7 @@ const SubmissionList = () => {
       <div className="submission-information-container">
         <div className="submission-information-container-files-list">
           {currAssignment.submissions.length > 0 && currAssignment.submissions.map((submission: any, key: any) => (
-            <h1>{}</h1>
+            <SubmissionStudentItem key={key} submission={submission} dueDate={currAssignment.dueDate}/>
           ))}
         </div>
       </div>

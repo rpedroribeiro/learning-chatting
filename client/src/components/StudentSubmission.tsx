@@ -7,6 +7,7 @@ import SubmissionFileItem from "./SubmissionFileItem"
 import submissionApi from "../api/submissionApi"
 import useAuth from "../hooks/useAuth"
 import assignmentsApi from "../api/assignmentsApi"
+import { UserRole } from "../utils/UserRole"
 
 const StudentSubmission = () => {
   const [dueDate, setDueDate] = useState<any>()
@@ -81,7 +82,7 @@ const StudentSubmission = () => {
           <h3>Files Attached</h3>
           <hr style={{marginBottom: '20px'}}/>
           {currAssignment.files.length > 0 ? currAssignment.files.map((file: any, key: any) => (
-            <SubmissionFileItem key={key} file={file}/>
+            <SubmissionFileItem key={key} file={file} accountType={UserRole.Student}/>
           )) : <span>No Supplemental Files Uploaded</span>}
         </div>
         <div className="submission-information-container-description">
@@ -108,7 +109,7 @@ const StudentSubmission = () => {
           <h3>Uploaded Files</h3>
           <hr style={{marginBottom: '20px'}}/>
           {currAssignment.submissions[0].uploadedFiles.length > 0 ? currAssignment.submissions[0].uploadedFiles.map((file: any, key: any) => (
-            <SubmissionFileItem key={key} file={file}/>
+            <SubmissionFileItem key={key} file={file} accountType={UserRole.Student}/>
           )) : <span>No Files Uploaded</span>}
         </div>
         {!currAssignment.submissions[0].submitted && 

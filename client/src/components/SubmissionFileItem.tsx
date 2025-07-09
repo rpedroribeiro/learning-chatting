@@ -6,12 +6,14 @@ import { useEffect, useState } from 'react'
 import submissionApi from '../api/submissionApi'
 import useAuth from '../hooks/useAuth'
 import useClassroom from '../hooks/useClassroom'
+import { UserRole } from '../utils/UserRole'
 
 interface submissionFileItemProps {
-  file: any
+  file: any;
+  accountType: UserRole;
 }
 
-const SubmissionFileItem = ({file}: submissionFileItemProps) => {
+const SubmissionFileItem = ({file, accountType}: submissionFileItemProps) => {
   const [fileName, setFileName] = useState<string>('')
   const { userId } = useAuth()
   const { currClass, currAssignment } = useClassroom()
@@ -35,12 +37,12 @@ const SubmissionFileItem = ({file}: submissionFileItemProps) => {
   }
 
   return (
-    <div className='file-system-item' onClick={handleItemClick}>
+    <div style={accountType === UserRole.Professor ? {padding: '1vw', gap: '0.5vw', height: '6vh'} : {}} className='file-system-item' onClick={handleItemClick}>
       <div className='file-system-item-icon-conatiner'>
-          <FontAwesomeIcon size='lg' icon={faFile}/>
+          <FontAwesomeIcon size={accountType === UserRole.Professor ? 'sm' : 'lg'} icon={faFile}/>
       </div>
       <div className='file-system-item-name'>
-        <span className='submission-information-container-file-name'>{fileName}</span>
+        <span style={accountType === UserRole.Professor ? {fontSize: '13px'} : {}} className='submission-information-container-file-name'>{fileName}</span>
       </div>
     </div>
   ) 

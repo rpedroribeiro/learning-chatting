@@ -16,7 +16,7 @@ const ProfessorAssignments = ({assignments}: professorAssignmentsProps) => {
     setClosedAssignments([])
     const date = new Date()
     for (const assignment of assignments) {
-      if (new Date(assignment.dueDate) > date) {
+      if (new Date(assignment.dueDate) < date) {
         setClosedAssignments(prev => [...prev, assignment])
       } else {
         setOpenedAssignments(prev => [...prev, assignment])

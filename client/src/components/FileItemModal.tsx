@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowDown } from '@fortawesome/free-solid-svg-icons'
 import { FileType } from '../utils/FileType'
 import fileSystemApi from '../api/fileSystemApi'
 import useAuth from '../hooks/useAuth'
 import useClassroom from '../hooks/useClassroom'
-import '../styles/class-modal.css'
+import '../styles/modal.css'
 
 interface addFileItemProps {
   setToggleAddItemForm: React.Dispatch<React.SetStateAction<boolean>>;

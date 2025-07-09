@@ -18,9 +18,10 @@ const upload = multer({ dest: 'uploads/assignments'})
  * uploades them to the GCP bucket, and creates the assignment with the rest of the
  * information provided.
  */
-router.post('/:userId/class/:classId/assignment', upload.array('uploadedFiles'), authenticateToken, async (req, res, next) => {
+router.post('/:userId/class/:classId/assignment', upload.array('files'), authenticateToken, async (req, res, next) => {
   try {
-    const { assignmentName, assignmentDescription, dueDate } = req.body
+    const data = JSON.parse(req.body.data)
+    const { assignmentName, assignmentDescription, dueDate } = data
     const classId = req.params.classId
     const userId = req.params.userId
 
@@ -40,12 +41,18 @@ router.post('/:userId/class/:classId/assignment', upload.array('uploadedFiles'),
       assignmentName,
       assignmentDescription,
       classId,
-      dueDate,
+      new Date(dueDate),
       filesUrls || undefined,
       ctx
     )
 
-    res.status(200).json({assignment: newAssignment})
+    const updatedAssignmentsList = await assignmentServices.findAllAssignmentsByClassId(
+      null,
+      classId,
+      ctx
+    )
+
+    res.status(200).json({updatedAssignmentsList: updatedAssignmentsList})
   } catch (error) {
     console.error(error)
   }
@@ -70,12 +77,12 @@ router.get('/:userId/class/:classId/assignment/:assignmentId', authenticateToken
       )
       res.status(200).json({assignment: assignment})
     } else {
-      const assignment = await assignmentServices.findAssignmentById(
+      const assignmentWithSubmission = await assignmentServices.findAssignmentById(
         userId,
         assignmentId,
         ctx  
       )
-      res.status(200).json({assignment: assignment})
+      res.status(200).json({assignmentWithSubmission: assignmentWithSubmission})
     }
   } catch (error) {
     console.error(error)
@@ -88,13 +95,28 @@ router.get('/:userId/class/:classId/assignment/:assignmentId', authenticateToken
  */
 router.get('/:userId/class/:classId/assignment', authenticateToken, async (req, res, next) => {
   try {
+    const userId = req.params.userId
     const classId = req.params.classId
-    const assignments = await assignmentServices.findAllAssignmentsByClassId(
-      classId,
-      ctx
-    )
-    res.status(200).json({assignments: assignments})
+
+    const currUser = await authServices.findUserById(userId, ctx)
+    if (currUser?.accountType === UserRole.Professor) {
+      const assignments = await assignmentServices.findAllAssignmentsByClassId(
+        null,
+        classId,
+        ctx
+      )
+      res.status(200).json({assignments: assignments})
+    } else {
+      const assignments = await assignmentServices.findAllAssignmentsByClassId(
+        userId,
+        classId,
+        ctx
+      )
+      res.status(200).json({assignments: assignments})
+    }
   } catch (error) {
     console.error(error)
   }
 })
+
+export default router

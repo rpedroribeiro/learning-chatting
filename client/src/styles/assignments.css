@@ -1,0 +1,75 @@
+.assignments-list {
+  height: 100vh;
+  padding: 30px 70px;
+  flex-grow: 1;
+}
+
+.assignments-list-title {
+  font-family: 'Freight Sans LF Pro', Arial, sans-serif;
+  font-weight: 900;
+  font-size: 40px;
+}
+
+.assignments-create-button {
+  padding: 10px 15px;
+  background-color: var(--button);
+  color: var(--textColor);
+  font-size: 15px;
+  border: none;
+  border: 1px solid var(--textColor);
+  border-radius: 5px;
+}
+
+.assignments-list-container {
+  padding: 4vh 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.assignments-list-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2vh;
+}
+
+.assignments-list-section h1 {
+  font-weight: 600;
+}
+
+.assignments-list-student {
+  display: flex;
+  flex-direction: column;
+  gap: 4vh;
+}
+
+.assignments-list-student-item {
+  width: 100%;
+  height: 8vh;
+  padding: 0 2vw;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 2vw;
+  background-color: #2E3543;
+  border: 1px solid #959595;
+  cursor: pointer
+}
+
+.assignments-list-student-item:hover {
+  background-color: #282e3b;
+}
+
+.assignments-list-student-item-icon-conatiner {
+  height: 100%;
+  width: 2vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.assignments-list-student-item-name {
+  height: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}

@@ -8,6 +8,7 @@ import multer from 'multer'
 import path from 'path'
 import fs from 'fs'
 import fileSystemUtil from './filesystem.utils'
+import gcpBucketUtils from '../gcpbucket/gcpbucket.utils'
 
 const router = express.Router()
 const ctx = { prisma }
@@ -132,7 +133,7 @@ router.get('/:userId/class/:classId/filesystem/:itemId/url', authenticateToken, 
       throw new Error('Cannot get signed url for a folder')
     }
 
-    const signedUrl = await fileSystemUtil.generateV4ReadSignedUrl(validItem?.fileURL)
+    const signedUrl = await gcpBucketUtils.generateV4ReadSignedUrl(validItem?.fileURL)
     res.status(200).json({signedUrl: signedUrl})
   } catch (error) {
     console.error(error)

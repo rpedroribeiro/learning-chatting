@@ -164,3 +164,5 @@ router.put('/:userId/class/:classId/assignment/:assignmentId/submit', authentica
     console.error(error)
   }
 })
+
+export default router

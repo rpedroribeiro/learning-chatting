@@ -1,6 +1,7 @@
 import { Context } from "../context/context"
 import classService from "../classes/classes.services"
 import submissionServices from "../submissions/submission.services"
+import { UserRole } from "@prisma/client"
 
 /**
  * This function takes in all the necessary information to create a new
@@ -40,6 +41,7 @@ const createNewAssignment = async (
         ctx
       )
     }
+    return newAssignemt
   }
 }
 
@@ -52,14 +54,31 @@ const createNewAssignment = async (
  * @returns - A list of all the assignments for the class
  */
 const findAllAssignmentsByClassId = async (
+  studentId: string | null,
   classId: string,
   ctx: Context
 ) => {
-  return await ctx.prisma.assignment.findMany({
-    where: {
-      classId: classId
-    }
-  })
+  if (studentId) {
+    return await ctx.prisma.assignment.findMany({
+      where: {
+        classId: classId
+      },
+      include: {
+        submissions: {
+          where: {
+            studentId: studentId
+          }
+        }
+      }
+    })
+  } else {
+    return await ctx.prisma.assignment.findMany({
+      where: {
+        classId: classId
+      }
+    })
+  }
+  
 }
 
 /**

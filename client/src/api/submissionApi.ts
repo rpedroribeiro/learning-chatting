@@ -28,12 +28,11 @@ const uploadSubmissionFile = async (
   try {
     const formData = new FormData()
     formData.append('file', file)
-    const response = await axiosClient.post<uploadFileSubmissionResposne>(
+    await axiosClient.post<uploadFileSubmissionResposne>(
       `api/${userId}/class/${classId}/assignment/${assignmentId}/uploadfiles`,
       formData,
       { withCredentials: true }
     )
-    return response
   } catch (error) {
     console.error(error)
   }
@@ -48,7 +47,7 @@ const uploadSubmissionFile = async (
  * @param classId - The id of the class the assginment belongs to.
  * @param assignmentId - The id of the assignment fetching the file url from.
  * @param file - The path to the file in the GCP bucket.
- * @returns 
+ * @returns - The url to access the file.
  */
 const getSignedUrlForFile = async (
   userId: string,
@@ -72,9 +71,38 @@ const getSignedUrlForFile = async (
   }
 }
 
+/**
+ * This function sends a PUT request to the submission for the specific
+ * assignment and changes the completion status
+ * 
+ * @param userId - The id of the user making the request.
+ * @param classId - The id of the class the assginment belongs to.
+ * @param assignmentId - The id of the assignment to submit the submission.
+ */
+const submitAssignment = async (
+  userId: string,
+  classId: string,
+  assignmentId: string
+) => {
+  try {
+    await axiosClient.put(
+      `/api/${userId}/class/${classId}/assignment/${assignmentId}/submit`,
+      {},
+      { headers: { 
+        'Content-Type': 'application/json' 
+        },
+        withCredentials: true 
+      }
+    )
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 const submissionApi = {
   uploadSubmissionFile,
-  getSignedUrlForFile
+  getSignedUrlForFile,
+  submitAssignment
 }
 
 export default submissionApi

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import useClassroom from "../hooks/useClassroom"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faArrowUpFromBracket, faClock } from "@fortawesome/free-solid-svg-icons"
+import { faArrowUpFromBracket, faClock, faCircleCheck } from "@fortawesome/free-solid-svg-icons"
 import '../styles/submission.css'
 import SubmissionFileItem from "./SubmissionFileItem"
 import submissionApi from "../api/submissionApi"
@@ -16,7 +16,12 @@ const StudentSubmission = () => {
 
   useEffect(() => {
     const date = new Date(currAssignment.dueDate)
-    date < new Date() ? setClockColor("rgb(217, 61, 61)") : setClockColor("#198E26")
+    if (currAssignment.submissions[0].submitted) {
+      new Date(currAssignment.submissions[0].submissionTime) > date ? 
+      setClockColor("rgb(217, 61, 61)") : setClockColor("#198E26")
+    } else {
+      new Date() > date ? setClockColor("rgb(217, 61, 61)") : setClockColor("rgb(255, 142, 28)")
+    }
     const formattedDate = date.toLocaleDateString('en-US', {
       weekday: 'short',
       year: 'numeric',
@@ -26,7 +31,6 @@ const StudentSubmission = () => {
       minute: '2-digit'
     })
     setDueDate(formattedDate)
-
   }, [])
 
   const handleUploadFile = async (event: any) => {
@@ -44,7 +48,22 @@ const StudentSubmission = () => {
       currAssignment.id
     )
 
-    setCurrAssignment(updatedAssignment.submissions)
+    setCurrAssignment(updatedAssignment)
+  }
+
+  const handleSubmit = async () => {
+    await submissionApi.submitAssignment(
+      userId,
+      currClass.id,
+      currAssignment.id
+    )
+    const updatedAssignment = await assignmentsApi.fetchStudentAssignmentAndSubmission(
+      userId,
+      currClass.id,
+      currAssignment.id
+    )
+
+    setCurrAssignment(updatedAssignment)
   }
 
   return (
@@ -76,10 +95,15 @@ const StudentSubmission = () => {
             onChange={handleUploadFile}
           />
         </div>
-        <label htmlFor='upload-file-btn-submission' className="submission-information-container-upload-button">
+        {!currAssignment.submissions[0].submitted ? <label htmlFor='upload-file-btn-submission' className="submission-information-container-upload-button">
           <FontAwesomeIcon icon={faArrowUpFromBracket}/>
           Upload Files
-        </label>
+        </label> :
+        <div className="submission-information-container-upload-button">
+          <FontAwesomeIcon color="#198E26" icon={faCircleCheck} />
+          Assignment Submitted
+        </div>
+        }
         <div className="submission-information-container-files-list">
           <h3>Uploaded Files</h3>
           <hr style={{marginBottom: '20px'}}/>
@@ -87,7 +111,9 @@ const StudentSubmission = () => {
             <SubmissionFileItem key={key} file={file}/>
           )) : <span>No Files Uploaded</span>}
         </div>
-        <button className="submission-information-container-submit-button">Submit Assignment</button>
+        {!currAssignment.submissions[0].submitted && 
+          <button onClick={handleSubmit} className="submission-information-container-submit-button">Submit Assignment</button>
+        }
       </div>
     </div>
   )

@@ -165,4 +165,18 @@ router.put('/:userId/class/:classId/assignment/:assignmentId/submit', authentica
   }
 })
 
+/**
+ * This GET request uses a GCP bucket util funciton to get the url needed
+ * to access the file in the client side using the file's path.
+ */
+router.get('/:userId/class/:classId/assignment/:assignmentId/url', authenticateToken, async (req, res, next) => {
+  try {
+    const { file } = req.query
+    const url = await gcpBucketUtils.generateV4ReadSignedUrl(String(file))
+    res.status(200).json({url: url})
+  } catch (error) {
+    console.error(error)
+  }
+})
+
 export default router

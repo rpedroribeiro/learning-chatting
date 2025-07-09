@@ -3,6 +3,8 @@ import { faFile } from '@fortawesome/free-solid-svg-icons'
 import '../styles/submission.css'
 import '../styles/file-system.css'
 import { useEffect, useState } from 'react'
+import fileSystemApi from '../api/fileSystemApi'
+import submissionApi from '../api/submissionApi'
 import useAuth from '../hooks/useAuth'
 import useClassroom from '../hooks/useClassroom'
 
@@ -13,15 +15,24 @@ interface submissionFileItemProps {
 const SubmissionFileItem = ({file}: submissionFileItemProps) => {
   const [fileName, setFileName] = useState<string>('')
   const { userId } = useAuth()
-  const { currClass } = useClassroom()
+  const { currClass, currAssignment } = useClassroom()
 
   useEffect(() => {
     const index = file.lastIndexOf('/')
     setFileName(file.substring(index + 1))
   }, [])
 
+  /**
+   * 
+   */
   const handleItemClick = async () => {
-    
+    const url = await submissionApi.getSignedUrlForFile(
+        userId,
+        currClass.id,
+        currAssignment.id,
+        file
+      )
+    url && window.open(url, '_blank')
   }
 
   return (

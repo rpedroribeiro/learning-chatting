@@ -1,15 +1,16 @@
 .classroom-page {
+  min-height: 100vh;
   margin: 0;
   padding: 0;
   display: flex;
   justify-content: flex-start;
-  align-items: flex-start;
+  align-items: stretch;
   background-color: var(--background);
   color: var(--textColor);
 }
 
 .classroom-grid-container {
-  height: 100vh;
+  min-height: 100vh;
   padding: 30px 70px;
   flex-grow: 1;
 }

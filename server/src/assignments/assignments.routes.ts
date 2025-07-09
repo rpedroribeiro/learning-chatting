@@ -71,18 +71,18 @@ router.get('/:userId/class/:classId/assignment/:assignmentId', authenticateToken
 
     const currUser = await authServices.findUserById(userId, ctx)
     if (currUser?.accountType === UserRole.Professor) {
-      const assignment = await assignmentServices.findAllSubmissionByAssignmentId(
+      const assignmentWithSubmissions = await assignmentServices.findAllSubmissionByAssignmentId(
         assignmentId,
         ctx  
       )
-      res.status(200).json({assignment: assignment})
+      res.status(200).json({assignmentWithSubmissions: assignmentWithSubmissions})
     } else {
-      const assignmentWithSubmission = await assignmentServices.findAssignmentById(
+      const assignmentWithSubmissions = await assignmentServices.findAssignmentById(
         userId,
         assignmentId,
         ctx  
       )
-      res.status(200).json({assignmentWithSubmission: assignmentWithSubmission})
+      res.status(200).json({assignmentWithSubmissions: assignmentWithSubmissions})
     }
   } catch (error) {
     console.error(error)

@@ -9,7 +9,7 @@ type createAssignmentResponse = {
 }
 
 type fetchAssignmentAndSubmissionResponse = {
-  assignmentWithSubmission: any
+  assignmentWithSubmissions: any
 }
 
 /**
@@ -104,7 +104,7 @@ const fetchStudentAssignmentAndSubmission = async (
         withCredentials: true 
       }
     )
-    return response.data.assignmentWithSubmission
+    return response.data.assignmentWithSubmissions
   } catch (error) {
     console.error(error)
     return null

@@ -57,7 +57,9 @@ const AssignmentItem = ({assignment, status}: assignmentItemProps) => {
       assignment.id
     )
     setCurrAssignment(fetchedAssignment)
-    accountType === UserRole.Student ? navigate(`/${userId}/classrooms/${currClass.id}/assignments/${fetchedAssignment.id}`) : []
+    accountType === UserRole.Student ? 
+    navigate(`/${userId}/classrooms/${currClass.id}/assignments/${fetchedAssignment.id}`) : 
+    navigate(`/${userId}/classrooms/${currClass.id}/assignments/submissions`)
   }
 
   return (

@@ -53,10 +53,10 @@ const AssignmentsDisplay = () => {
       </div>
       <hr style={{marginTop: '10px'}}/>
       <div className='assignments-list-container'>
-        {(assignments.length > 0 && accountType === UserRole.Student) ? 
+        {((assignments.length > 0) ? (accountType === UserRole.Student ? 
           <StudentAssignments assignments={assignments}/> : 
           <ProfessorAssignments assignments={assignments} />
-        }
+        ) : [])}
       </div>
     </div>
   )

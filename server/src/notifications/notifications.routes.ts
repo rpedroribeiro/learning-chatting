@@ -91,4 +91,41 @@ router.put('/:userId/class/:classId/notifications/:notificationId', authenticate
   }
 })
 
+/**
+ * This POST request takes creates an announcement and stores it as a notification
+ * only if the user making this request is a professor.
+ */
+router.post('/:userId/class/:classId/notifications/announcement', authenticateToken, async (req, res, next) => {
+  try {
+    const userId = req.params.userId
+    const classId = req.params.classId
+    const { announcementTitle, announcementDescription } = req.body
+
+    const notificationCreator = await authServices.findUserById(
+      userId, 
+      ctx
+    )
+     
+    if (!notificationCreator) {
+      res.status(400).json({message: "User does not exist"})
+      throw new Error('User does not exist')
+    }
+
+    if (notificationCreator.accountType !== UserRole.Professor) {
+      res.status(400).json({message: "User must be a professor to create an announcement"})
+      throw new Error('User must be a professor to create an announcement')
+    }
+
+    notificationsUtils.createNotificationAsProfessor(
+      userId,
+      classId,
+      NotificationType.AnnouncementPosted,
+      { announcementTitle, announcementDescription },
+      res
+    )
+  } catch (error) {
+    console.error(error)
+  }
+})
+
 export default router

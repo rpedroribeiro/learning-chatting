@@ -1,0 +1,21 @@
+.notifications-page {
+  min-height: 100vh;
+  padding: 30px 70px;
+  flex-grow: 1;
+}
+
+.notifications-title {
+  font-family: 'Freight Sans LF Pro', Arial, sans-serif;
+  font-weight: 900;
+  font-size: 40px;
+}
+
+.notifications-widget-container {
+  padding: 4vh 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.notification-widget {
+  border: 1px solid var(--textColor);
+}

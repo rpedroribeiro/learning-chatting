@@ -5,9 +5,10 @@ import useClassroom from '../hooks/useClassroom'
 import profilePic from '../assets/images/people-face-avatar-icon-cartoon-character-png.webp'
 import '../styles/sidebar.css'
 import '../styles/root.css'
+import { Link } from 'react-router-dom'
 
 interface navOptions {
-  [key: string]: IconDefinition;
+  [key: string]: [IconDefinition, string];
 }
 
 const Sidebar = () => {
@@ -16,9 +17,9 @@ const Sidebar = () => {
   const { isClassroom } = useClassroom()
 
   const nav: navOptions = {
-    "Notification": faBell,
-    "File System": faFolderOpen,
-    "Assignments": faBook,
+    "Notification": [faBell, "notifications"],
+    "File System": [faFolderOpen, "files"],
+    "Assignments": [faBook, "assignments"],
   }
 
   return (
@@ -45,14 +46,16 @@ const Sidebar = () => {
           )}
         </div>
       </div>
-      { !isClassroom ? 
+      {isClassroom ? 
         Object.entries(nav).map(([key, value]) => (
-          <div key={key} className='sidebar-nav-container'>
-            <div className='sidebar-nav-content'>
-              <FontAwesomeIcon style={{transform: 'scale(1.25)'}} icon={value} />
-              <span className={`sidebar-nav-content-text${isHovered ? ' hovered' : ''}`}>{key}</span>
+          <Link to={value[1]} style={{textDecoration: 'none', color: 'var(--textColor)'}}>
+            <div key={key} className='sidebar-nav-container'>
+              <div className='sidebar-nav-content'>
+                <FontAwesomeIcon style={{transform: 'scale(1.25)'}} icon={value[0]} />
+                <span className={`sidebar-nav-content-text${isHovered ? ' hovered' : ''}`}>{key}</span>
+              </div>
             </div>
-          </div>
+          </Link>
         )) : []}
     </div>
   )

@@ -2,13 +2,14 @@ import express from 'express'
 import { prisma } from '../context/context'
 import { authenticateToken } from '../auth/auth.jwt'
 import authServices from '../auth/auth.services'
-import { UserRole, FileType } from '@prisma/client'
+import { UserRole, FileType, NotificationType } from '@prisma/client'
 import fileSystemServices from './filesystem.services'
 import multer from 'multer'
 import path from 'path'
 import fs from 'fs'
 import fileSystemUtil from './filesystem.utils'
 import gcpBucketUtils from '../gcpbucket/gcpbucket.utils'
+import notificationsUtils from '../notifications/notifications.utils'
 
 const router = express.Router()
 const ctx = { prisma }
@@ -25,6 +26,7 @@ router.post('/:userId/class/:classId/filesystem', upload.single('file'), authent
   try {
     const { fileName, fileType, parentId } = JSON.parse(req.body.data)
     const userId = req.params.userId
+    const classId = req.params.classId
 
     const validUser = await authServices.findUserById(userId, ctx)
     if (validUser?.accountType === UserRole.Student) {
@@ -65,6 +67,14 @@ router.post('/:userId/class/:classId/filesystem', upload.single('file'), authent
       parentId,
       null,
       ctx
+    )
+
+    await notificationsUtils.createNotificationAsProfessor(
+      userId,
+      classId,
+      NotificationType,
+      newFileSystemItem,
+      res
     )
 
     res.status(200).json({fileSystemItem: newFileSystemItem})

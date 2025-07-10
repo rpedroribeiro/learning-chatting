@@ -4,10 +4,11 @@ import { authenticateToken } from '../auth/auth.jwt'
 import multer from 'multer'
 import submissionServices from './submission.services'
 import authServices from '../auth/auth.services'
-import { UserRole } from '@prisma/client'
+import { NotificationType, UserRole } from '@prisma/client'
 import gcpBucketUtils from '../gcpbucket/gcpbucket.utils'
 import submissionUtils from './submission.utils'
 import assignmentServices from '../assignments/assignments.services'
+import notificationsUtils from '../notifications/notifications.utils'
 
 const router = express.Router()
 const ctx = { prisma }
@@ -72,6 +73,7 @@ router.post('/:userId/class/:classId/assignment/:assignmentId/uploadfiles', uplo
       dbFilePath,
       ctx
     )
+
     res.status(200).json({submission: submission})
   } catch (error) {
     console.error(error)
@@ -135,6 +137,7 @@ router.put('/:userId/class/:classId/assignment/:assignmentId/submit', authentica
   try {
     const userId = req.params.userId
     const assignmentId = req.params.assignmentId
+    const classId = req.params.classId
 
     const currSubmission = await submissionServices.findSubmissionWithUserIdAndAssignmentId(
       userId,
@@ -157,6 +160,14 @@ router.put('/:userId/class/:classId/assignment/:assignmentId/submit', authentica
       userId,
       assignmentId,
       ctx
+    )
+
+    await notificationsUtils.createNotificationAsStudent(
+      userId,
+      classId,
+      NotificationType.StudentSubmission,
+      updatedSubmission,
+      res
     )
 
     res.status(200).json({submission: updatedSubmission})

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import '../styles/modal.css'
-import classesApi from '../api/classesApi'
-import useAuth from '../hooks/useAuth'
+import classesApi from '../../api/classesApi'
+import useAuth from '../../hooks/useAuth'
 
 interface createClassModalProps {
   setToggleCreateForm: React.Dispatch<React.SetStateAction<boolean>>

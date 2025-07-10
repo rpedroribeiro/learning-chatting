@@ -1,5 +1,4 @@
-import { useEffect } from "react"
-import useClassroom from "../hooks/useClassroom"
+import useClassroom from "../../hooks/useClassroom"
 import '../styles/submission.css'
 import SubmissionStudentItem from "./SubmissionStudentItem"
 

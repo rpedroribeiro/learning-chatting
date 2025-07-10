@@ -3,10 +3,10 @@ import { faFile } from '@fortawesome/free-solid-svg-icons'
 import '../styles/submission.css'
 import '../styles/file-system.css'
 import { useEffect, useState } from 'react'
-import submissionApi from '../api/submissionApi'
-import useAuth from '../hooks/useAuth'
-import useClassroom from '../hooks/useClassroom'
-import { UserRole } from '../utils/UserRole'
+import submissionApi from '../../api/submissionApi'
+import useAuth from '../../hooks/useAuth'
+import useClassroom from '../../hooks/useClassroom'
+import { UserRole } from '../../utils/UserRole'
 
 interface submissionFileItemProps {
   file: any;

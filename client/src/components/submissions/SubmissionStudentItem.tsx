@@ -3,7 +3,7 @@ import { faGraduationCap, faFolder, faClock} from '@fortawesome/free-solid-svg-i
 import '../styles/submission.css'
 import { useEffect, useState } from 'react'
 import SubmissionFileItem from './SubmissionFileItem'
-import { UserRole } from '../utils/UserRole'
+import { UserRole } from '../../utils/UserRole'
 
 type submissionStudentItemProps = {
   submission: any;

@@ -2,9 +2,9 @@ import { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowDown } from '@fortawesome/free-solid-svg-icons/faArrowDown';
 import '../styles/modal.css'
-import assignmentsApi from '../api/assignmentsApi';
-import useAuth from '../hooks/useAuth';
-import useClassroom from '../hooks/useClassroom';
+import assignmentsApi from '../../api/assignmentsApi';
+import useAuth from '../../hooks/useAuth';
+import useClassroom from '../../hooks/useClassroom';
 
 interface createAssignmentModalProps {
   setToggleCreateAssignment: React.Dispatch<React.SetStateAction<boolean>>;

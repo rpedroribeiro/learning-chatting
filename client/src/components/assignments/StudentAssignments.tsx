@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import '../styles/assignments.css'
 import AssignmentItem from './AssignmentItem'
-import { AssignmentStatus } from '../utils/AssignmentStatus'
+import { AssignmentStatus } from '../../utils/AssignmentStatus'
 
 interface studentAssignmentsProps {
   assignments: any

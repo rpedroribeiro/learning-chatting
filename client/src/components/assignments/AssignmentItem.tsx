@@ -1,12 +1,12 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClock, faClockRotateLeft } from '@fortawesome/free-solid-svg-icons'
-import { AssignmentStatus } from '../utils/AssignmentStatus'
-import useAuth from '../hooks/useAuth'
+import { AssignmentStatus } from '../../utils/AssignmentStatus'
+import useAuth from '../../hooks/useAuth'
 import '../styles/assignments.css'
-import { UserRole } from '../utils/UserRole'
+import { UserRole } from '../../utils/UserRole'
 import { useEffect, useState } from 'react'
-import assignmentsApi from '../api/assignmentsApi'
-import useClassroom from '../hooks/useClassroom'
+import assignmentsApi from '../../api/assignmentsApi'
+import useClassroom from '../../hooks/useClassroom'
 import { useNavigate } from 'react-router-dom'
 
 

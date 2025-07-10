@@ -14,8 +14,23 @@
   padding: 4vh 0;
   display: flex;
   flex-direction: column;
+  gap: 4vh;
 }
 
 .notification-widget {
+  padding: 2vh 2vw;
   border: 1px solid var(--textColor);
+  border-radius: 20px;
+}
+
+.notification-widget-title {
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.notification-widget-list {
+  margin-top: 3vh;
+  display: flex;
+  flex-direction: column;
+  gap: 2vh;
 }

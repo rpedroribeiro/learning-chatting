@@ -17,14 +17,24 @@ const ctx = { prisma }
  */
 router.get('/:userId/class/:classId/notifications', authenticateToken, async (req, res, next) => {
   try {
-    const { notificationType } = req.body
+    const { notificationType } = req.query
     const userId = req.params.userId
     const classId = req.params.classId
+
+    if (
+      typeof notificationType !== 'string' ||
+      !Object.values(NotificationType).includes(notificationType as NotificationType)
+    ) {
+      res.status(400).json({ message: 'Invalid notification type' })
+      throw new Error('Invalid notification type')
+    }
+
+    const notificationTypeEnum = notificationType as NotificationType
 
     const notifications = await notificationServices.getAllNotificationsForCategoryForUser(
       userId,
       classId,
-      notificationType,
+      notificationTypeEnum,
       ctx
     )
 

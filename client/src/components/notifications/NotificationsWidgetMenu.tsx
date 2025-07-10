@@ -2,6 +2,7 @@ import useAuth from '../../hooks/useAuth'
 import '../../styles/notifications.css'
 import { NotificationType } from '../../utils/NotificationType'
 import { UserRole } from '../../utils/UserRole'
+import NotificationWidget from './NotificationWidget'
 
 const NotificationsWidgetMenu = () => {
   const { accountType } = useAuth()
@@ -26,10 +27,10 @@ const NotificationsWidgetMenu = () => {
       <hr style={{marginTop: '10px'}}/>
       <div className='notifications-widget-container'>
         {accountType === UserRole.Student ?
-          (studentWidgets.map((item: any, key: any) => (
-            <></>
-          ))) : (professorWidgets.map((item: any, key: any) => (
-            <></>
+          (studentWidgets.map((widget: any, key: any) => (
+            <NotificationWidget key={key} widgetName={widget[0]} notificationType={widget[1]}/>
+          ))) : (professorWidgets.map((widget: any, key: any) => (
+            <NotificationWidget key={key} widgetName={widget[0]} notificationType={widget[1]}/>
           )))
         }
       </div>

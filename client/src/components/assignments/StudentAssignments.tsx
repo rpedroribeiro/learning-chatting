@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import '../styles/assignments.css'
+import '../../styles/assignments.css'
 import AssignmentItem from './AssignmentItem'
 import { AssignmentStatus } from '../../utils/AssignmentStatus'
 

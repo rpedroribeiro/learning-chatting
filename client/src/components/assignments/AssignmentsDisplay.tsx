@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import '../styles/assignments.css'
+import '../../styles/assignments.css'
 import assignmentsApi from '../../api/assignmentsApi'
 import useAuth from '../../hooks/useAuth'
 import useClassroom from '../../hooks/useClassroom'

@@ -6,7 +6,7 @@ import useClassroom from '../../hooks/useClassroom'
 import fileSystemApi from '../../api/fileSystemApi'
 import useAuth from '../../hooks/useAuth'
 import FileSystemItem from './FileSystemItem'
-import '../styles/file-system.css'
+import '../../styles/file-system.css'
 
 const FilesDisplay = () => {
   const [toggleAddItemForm, setToggleAddItemForm] = useState<boolean>(false)

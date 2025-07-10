@@ -1,5 +1,5 @@
 import useClassroom from "../../hooks/useClassroom"
-import '../styles/submission.css'
+import '../../styles/submission.css'
 import SubmissionStudentItem from "./SubmissionStudentItem"
 
 const SubmissionList = () => {

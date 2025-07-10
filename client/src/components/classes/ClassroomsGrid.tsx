@@ -6,7 +6,7 @@ import useClassroom from '../../hooks/useClassroom'
 import classesUtils from '../../utils/classesUtils'
 import CreateClassModal from './CreateClassModal'
 import AddClassModal from './AddClassModal'
-import '../styles/classrooms.css'
+import '../../styles/classrooms.css'
 
 const ClassroomsGrid = () => {
   const [classes, setClasses] = useState<any[]>([])

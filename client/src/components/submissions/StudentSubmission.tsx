@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import useClassroom from "../../hooks/useClassroom"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faArrowUpFromBracket, faClock, faCircleCheck } from "@fortawesome/free-solid-svg-icons"
-import '../styles/submission.css'
+import '../../styles/submission.css'
 import SubmissionFileItem from "./SubmissionFileItem"
 import submissionApi from "../../api/submissionApi"
 import useAuth from "../../hooks/useAuth"

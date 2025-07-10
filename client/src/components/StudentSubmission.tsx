@@ -1,21 +1,27 @@
 import { useEffect, useState } from "react"
 import useClassroom from "../hooks/useClassroom"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faArrowUpFromBracket, faClock } from "@fortawesome/free-solid-svg-icons"
+import { faArrowUpFromBracket, faClock, faCircleCheck } from "@fortawesome/free-solid-svg-icons"
 import '../styles/submission.css'
 import SubmissionFileItem from "./SubmissionFileItem"
+import submissionApi from "../api/submissionApi"
+import useAuth from "../hooks/useAuth"
+import assignmentsApi from "../api/assignmentsApi"
 
 const StudentSubmission = () => {
   const [dueDate, setDueDate] = useState<any>()
-  const [fileNames, setFileNames] = useState<string[]>([])
   const [clockColor, setClockColor] = useState<any>()
-  const [uploadedFiles, setUploadedFiles] = useState<string[]>([])
-  const { currAssignment } = useClassroom()
+  const { userId } = useAuth()
+  const { currAssignment, currClass, setCurrAssignment } = useClassroom()
 
   useEffect(() => {
-    // Due Date formatting
     const date = new Date(currAssignment.dueDate)
-    date < new Date() ? setClockColor("rgb(217, 61, 61)") : setClockColor("#198E26")
+    if (currAssignment.submissions[0].submitted) {
+      new Date(currAssignment.submissions[0].submissionTime) > date ? 
+      setClockColor("rgb(217, 61, 61)") : setClockColor("#198E26")
+    } else {
+      new Date() > date ? setClockColor("rgb(217, 61, 61)") : setClockColor("rgb(255, 142, 28)")
+    }
     const formattedDate = date.toLocaleDateString('en-US', {
       weekday: 'short',
       year: 'numeric',
@@ -25,15 +31,40 @@ const StudentSubmission = () => {
       minute: '2-digit'
     })
     setDueDate(formattedDate)
-
-    // Files formatting
-    setFileNames([])
-    currAssignment.files.forEach((path: any) => {
-      const nameCutoff = path.lastIndexOf('/')
-      const fileName = path.substring(nameCutoff + 1)
-      setFileNames(prev => [...prev, fileName])
-    })
   }, [])
+
+  const handleUploadFile = async (event: any) => {
+    const file = event.target.files?.[0]
+    await submissionApi.uploadSubmissionFile(
+      userId,
+      currClass.id,
+      currAssignment.id,
+      file
+    )
+
+    const updatedAssignment = await assignmentsApi.fetchStudentAssignmentAndSubmission(
+      userId,
+      currClass.id,
+      currAssignment.id
+    )
+
+    setCurrAssignment(updatedAssignment)
+  }
+
+  const handleSubmit = async () => {
+    await submissionApi.submitAssignment(
+      userId,
+      currClass.id,
+      currAssignment.id
+    )
+    const updatedAssignment = await assignmentsApi.fetchStudentAssignmentAndSubmission(
+      userId,
+      currClass.id,
+      currAssignment.id
+    )
+
+    setCurrAssignment(updatedAssignment)
+  }
 
   return (
     <div className="submission-page">
@@ -49,26 +80,40 @@ const StudentSubmission = () => {
         <div className="submission-information-container-files-list">
           <h3>Files Attached</h3>
           <hr style={{marginBottom: '20px'}}/>
-          {fileNames.length > 0 ? fileNames.map((item: any, key: any) => (
-            <SubmissionFileItem key={key} filePath={item}/>
+          {currAssignment.files.length > 0 ? currAssignment.files.map((file: any, key: any) => (
+            <SubmissionFileItem key={key} file={file}/>
           )) : <span>No Supplemental Files Uploaded</span>}
         </div>
         <div className="submission-information-container-description">
           <h3>Description</h3>
           <p>{currAssignment.description}</p>
         </div>
-        <button className="submission-information-container-upload-button">
+        <div>
+          <input 
+            type='file' id='upload-file-btn-submission' 
+            style={{display: 'none'}} 
+            onChange={handleUploadFile}
+          />
+        </div>
+        {!currAssignment.submissions[0].submitted ? <label htmlFor='upload-file-btn-submission' className="submission-information-container-upload-button">
           <FontAwesomeIcon icon={faArrowUpFromBracket}/>
           Upload Files
-        </button>
+        </label> :
+        <div className="submission-information-container-upload-button">
+          <FontAwesomeIcon color="#198E26" icon={faCircleCheck} />
+          Assignment Submitted
+        </div>
+        }
         <div className="submission-information-container-files-list">
           <h3>Uploaded Files</h3>
           <hr style={{marginBottom: '20px'}}/>
-          {uploadedFiles.length > 0 ? fileNames.map((item: any, key: any) => (
-            <SubmissionFileItem key={key} filePath={item}/>
+          {currAssignment.submissions[0].uploadedFiles.length > 0 ? currAssignment.submissions[0].uploadedFiles.map((file: any, key: any) => (
+            <SubmissionFileItem key={key} file={file}/>
           )) : <span>No Files Uploaded</span>}
         </div>
-        <button className="submission-information-container-submit-button">Submit Assignment</button>
+        {!currAssignment.submissions[0].submitted && 
+          <button onClick={handleSubmit} className="submission-information-container-submit-button">Submit Assignment</button>
+        }
       </div>
     </div>
   )

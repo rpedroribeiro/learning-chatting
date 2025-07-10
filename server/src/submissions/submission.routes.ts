@@ -19,7 +19,7 @@ const upload = multer({ dest: 'uploads/submissions'})
  * rather gets the files ready for when the assignment is submitted. This request cannot be
  * made once the submission is submitted.
  */
-router.post('/:userId/class/:classId/assignment/:assignmentId/uploadfiles', upload.single('uploadedFiles'), authenticateToken, async (req, res, next) => {
+router.post('/:userId/class/:classId/assignment/:assignmentId/uploadfiles', upload.single('file'), authenticateToken, async (req, res, next) => {
   try {
     const userId = req.params.userId
     const assignmentId = req.params.assignmentId
@@ -160,6 +160,20 @@ router.put('/:userId/class/:classId/assignment/:assignmentId/submit', authentica
     )
 
     res.status(200).json({submission: updatedSubmission})
+  } catch (error) {
+    console.error(error)
+  }
+})
+
+/**
+ * This GET request uses a GCP bucket util funciton to get the url needed
+ * to access the file in the client side using the file's path.
+ */
+router.get('/:userId/class/:classId/assignment/:assignmentId/url', authenticateToken, async (req, res, next) => {
+  try {
+    const { file } = req.query
+    const url = await gcpBucketUtils.generateV4ReadSignedUrl(String(file))
+    res.status(200).json({url: url})
   } catch (error) {
     console.error(error)
   }

@@ -18,8 +18,9 @@ const uploadSubmissionFiles = async (
   studentLastName: string
 ) => {
   const localFilePath = file.path
-  const finalDestination = `assignments/${assignmentName}/${studentFirstName}_${studentLastName}/${localFilePath}`
-  gcpBucketUtils.uploadFileToFileSystem(finalDestination, localFilePath)
+  const fileName = file.originalname
+  const finalDestination = `assignments/${assignmentName}/submissions/${studentFirstName}_${studentLastName}/${fileName}`
+  await gcpBucketUtils.uploadFileToFileSystem(finalDestination, localFilePath)
   fs.unlink(localFilePath, (err) => { if (err) { console.error('Failed to delete file', err) } })
   return finalDestination
 }

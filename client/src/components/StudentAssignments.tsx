@@ -34,7 +34,7 @@ const StudentAssignments = ({assignments}: studentAssignmentsProps) => {
   return (
     <div className='assignments-list-student'>
       <div className='assignments-list-section'>
-        <h1>Assigned</h1>
+        <h1 className='assignments-list-section-title'>Assigned</h1>
         <div>
           {dueAssignments.length > 0 ?dueAssignments.map((item: any, key: any) => (
             <AssignmentItem key={key} assignment={item} status={AssignmentStatus.Assigned}/>
@@ -42,7 +42,7 @@ const StudentAssignments = ({assignments}: studentAssignmentsProps) => {
         </div>
       </div>
       <div className='assignments-list-section'>
-        <h1>Overdue</h1>
+        <h1 className='assignments-list-section-title'>Overdue</h1>
         <div>
           {overdueAssignments.length > 0 ? overdueAssignments.map((item: any, key: any) => (
             <AssignmentItem key={key} assignment={item} status={AssignmentStatus.Overdue}/>
@@ -50,11 +50,14 @@ const StudentAssignments = ({assignments}: studentAssignmentsProps) => {
         </div>
       </div>
       <div className='assignments-list-section'>
-        <h1>Submitted</h1>
+        <h1 className='assignments-list-section-title'>Submited</h1>
         <div>
           {submittedAssignments.length > 0 ? submittedAssignments.map((item: any, key: any) => (
-            <AssignmentItem key={key} assignment={item} status={AssignmentStatus.Submitted}/>
-          )) : <span>No assignments have been submitted</span>}
+            <AssignmentItem key={key} assignment={item} status={
+              item.submissions[0].submissionTime > item.dueDate ? AssignmentStatus.Overdue : AssignmentStatus.Submitted
+            }
+            />)) : <span>No assignments have been submitted</span>
+          }
         </div>
       </div>
     </div>

@@ -69,6 +69,7 @@
   font-size: 25px;
   cursor: pointer;
   transition: font-size 0.3s ease;
+  margin-top: -2vh;
 }
 
 .submission-information-container-upload-button:hover {
@@ -85,4 +86,5 @@
   border: 1px solid var(--textColor);
   border-radius: 10px;
   background-color: var(--button);
+  cursor: pointer;
 }

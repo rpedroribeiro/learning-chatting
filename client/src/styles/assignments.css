@@ -32,7 +32,8 @@
   gap: 2vh;
 }
 
-.assignments-list-section h1 {
+.assignments-list-section-title {
+  font-size: 28px;
   font-weight: 600;
 }
 

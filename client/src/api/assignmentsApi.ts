@@ -85,6 +85,13 @@ const createAssignment = async (
   }
 }
 
+/**
+ * 
+ * @param userId 
+ * @param classId 
+ * @param assignmentId 
+ * @returns 
+ */
 const fetchStudentAssignmentAndSubmission = async (
   userId: string,
   classId: string,

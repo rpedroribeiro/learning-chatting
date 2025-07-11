@@ -34,7 +34,7 @@ const NotificationWidget = ({widgetName, notificationType}: notificationWidgetPr
       <h1 className="notification-widget-title">{widgetName}</h1>
       <div className="notification-widget-list">
         {notificationForWidget.length > 0 ? notificationForWidget.map((notificationItem: any, key: any) => (
-          <NotificationItem notification={notificationItem} notificationType={notificationType} />
+          <NotificationItem key={key} notification={notificationItem} notificationType={notificationType} />
         )): <span>No notifications for this category</span>}
       </div>
     </div>

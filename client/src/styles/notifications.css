@@ -18,13 +18,20 @@
 }
 
 .notification-widget {
+  max-height: 60vh;
   padding: 3vh 2vw;
   border: 1px solid var(--textColor);
   border-radius: 20px;
+  overflow: hidden;
+  transition: height 0.6s ease;
+}
+
+.notification-widget:hover {
+  max-height: 120vh;
 }
 
 .notification-widget-title {
-  font-size: 30px;
+  font-size: 25px;
   font-weight: bold;
 }
 
@@ -36,15 +43,20 @@
 }
 
 .notification-widget-item {
-  padding: 4vh 2vw;
+  padding: 3vh 2vw;
   display: flex;
   justify-content: space-between;
   align-items: center;
   background-color: #31363F;
   border: 1px solid var(--textColor);
   border-radius: 20px;
+  transition: background-color 0.3s ease;
+}
+
+.notification-widget-item:hover {
+  background-color: #292e35;
 }
 
 .notification-widget-item-text {
-  font-size: 18px;
+  font-size: 16px;
 }

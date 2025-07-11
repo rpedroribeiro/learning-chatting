@@ -48,11 +48,6 @@ const FilesDisplay = () => {
     setLoading(false)
   }
 
-  /**
-   * Fetches all the children from the root file of the class on render, sets
-   * them to a state if successful. If the fetch from the fileSystemApi was 
-   * not successful, the error message is also stored in a state.
-   */
   useEffect(() => {
     if (currFileItem === null) { fetchAllChildren(currClass.rootFile.id) } else { fetchAllChildren(currFileItem.id) } 
   }, [])

@@ -19,7 +19,7 @@ const AssignmentItem = ({assignment, status}: assignmentItemProps) => {
   const [icon, setIcon] = useState<any>()
   const [color, setColor] = useState<any>()
   const { userId, accountType } = useAuth()
-  const { currClass, setCurrAssignment } = useClassroom()
+  const { currClass, setCurrAssignment, currAssignment } = useClassroom()
   const navigate = useNavigate()
 
   /**
@@ -59,7 +59,7 @@ const AssignmentItem = ({assignment, status}: assignmentItemProps) => {
     setCurrAssignment(fetchedAssignment)
     accountType === UserRole.Student ? 
     navigate(`/${userId}/classrooms/${currClass.id}/assignments/${fetchedAssignment.id}`) : 
-    navigate(`/${userId}/classrooms/${currClass.id}/assignments/submissions`)
+    navigate(`/${userId}/classrooms/${currClass.id}/assignments/${currAssignment.id}/submissions`)
   }
 
   return (

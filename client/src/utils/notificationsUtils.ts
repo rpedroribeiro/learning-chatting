@@ -6,7 +6,7 @@ import { NotificationType } from "./NotificationType"
  * 
  * @param notificationItem - The notification item that will be formatted.
  * @param notificationType - The category of the notification.
- * @returns 
+ * @returns - The notification message and the time since posted.
  */
 const formatNotificationItem = (
   notificationItem: any,
@@ -25,8 +25,8 @@ const formatNotificationItem = (
     case NotificationType.FileSystemItemCreated:
       return [`${notificationItem.data.name} was uploaded`, formattedTimeDifference]
     case NotificationType.StudentSubmission:
-      return [`${notificationItem.data.student.firstName} ${notificationItem.data.student.firstName} 
-      submitted assignment ${notificationItem.data.assignment.name}`, formattedTimeDifference]
+      return [`${notificationItem.data.submissions[0].student.firstName} ${notificationItem.data.submissions[0].student.lastName} 
+      submitted the following assignment:  ${notificationItem.data.name}`, formattedTimeDifference]
   }
 }
 
@@ -45,8 +45,38 @@ const formatTimeDifference = (differenceInSeconds: number) => {
   return Math.round(differenceInSeconds / 86400) + 'd'
 }
 
+/**
+ * This function handles the navigation to all different types of notifications when
+ * clicked.
+ * 
+ * @param notificationType - The category used to determine what url to use.
+ * @param userId - The id of the user logged in.
+ * @param classId - The class the notification id belongs to.
+ * @param assignmentId - The assignment id the notification belongs to, optional.
+ * @returns The url to be used to navigate.
+ */
+const navigateToNotification = (
+  notificationType: NotificationType,
+  userId: string,
+  classId: string,
+  assignmentId: string | null
+): string => {
+  switch (notificationType) {
+    case NotificationType.AnnouncementPosted:
+      // TODO: Make the annoucement section, possible new page or modal popup
+      return ""
+    case NotificationType.AssignmentPosted:
+      return `/${userId}/classrooms/${classId}/assignments/${assignmentId}`
+    case NotificationType.FileSystemItemCreated:
+      return `/${userId}/classrooms/${classId}/files`
+    case NotificationType.StudentSubmission:
+      return `/${userId}/classrooms/${classId}/assignments/${assignmentId}/submissions`
+  }
+}
+
 const notificationsUtils = {
-  formatNotificationItem
+  formatNotificationItem,
+  navigateToNotification,
 }
 
 export default notificationsUtils

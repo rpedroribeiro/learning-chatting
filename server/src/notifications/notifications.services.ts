@@ -86,7 +86,8 @@ const markNotificationAsRead = async (
         id: notificationId
       },
       data: {
-        read: true
+        read: true,
+        readAt: new Date()
       }
     })
   } catch (error) {

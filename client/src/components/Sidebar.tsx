@@ -5,21 +5,25 @@ import useClassroom from '../hooks/useClassroom'
 import profilePic from '../assets/images/people-face-avatar-icon-cartoon-character-png.webp'
 import '../styles/sidebar.css'
 import '../styles/root.css'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 interface navOptions {
   [key: string]: [IconDefinition, string];
 }
 
 const Sidebar = () => {
-
   const [isHovered, setIsHovered] = useState(false)
-  const { isClassroom } = useClassroom()
+  const { isClassroom, setCurrFileItem } = useClassroom()
+  const navigate = useNavigate()
 
   const nav: navOptions = {
-    "Notification": [faBell, "notifications"],
+    "Notifications": [faBell, "notifications"],
     "File System": [faFolderOpen, "files"],
     "Assignments": [faBook, "assignments"],
+  }
+
+  const handleLinkClick = (key: string) => {
+    key === "File System" && setCurrFileItem(null)
   }
 
   return (
@@ -48,7 +52,15 @@ const Sidebar = () => {
       </div>
       {isClassroom ? 
         Object.entries(nav).map(([key, value]) => (
-          <Link to={value[1]} style={{textDecoration: 'none', color: 'var(--textColor)'}}>
+          <Link 
+            to={value[1]} 
+            style={{textDecoration: 'none', color: 'var(--textColor)'}}
+            onClick={event => {
+              event.preventDefault()
+              handleLinkClick(key)
+              navigate(value[1])
+            }}
+          >
             <div key={key} className='sidebar-nav-container'>
               <div className='sidebar-nav-content'>
                 <FontAwesomeIcon style={{transform: 'scale(1.25)'}} icon={value[0]} />

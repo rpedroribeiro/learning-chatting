@@ -10,7 +10,7 @@ import '../../styles/file-system.css'
 
 const FilesDisplay = () => {
   const [toggleAddItemForm, setToggleAddItemForm] = useState<boolean>(false)
-  const [currItemChildren, setCurrItemChildren] = useState<any>()
+  const [currItemChildren, setCurrItemChildren] = useState<any>([])
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(true)
   const { userId } = useAuth()
@@ -54,11 +54,15 @@ const FilesDisplay = () => {
    * not successful, the error message is also stored in a state.
    */
   useEffect(() => {
-    fetchAllChildren(currClass.rootFile.id)
+    if (currFileItem === null) { fetchAllChildren(currClass.rootFile.id) } else { fetchAllChildren(currFileItem.id) } 
   }, [])
 
+  useEffect(() => {
+    fetchAllChildren(currClass.rootFile.id)
+  }, [currFileItem === null])
+
   return (
-    (!loading && (
+    ((!loading && currFileItem !== null && currItemChildren.length > 0) && (
       <div className="file-system-grid">
         {toggleAddItemForm ? <FileItemModal setToggleAddItemForm={setToggleAddItemForm} setCurrItemChildren={setCurrItemChildren} /> : []}
         <div style={{display: 'flex', justifyContent: 'space-between'}}>

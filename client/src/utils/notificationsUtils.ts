@@ -1,5 +1,29 @@
 import { NotificationType } from "./NotificationType"
 
+type WidgetInfo = {
+  name: string;
+  type: NotificationType;
+  weight: number;
+}
+
+const studentWidgets: WidgetInfo[] = [
+  { name: "File System Updates", type: NotificationType.FileSystemItemCreated, weight: 1 },
+  { name: "Assignments", type: NotificationType.AssignmentPosted, weight: 2 },
+  { name: "Announcements", type: NotificationType.AnnouncementPosted, weight: 3 }
+]
+
+const professorWidgets: WidgetInfo[] = [
+  { name: "Submissions", type: NotificationType.StudentSubmission, weight: 1}
+]
+
+type scoreArray = {
+  unreadCount: number,
+  unreadHours: number
+}
+
+const alpha = 2
+const beta = 1
+
 /**
  * This function takes in the notification category and the notification item and
  * formats the notification message and the time since it was posted.
@@ -72,6 +96,63 @@ const navigateToNotification = (
     case NotificationType.StudentSubmission:
       return `/${userId}/classrooms/${classId}/assignments/${assignmentId}/submissions`
   }
+}
+
+
+/**
+ * 
+ * @param notifications 
+ * @returns 
+ */
+const sortStudentWidgets = (
+  notifications: any
+) => {
+  let announcementNotifications: scoreArray = { unreadCount: 0, unreadHours: 0 }
+  let assignmentNotifications: scoreArray = { unreadCount: 0, unreadHours: 0 }
+  let fileSystemNotifications: scoreArray = { unreadCount: 0, unreadHours: 0 }
+  for (const notification of notifications) {
+    switch (notification.type) {
+      case NotificationType.AnnouncementPosted:
+        if (!notification.read) {
+          announcementNotifications.unreadCount++
+          announcementNotifications.unreadHours += Math.round(
+            new Date(notification.createdAt).getTime() / 3600000
+          )
+        }
+        break
+      case NotificationType.AssignmentPosted:
+        if (!notification.read) {
+          assignmentNotifications.unreadCount++
+          assignmentNotifications.unreadHours += Math.round(
+            new Date(notification.createdAt).getTime() / 3600000
+          )
+        }
+        break
+      case NotificationType.FileSystemItemCreated:
+        if (!notification.read) {
+          fileSystemNotifications.unreadCount++
+          fileSystemNotifications.unreadHours += Math.round(
+            new Date(notification.createdAt).getTime() / 3600000
+          )
+        }
+        break
+    }
+  }
+
+  return new Map<NotificationType, scoreArray>([
+    [NotificationType.AnnouncementPosted, { 
+      unreadCount: announcementNotifications.unreadCount, 
+      unreadHours:announcementNotifications.unreadHours }
+    ],
+    [NotificationType.AssignmentPosted, {
+      unreadCount: assignmentNotifications.unreadCount,
+      unreadHours: assignmentNotifications.unreadHours
+    }],
+    [NotificationType.FileSystemItemCreated, { 
+      unreadCount: fileSystemNotifications.unreadCount,
+      unreadHours: fileSystemNotifications.unreadHours 
+    }],
+  ])
 }
 
 const notificationsUtils = {

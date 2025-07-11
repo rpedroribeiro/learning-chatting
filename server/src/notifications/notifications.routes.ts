@@ -3,7 +3,6 @@ import { prisma } from '../context/context'
 import { authenticateToken } from '../auth/auth.jwt'
 import authServices from '../auth/auth.services'
 import { NotificationType, UserRole } from '@prisma/client'
-import classService from '../classes/classes.services'
 import notificationServices from './notifications.services'
 import notificationsUtils from './notifications.utils'
 

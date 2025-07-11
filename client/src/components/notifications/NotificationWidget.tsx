@@ -17,7 +17,7 @@ const NotificationWidget = ({widgetName, notificationType}: notificationWidgetPr
   const { currClass } = useClassroom()
 
   const fetchNotifications = async () => {
-    const notifications = await notificationsApi.fetchNotificationsPerCategoryForUser(
+    const notifications = await notificationsApi.fetchNotifucations(
       userId,
       currClass.id,
       notificationType

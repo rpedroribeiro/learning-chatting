@@ -126,6 +126,43 @@ const deleteSubmissionFile = async (
 }
 
 /**
+ * This functions fetches all the assignment and submission data needed
+ * to use in the metadata section of a notification.
+ *  
+ * @param studentId - The id of the stuent submitting the assignment.
+ * @param assignmentId - The id of the assignment needed.
+ * @param ctx - The prisma context that this function is being used in.
+ * @returns All the meta data necessary.
+ */
+const getNotificationSubmissionData = async (
+  studentId: string,
+  assignmentId: string,
+  ctx: Context
+) => {
+  return await ctx.prisma.assignment.findUnique({
+    where: {
+      id: assignmentId,
+    },
+    include: {
+      submissions: {
+        where: {
+          studentId: studentId
+        },
+        include: {
+          student: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true
+            }
+          }
+        }
+      }
+    }
+  })
+}
+
+/**
  * This function queries the submission object with the student id and 
  * the assignment id provided and updates the submitted attribute to be
  * true and record the time of the submission. Returns the updated
@@ -160,7 +197,8 @@ const submissionServices = {
   uploadSubmissionFile,
   deleteSubmissionFile,
   findSubmissionWithUserIdAndAssignmentId,
-  updateSubmissionStatus
+  updateSubmissionStatus,
+  getNotificationSubmissionData
 }
 
 export default submissionServices

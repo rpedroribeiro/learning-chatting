@@ -32,7 +32,7 @@ const AppRoutes = () => (
     >
       <Route path='files' element={<FilesDisplay />}/>
       <Route path='assignments' element={<AssignmentsDisplay />}/>
-      <Route path='assignments/submissions' element={<SubmissionList />}/>
+      <Route path='assignments/:assignmentId/submissions' element={<SubmissionList />}/>
       <Route path='assignments/:assignmentId' element={<StudentSubmission />} />
       <Route path='notifications' element={<NotificationsWidgetMenu />} />
     </Route>

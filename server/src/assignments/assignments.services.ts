@@ -98,7 +98,7 @@ const findAllSubmissionByAssignmentId = async (
     where: {
       id: assignmentId
     },
-     select: {
+    include: {
       submissions: {
         include: {
           student: {

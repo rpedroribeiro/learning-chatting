@@ -6,6 +6,7 @@ import useClassroom from '../hooks/useClassroom'
 import CreateAssignmentModal from './CreateAssignmentModal'
 import { UserRole } from '../utils/UserRole'
 import StudentAssignments from './StudentAssignments'
+import ProfessorAssignments from './ProfessorAssignments'
 
 const AssignmentsDisplay = () => {
   const [assignments, setAssignments] = useState<any>([])
@@ -52,7 +53,10 @@ const AssignmentsDisplay = () => {
       </div>
       <hr style={{marginTop: '10px'}}/>
       <div className='assignments-list-container'>
-        {(assignments.length > 0 && accountType === UserRole.Student) ? <StudentAssignments assignments={assignments}/> : []}
+        {((assignments.length > 0) ? (accountType === UserRole.Student ? 
+          <StudentAssignments assignments={assignments}/> : 
+          <ProfessorAssignments assignments={assignments} />
+        ) : [])}
       </div>
     </div>
   )

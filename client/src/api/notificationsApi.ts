@@ -20,7 +20,7 @@ type readNotificationResponse = {
  * @param classId - The class these notifications belong to.
  * @param notificationType - The category these notifications fall into.
  */
-const fetchNotifucations = async (
+const fetchNotifications = async (
   userId: string,
   classId: string,
   notificationType: NotificationType | null
@@ -79,7 +79,7 @@ const readNotification = async (
 }
 
 const notificationsApi = {
-  fetchNotifucations,
+  fetchNotifications,
   readNotification
 }
 

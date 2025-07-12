@@ -158,6 +158,24 @@ const sortStudentWidgets = (
 }
 
 /**
+ * This function gets the total notification count for each one of notification
+ * categories, used as a secondary sorting method.
+ * 
+ * @param notifications - All notifications for a user.
+ * @returns A map with the counts for each notification type.
+ */
+const getTotalNotificationCounts = (notifications: any[]): Map<NotificationType, number> => {
+  const counts = new Map<NotificationType, number>()
+  for (const notification of notifications) {
+    counts.set(
+      notification.type,
+      (counts.get(notification.type) || 0) + 1
+    )
+  }
+  return counts
+}
+
+/**
  * This function takes in all the data saved into the map and sorts the
  * widgets, it then returns the widget name and type.
  * @param unreadData - The data stored in the map from all the fetched
@@ -167,7 +185,8 @@ const sortStudentWidgets = (
  */
 const sortWidgetsByScore = (
   unreadData: Map<NotificationType, scoreArray>,
-  widgets: WidgetInfo[]
+  widgets: WidgetInfo[],
+  totalCounts: Map<NotificationType, number>
 ): [string, NotificationType][] => {
   return widgets
     .map(widget => {
@@ -176,17 +195,28 @@ const sortWidgetsByScore = (
         widget.weight *
         (1 + alpha * stats.unreadCount) *
         (1 + beta * stats.unreadHours)
-      return { widget, score }
+      return { widget, score, stats }
     })
-    .sort((a, b) => b.score - a.score)
+    .sort((a, b) => {
+      const aNoUnread = a.score === a.widget.weight
+      const bNoUnread = b.score === b.widget.weight
+      if (aNoUnread && bNoUnread) {
+        const aTotal = totalCounts.get(a.widget.type) || 0
+        const bTotal = totalCounts.get(b.widget.type) || 0
+        return bTotal - aTotal;
+      }
+      return b.score - a.score
+    })
     .map(({ widget }) => [widget.name, widget.type] as [string, NotificationType])
 }
 
 const fetchedOrderStudentWidgets = (notifications: any) => {
   const notificationsData: Map<NotificationType, scoreArray> = sortStudentWidgets(notifications)
+  const totalCounts = getTotalNotificationCounts(notifications)
   return sortWidgetsByScore(
     notificationsData,
-    studentWidgets
+    studentWidgets,
+    totalCounts
   )
 }
 

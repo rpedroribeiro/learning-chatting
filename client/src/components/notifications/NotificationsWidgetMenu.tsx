@@ -1,21 +1,32 @@
+import { useEffect, useState } from 'react'
 import useAuth from '../../hooks/useAuth'
 import '../../styles/notifications.css'
-import { NotificationType } from '../../utils/NotificationType'
+import notificationsUtils from '../../utils/notificationsUtils'
 import { UserRole } from '../../utils/UserRole'
 import NotificationWidget from './NotificationWidget'
+import notificationsApi from '../../api/notificationsApi'
+import useClassroom from '../../hooks/useClassroom'
 
 const NotificationsWidgetMenu = () => {
-  const { accountType } = useAuth()
+  const [sortedWidgets, setSortedWidgets] = useState<any[]>([])
+  const { accountType, userId } = useAuth()
+  const { currClass } = useClassroom()
 
-  const studentWidgets = [
-    ["File System Updates", NotificationType.FileSystemItemCreated],
-    ["Assignments", NotificationType.AssignmentPosted],
-    ["Annoucements", NotificationType.AnnouncementPosted]
-  ]
+  const sortNotificationWidgets = async () => {
+    const userNotifications = await notificationsApi.fetchNotifications(
+      userId,
+      currClass.id,
+      null
+    )
+    if (accountType === UserRole.Student) {
+      const widgetsInfo = notificationsUtils.fetchedOrderStudentWidgets(userNotifications)
+      setSortedWidgets(widgetsInfo)
+    }
+  }
 
-  const professorWidgets = [
-    ["Submissions", NotificationType.StudentSubmission]
-  ]
+  useEffect(() => {
+    sortNotificationWidgets()
+  }, [])
 
   return (
     <div className='notifications-page'>
@@ -26,10 +37,8 @@ const NotificationsWidgetMenu = () => {
       </div>
       <hr style={{marginTop: '10px'}}/>
       <div className='notifications-widget-container'>
-        {accountType === UserRole.Student ?
-          (studentWidgets.map((widget: any, key: any) => (
-            <NotificationWidget key={key} widgetName={widget[0]} notificationType={widget[1]}/>
-          ))) : (professorWidgets.map((widget: any, key: any) => (
+        {sortedWidgets.length > 0 &&
+          (sortedWidgets.map((widget: any, key: any) => (
             <NotificationWidget key={key} widgetName={widget[0]} notificationType={widget[1]}/>
           )))
         }

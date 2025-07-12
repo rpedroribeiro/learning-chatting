@@ -17,7 +17,7 @@ const NotificationWidget = ({widgetName, notificationType}: notificationWidgetPr
   const { currClass } = useClassroom()
 
   const fetchNotifications = async () => {
-    const notifications = await notificationsApi.fetchNotifucations(
+    const notifications = await notificationsApi.fetchNotifications(
       userId,
       currClass.id,
       notificationType
@@ -27,7 +27,7 @@ const NotificationWidget = ({widgetName, notificationType}: notificationWidgetPr
 
   useEffect(() => {
     fetchNotifications()
-  })
+  }, [])
 
   return (
     <div className="notification-widget">

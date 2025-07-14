@@ -1,17 +1,17 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import useClassroom from '../hooks/useClassroom'
 import Sidebar from '../components/Sidebar'
 import ClassroomsGrid from '../components/classes/ClassroomsGrid'
 import '../styles/classrooms.css'
 import useAuth from '../hooks/useAuth'
 import NotificationBanner from '../components/notifications/NotificationBanner'
-import { NotificationType } from '../utils/NotificationType'
 import classesApi from '../api/classesApi'
 import notificationsUtils from '../utils/notificationsUtils'
 import '../styles/notifications.css'
 
 const ClassroomsPage = () => {
   const [notificationClassName, setNotificationClassName] = useState<string>('')
+  const [notificationClassId, setNotificationClassId] = useState<string>('')
   const [notificationType, setNotificationType] = useState<any>(null)
   const [notificationMessage, setNotificationMessage] = useState<any>(null)
   const [toggleBanner, setToggleBanner] = useState<boolean>(false)
@@ -32,11 +32,13 @@ const ClassroomsPage = () => {
       )
       if (status) {
         setNotificationClassName(classInfo.name)
+        setNotificationClassId(classId)
         setNotificationType(notificationType)
         setNotificationMessage(formattedMessage)
         setToggleBanner(true)
         setTimeout(() => {
           setNotificationClassName('')
+          setNotificationClassId('')
           setNotificationType(null)
           setNotificationMessage(null)
           setToggleBanner(false)
@@ -56,6 +58,7 @@ const ClassroomsPage = () => {
         notificationClassName={notificationClassName}
         notificationType={notificationType}
         notificationMessage={notificationMessage}
+        classId={notificationClassId}
       />
       <Sidebar />
       <ClassroomsGrid />

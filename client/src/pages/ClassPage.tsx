@@ -11,6 +11,7 @@ import '../styles/notifications.css'
 
 const ClassPage = () => {
   const [notificationClassName, setNotificationClassName] = useState<string>('')
+  const [notificationClassId, setNotificationClassId] = useState<string>('')
   const [notificationType, setNotificationType] = useState<any>(null)
   const [notificationMessage, setNotificationMessage] = useState<any>(null)
   const [toggleBanner, setToggleBanner] = useState<boolean>(false)
@@ -24,7 +25,6 @@ const ClassPage = () => {
   useEffect(() => {
     if (!socket) return
     const handleNotificationReceived = async (classId: any, notificationType: any, data: any) => {
-      console.log(data)
       const formattedMessage = notificationsUtils.formatNotificationMessage(
         data,
         notificationType
@@ -36,15 +36,17 @@ const ClassPage = () => {
       )
       if (status) {
         setNotificationClassName(classInfo.name)
+        setNotificationClassId(classId)
         setNotificationType(notificationType)
         setNotificationMessage(formattedMessage)
         setToggleBanner(true)
         setTimeout(() => {
           setNotificationClassName('')
+          setNotificationClassId('')
           setNotificationType(null)
           setNotificationMessage(null)
           setToggleBanner(false)
-        })
+        }, 5000)
       }
     }
     socket.on('notificationPosted', handleNotificationReceived)
@@ -60,6 +62,7 @@ const ClassPage = () => {
         notificationClassName={notificationClassName}
         notificationType={notificationType}
         notificationMessage={notificationMessage}
+        classId={notificationClassId}
       />
       <Sidebar />
       <Outlet />

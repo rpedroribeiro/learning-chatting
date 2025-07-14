@@ -105,9 +105,10 @@ const navigateToNotification = (
 /**
  * Formats the notification message to appear on the notification banner.
  * 
- * @param notificationData 
- * @param notificationType 
- * @returns 
+ * @param notificationData - The data needed for the correct message to be displayed.
+ * @param notificationType - The notification category that is used in this function's
+ * switch case.
+ * @returns The new message to be displayed in the banner.
  */
 const formatNotificationMessage = (
   notificationData: any,
@@ -239,9 +240,12 @@ const sortWidgetsByScore = (
 }
 
 /**
+ * This function takes in the notifications to be sorted for the student and runs 
+ * functions to get the notification data to sort and then sorts the notification 
+ * categories.
  * 
- * @param notifications 
- * @returns 
+ * @param notifications - The notifications that decide the category sorting.
+ * @returns The widget name and type in a sorted list.
  */
 const fetchedOrderStudentWidgets = (notifications: any) => {
   const notificationsData: Map<NotificationType, scoreArray> = sortStudentWidgets(notifications)

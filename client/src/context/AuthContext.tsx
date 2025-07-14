@@ -38,7 +38,6 @@ export const AuthProvider = ({children}: AuthContextChildren) => {
     } else {
       localStorage.removeItem('userId')
       if (socket) {
-        console.log('here')
         socket.disconnect()
         setSocket(null)
       }
@@ -60,7 +59,7 @@ export const AuthProvider = ({children}: AuthContextChildren) => {
     setAccountType,
     socket,
     setSocket
-  }), [userId, accountType])
+  }), [userId, accountType, socket])
 
   return (
     <AuthContext.Provider value={value}>

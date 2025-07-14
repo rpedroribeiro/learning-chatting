@@ -6,7 +6,8 @@ import classService from '../classes/classes.services'
 import assignmentUtils from './assignments.utils'
 import assignmentServices from './assignments.services'
 import authServices from '../auth/auth.services'
-import { UserRole } from '@prisma/client'
+import { NotificationType, UserRole } from '@prisma/client'
+import notificationsUtils from '../notifications/notifications.utils'
 
 const router = express.Router()
 const ctx = { prisma }
@@ -44,6 +45,14 @@ router.post('/:userId/class/:classId/assignment', upload.array('files'), authent
       new Date(dueDate),
       filesUrls || undefined,
       ctx
+    )
+
+    await notificationsUtils.createNotificationAsProfessor(
+      userId,
+      classId,
+      NotificationType.AssignmentPosted,
+      newAssignment,
+      res
     )
 
     const updatedAssignmentsList = await assignmentServices.findAllAssignmentsByClassId(

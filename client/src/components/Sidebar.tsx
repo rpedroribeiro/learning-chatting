@@ -54,10 +54,10 @@ const Sidebar = () => {
       </div>
       {isClassroom ? 
         Object.entries(nav).map(([key, value]) => (
-          <Link style={{ textDecoration: 'none', color: 'var(--text)' }} to={`${baseUrl}/${value[1]}`}>
+          <Link to={value[1]} style={{textDecoration: 'none', color: 'var(--textColor)'}}>
             <div key={key} className='sidebar-nav-container'>
               <div className='sidebar-nav-content'>
-                <FontAwesomeIcon size='lg' icon={value[0]} />
+                <FontAwesomeIcon style={{transform: 'scale(1.25)'}} icon={value[0]} />
                 <span className={`sidebar-nav-content-text${isHovered ? ' hovered' : ''}`}>{key}</span>
               </div>
             </div>

@@ -2,7 +2,7 @@ import classroomUtils from "./classes.utils"
 import { Context } from '../context/context'
 import { FileType } from "@prisma/client"
 import fileSystemServices from "../filesystem/filesystem.services"
-import fileSystemUtil from "../filesystem/filesystem.utils"
+import gcpBucketUtils from "../gcpbucket/gcpbucket.utils"
 
 /**
  * This function takes in a class id and uses
@@ -154,7 +154,7 @@ const createClass = async (
     newClass.id,
     ctx
   )
-  await fileSystemUtil.addFolderToFileSystem(`file_system/${sectionId}_root/`)
+  await gcpBucketUtils.addFolderToFileSystem(`file_system/${sectionId}_root/`)
   await ctx.prisma.user.update({
     where: {
       id: professorId

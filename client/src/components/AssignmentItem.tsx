@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClock, faClockRotateLeft } from '@fortawesome/free-solid-svg-icons'
-import { AssignmentStatus } from '../utils/assignmentStatus'
+import { AssignmentStatus } from '../utils/AssignmentStatus'
 import useAuth from '../hooks/useAuth'
 import '../styles/assignments.css'
 import { UserRole } from '../utils/UserRole'

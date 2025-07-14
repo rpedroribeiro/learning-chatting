@@ -14,18 +14,20 @@ datasource db {
 }
 
 model User {
-  id                String          @id @unique @default(uuid())
-  email             String          @unique
-  firstName         String
-  lastName          String
-  password          String
-  accountType       UserRole
-  refreshTokens     RefreshToken[]
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
-  studentClasses    Classes[]       @relation("studentClasses")
-  professorClasses  Classes[]       @relation("professorClasses")
-  submissions       Submission[]    @relation("studentSubmission")
+  id                     String          @id @unique @default(uuid())
+  email                  String          @unique
+  firstName              String
+  lastName               String
+  password               String
+  accountType            UserRole
+  refreshTokens          RefreshToken[]
+  createdAt              DateTime        @default(now())
+  updatedAt              DateTime        @updatedAt
+  studentClasses         Classes[]       @relation("studentClasses")
+  professorClasses       Classes[]       @relation("professorClasses")
+  submissions            Submission[]    @relation("studentSubmission")
+  receiverNotifications  Notification[]  @relation("receiverNotifications")
+  creatorNotifications   Notification[]  @relation("creatorNotifications")
 }
 
 enum UserRole {
@@ -45,17 +47,18 @@ model RefreshToken {
 }
 
 model Classes {
-  id           String           @id @unique @default(uuid())
-  classCode    String           @unique
-  sectionId    String           @unique
-  className    String
-  startTimes   DateTime[]
-  endTimes     DateTime[]
-  professorId  String
-  professor    User             @relation("professorClasses", fields: [professorId], references: [id])
-  students     User[]           @relation("studentClasses")
-  rootFile     FileSystemItem?  @relation("classRootFile")
-  assignments  Assignment[]     @relation("classAssignments")
+  id             String            @id @unique @default(uuid())
+  classCode      String            @unique
+  sectionId      String            @unique
+  className      String 
+  startTimes     DateTime[] 
+  endTimes       DateTime[] 
+  professorId    String 
+  professor      User              @relation("professorClasses", fields: [professorId], references: [id])
+  students       User[]            @relation("studentClasses")
+  rootFile       FileSystemItem?   @relation("classRootFile")
+  assignments    Assignment[]      @relation("classAssignments")
+  notifications  Notification[]  @relation("classNotifications")
 }
 
 enum FileType {
@@ -64,15 +67,15 @@ enum FileType {
 }
 
 model FileSystemItem {
-  id        String           @id @unique @default(uuid())
+  id        String            @id @unique @default(uuid())
   name      String
   type      FileType
-  classId   String?          @unique
-  class     Classes?         @relation("classRootFile", fields: [classId], references: [id])
+  classId   String?           @unique
+  class     Classes?          @relation("classRootFile", fields: [classId], references: [id])
   parentId  String?
   parent    FileSystemItem?   @relation("FileToFile", fields: [parentId], references: [id])
   fileURL   String?
-  children  FileSystemItem[] @relation("FileToFile")
+  children  FileSystemItem[]  @relation("FileToFile")
 }
 
 model Assignment {
@@ -96,4 +99,26 @@ model Submission {
   submissionTime  DateTime?
   uploadedFiles   String[]
   @@unique([assignmentId, studentId])
+}
+
+model Notification {
+  id           String     @id @default(uuid())
+  classId      String
+  class        Classes    @relation("classNotifications", fields: [classId], references: [id])
+  creatorId    String
+  creator      User       @relation("creatorNotifications", fields: [creatorId], references: [id])
+  receiverId   String 
+  receiver     User       @relation("receiverNotifications", fields: [receiverId], references: [id])
+  type         String
+  data         Json     
+  read         Boolean    @default(false)
+  createdAt    DateTime   @default(now())
+  readAt       DateTime?
+}
+
+enum NotificationType {
+  AssignmentPosted
+  StudentSubmission
+  FileSystemItemCreated
+  AnnouncementPosted
 }

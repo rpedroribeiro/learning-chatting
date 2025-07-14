@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useMemo, useState, type ReactNode } from "react"
 import { UserRole } from "../utils/UserRole"
-import { io } from "socket.io-client"
+import { io, Socket } from "socket.io-client"
 
 type AuthContextType = {
   userId: string;
@@ -18,10 +18,10 @@ type AuthContextChildren = {
 }
 
 export const AuthProvider = ({children}: AuthContextChildren) => {
-  const [socket, setSocket] = useState<null | any>(null)
+  const [socket, setSocket] = useState<Socket | any>(null)
   const [userId, setUserId] = useState<string>(() => localStorage.getItem('userId') || '')
   const [accountType, setAccountType] = useState<UserRole | null>(() => {
-    const stored = localStorage.getItem('accountType');
+    const stored = localStorage.getItem('accountType')
     if (stored === UserRole.Professor || stored === UserRole.Student) {
       return stored as UserRole
     }
@@ -30,17 +30,9 @@ export const AuthProvider = ({children}: AuthContextChildren) => {
 
   useEffect(() => {
     if (userId.length > 0) {
-      localStorage.setItem('userId', userId)
-      const newSocket = io(import.meta.env.VITE_SERVER_URL, {
-        withCredentials: true,
-      })
-      setSocket(newSocket)
+      localStorage.setItem('userId', userId);
     } else {
-      localStorage.removeItem('userId')
-      if (socket) {
-        socket.disconnect()
-        setSocket(null)
-      }
+      localStorage.removeItem('userId');
     }
   }, [userId])
 
@@ -51,6 +43,33 @@ export const AuthProvider = ({children}: AuthContextChildren) => {
       localStorage.removeItem('accountType')
     }
   }, [accountType])
+
+  useEffect(() => {
+    if (userId.length === 0) {
+      if (socket) {
+        socket.disconnect()
+        setSocket(null)
+      }
+      return
+    }
+
+    if (!socket) {
+      const newSocket = io(import.meta.env.VITE_SERVER_URL, {
+        withCredentials: true,
+        auth: { userId }
+      })
+      newSocket.on('connect', () => {
+        setSocket(newSocket)
+        console.log('Socket connected:', newSocket.id)
+      })
+    }
+    return () => {
+      if (socket) {
+        socket.disconnect()
+        setSocket(null)
+      }
+    }
+  }, [userId])
 
   const value = useMemo(() => ({
     userId,

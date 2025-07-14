@@ -103,6 +103,30 @@ const navigateToNotification = (
 }
 
 /**
+ * Formats the notification message to appear on the notification banner.
+ * 
+ * @param notificationData 
+ * @param notificationType 
+ * @returns 
+ */
+const formatNotificationMessage = (
+  notificationData: any,
+  notificationType: NotificationType,
+) => {
+  switch (notificationType) {
+    case NotificationType.AnnouncementPosted:
+      return `${notificationData.announcementTitle}`
+    case NotificationType.AssignmentPosted:
+      return `${notificationData.name} was assigned`
+    case NotificationType.FileSystemItemCreated:
+      return `${notificationData.name} was uploaded`
+    case NotificationType.StudentSubmission:
+      return `${notificationData.submissions[0].student.firstName} ${notificationData.submissions[0].student.lastName} 
+      submitted the following assignment: ${notificationData.name}`
+  }
+}
+
+/**
  * This function takes in all the notifications fetched and counts the number of 
  * unread  notifications and how many hours they have been unread for each of the 
  * different student categories.
@@ -214,6 +238,11 @@ const sortWidgetsByScore = (
     .map(({ widget }) => [widget.name, widget.type] as [string, NotificationType])
 }
 
+/**
+ * 
+ * @param notifications 
+ * @returns 
+ */
 const fetchedOrderStudentWidgets = (notifications: any) => {
   const notificationsData: Map<NotificationType, scoreArray> = sortStudentWidgets(notifications)
   const totalCounts = getTotalNotificationCounts(notifications)
@@ -227,7 +256,8 @@ const fetchedOrderStudentWidgets = (notifications: any) => {
 const notificationsUtils = {
   formatNotificationItem,
   navigateToNotification,
-  fetchedOrderStudentWidgets
+  fetchedOrderStudentWidgets,
+  formatNotificationMessage
 }
 
 export default notificationsUtils

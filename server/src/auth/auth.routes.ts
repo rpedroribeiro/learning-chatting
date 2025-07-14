@@ -164,4 +164,26 @@ router.post('/revokeRefreshToken', async (req, res, next) => {
   res.status(200).json({message: `Token revoked for User with Id ${userId}`})
 })
 
+/**
+ * This POST route logs out the user by clearing both the accessToken and the
+ * refreshToken from the client side.
+ */
+router.post('/logout', async (req, res, next) => {
+  res.clearCookie('refreshToken', {
+    'httpOnly': true,
+    'secure': true,
+    'sameSite': 'none',
+    'path': '/'
+  })
+
+  res.clearCookie('accessToken', {
+    'httpOnly': true,
+    'secure': true,
+    'sameSite': 'none',
+    'path': '/'
+  })
+
+  res.status(200).json({message: "User successfully logged out"})
+})
+
 export default router

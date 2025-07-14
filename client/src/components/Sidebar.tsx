@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBell, faFolderOpen, faBook, type IconDefinition } from '@fortawesome/free-solid-svg-icons'
+import { faBell, faRightFromBracket, faFolderOpen, faBook, type IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import useClassroom from '../hooks/useClassroom'
 import profilePic from '../assets/images/people-face-avatar-icon-cartoon-character-png.webp'
 import '../styles/sidebar.css'
 import '../styles/root.css'
 import { Link, useNavigate } from 'react-router-dom'
+import authApi from '../api/authApi'
+import useAuth from '../hooks/useAuth'
 
 interface navOptions {
   [key: string]: [IconDefinition, string];
@@ -14,7 +16,8 @@ interface navOptions {
 const Sidebar = () => {
   const [baseUrl, setBaseUrl] = useState<string>('')
   const [isHovered, setIsHovered] = useState(false)
-  const { isClassroom, setCurrFileItem } = useClassroom()
+  const { setUserId, setAccountType } = useAuth()
+  const { isClassroom, setCurrFileItem, setIsClassroom, setCurrClass } = useClassroom()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -31,6 +34,22 @@ const Sidebar = () => {
 
   const handleLinkClick = (key: string) => {
     key === "File System" && setCurrFileItem(null)
+  }
+
+  /**
+   * Makes the api call to logout the user, then clears all the states from both
+   * AuthContext and ClassroomContext.
+   */
+  const handleLogOut = async () => {
+    const logoutMessage = await authApi.logOutAccount()
+    if (logoutMessage) {
+      setUserId('')
+      setIsClassroom(false)
+      setCurrClass(null)
+      setCurrFileItem(null)
+      setAccountType(null)
+      navigate('/login')
+    }
   }
 
   return (
@@ -76,6 +95,12 @@ const Sidebar = () => {
             </div>
           </Link>
         )) : []}
+        <div onClick={handleLogOut} style={{borderTop: '1px solid var(--textColor)'}} className='sidebar-nav-container'>
+          <div className='sidebar-nav-content'>
+            <FontAwesomeIcon style={{transform: 'scale(1.25)'}} icon={faRightFromBracket} />
+            <span className={`sidebar-nav-content-text${isHovered ? ' hovered' : ''}`}>Log out</span>
+          </div>
+        </div>
     </div>
   )
 }

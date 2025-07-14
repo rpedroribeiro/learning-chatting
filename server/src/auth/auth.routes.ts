@@ -3,6 +3,7 @@ import * as bcrypt from 'bcrypt'
 import authJwt from './auth.jwt'
 import authServices from './auth.services'
 import { prisma } from '../context/context'
+import io from '../sockets/index'
 
 const router = express.Router()
 const ctx = { prisma }

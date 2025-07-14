@@ -3,6 +3,7 @@ import { prisma } from "../context/context"
 import classService from "../classes/classes.services"
 import notificationServices from "./notifications.services"
 import { Response } from "express"
+import socketNotifications from "../sockets/socket.notifications"
 
 const ctx = { prisma }
 
@@ -49,6 +50,12 @@ const createNotificationAsStudent = async (
       [user.professor],
       ctx
     )
+    socketNotifications.sendNotificationToReceivers(
+      classId,
+      notificationType,
+      data,
+      [user.professor]
+    )
   } catch (error) {
     console.error(error)
   }
@@ -92,6 +99,12 @@ const createNotificationAsProfessor = async (
       data,
       users.students,
       ctx
+    )
+    socketNotifications.sendNotificationToReceivers(
+      classId,
+      notificationType,
+      data,
+      users.students
     )
   } catch (error) {
     console.error(error)

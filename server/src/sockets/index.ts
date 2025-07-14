@@ -1,12 +1,14 @@
 import { Server as SocketIOServer, Socket } from "socket.io"
+import socketUtils from "./socket"
 
 /**
- * This function sets up the socket io server and creates all the events
- * it is listening for.
+ * This function sets up the socket io server and logs when a user
+ * connects and disconnects.
  * 
  * @param io - The socket io server instance created in the server
  */
 const setUpSocketServer = async (io: SocketIOServer): Promise<void> => {
+  socketUtils.initializeSocket(io)
   io.disconnectSockets()
 
   io.on('connection', (socket) => {

@@ -1,11 +1,14 @@
-import { createContext, useEffect, useMemo, useState, type ReactNode } from "react"
+import React, { createContext, useEffect, useMemo, useState, type ReactNode } from "react"
 import { UserRole } from "../utils/UserRole"
+import { io } from "socket.io-client"
 
 type AuthContextType = {
   userId: string;
   setUserId: React.Dispatch<React.SetStateAction<string>>;
   accountType: UserRole | null;
   setAccountType: React.Dispatch<React.SetStateAction<UserRole | null>>;
+  socket: any;
+  setSocket: React.Dispatch<React.SetStateAction<any>>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -15,6 +18,7 @@ type AuthContextChildren = {
 }
 
 export const AuthProvider = ({children}: AuthContextChildren) => {
+  const [socket, setSocket] = useState<null | any>(null)
   const [userId, setUserId] = useState<string>(() => localStorage.getItem('userId') || '')
   const [accountType, setAccountType] = useState<UserRole | null>(() => {
     const stored = localStorage.getItem('accountType');
@@ -25,7 +29,20 @@ export const AuthProvider = ({children}: AuthContextChildren) => {
   })
 
   useEffect(() => {
-    localStorage.setItem('userId', userId)
+    if (userId.length > 0) {
+      localStorage.setItem('userId', userId)
+      const newSocket = io(import.meta.env.VITE_SERVER_URL, {
+        withCredentials: true,
+      })
+      setSocket(newSocket)
+    } else {
+      localStorage.removeItem('userId')
+      if (socket) {
+        console.log('here')
+        socket.disconnect()
+        setSocket(null)
+      }
+    }
   }, [userId])
 
   useEffect(() => {
@@ -41,6 +58,8 @@ export const AuthProvider = ({children}: AuthContextChildren) => {
     setUserId,
     accountType,
     setAccountType,
+    socket,
+    setSocket
   }), [userId, accountType])
 
   return (

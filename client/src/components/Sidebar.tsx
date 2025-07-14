@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBell, faFolderOpen, faBook, type IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import useClassroom from '../hooks/useClassroom'
@@ -12,12 +12,18 @@ interface navOptions {
 }
 
 const Sidebar = () => {
-
+  const [baseUrl, setBaseUrl] = useState<string>('')
   const [isHovered, setIsHovered] = useState(false)
   const { isClassroom } = useClassroom()
 
+  useEffect(() => {
+    const currentUrl = String(window.location.href)
+    const cutoffIndex = currentUrl.lastIndexOf('/')
+    setBaseUrl(currentUrl.substring(0, cutoffIndex ))
+  }, [])
+
   const nav: navOptions = {
-    "Notification": [faBell, "notifications"],
+    "Notifications": [faBell, "notifications"],
     "File System": [faFolderOpen, "files"],
     "Assignments": [faBook, "assignments"],
   }

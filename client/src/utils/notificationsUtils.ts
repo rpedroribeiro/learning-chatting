@@ -21,6 +21,10 @@ type scoreArray = {
   unreadHours: number
 }
 
+/**
+ * Alpha is the weight for the number of notifications unread, Beta is the number of
+ * hours the unread notifications have been unread.
+ */
 const alpha = 2
 const beta = 1
 
@@ -203,7 +207,7 @@ const sortWidgetsByScore = (
       if (aNoUnread && bNoUnread) {
         const aTotal = totalCounts.get(a.widget.type) || 0
         const bTotal = totalCounts.get(b.widget.type) || 0
-        return bTotal - aTotal;
+        return bTotal - aTotal
       }
       return b.score - a.score
     })

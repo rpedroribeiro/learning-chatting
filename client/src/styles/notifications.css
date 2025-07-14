@@ -23,7 +23,7 @@
   border: 1px solid var(--textColor);
   border-radius: 20px;
   overflow: hidden;
-  transition: height 0.6s ease;
+  transition: max-height 0.6s ease;
 }
 
 .notification-widget:hover {

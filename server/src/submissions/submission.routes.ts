@@ -162,11 +162,19 @@ router.put('/:userId/class/:classId/assignment/:assignmentId/submit', authentica
       ctx
     )
 
+    const notificationData = await submissionServices.getNotificationSubmissionData(
+      userId,
+      assignmentId,
+      ctx
+    )
+    
+    console.log(notificationData)
+
     await notificationsUtils.createNotificationAsStudent(
       userId,
       classId,
       NotificationType.StudentSubmission,
-      updatedSubmission,
+      notificationData,
       res
     )
 

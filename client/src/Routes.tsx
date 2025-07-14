@@ -3,11 +3,12 @@ import { ClassroomProvider } from './context/ClassroomContext'
 import SignUpPage from './pages/SignUp'
 import LogInPage from './pages/LogIn'
 import ClassroomsPage from './pages/Classrooms'
-import FilesDisplay from './components/FilesDisplay'
-import AssignmentsDisplay from './components/AssignmentsDisplay'
+import FilesDisplay from './components/files/FilesDisplay'
+import AssignmentsDisplay from './components/assignments/AssignmentsDisplay'
 import ClassPage from './pages/ClassPage'
-import StudentSubmission from './components/StudentSubmission'
-import SubmissionList from './components/SubmissionList'
+import StudentSubmission from './components/submissions/StudentSubmission'
+import SubmissionList from './components/submissions/SubmissionList'
+import NotificationsWidgetMenu from './components/notifications/NotificationsWidgetMenu'
 
 const AppRoutes = () => (
   <Routes>
@@ -31,8 +32,9 @@ const AppRoutes = () => (
     >
       <Route path='files' element={<FilesDisplay />}/>
       <Route path='assignments' element={<AssignmentsDisplay />}/>
-      <Route path='assignments/submissions' element={<SubmissionList />}/>
+      <Route path='assignments/:assignmentId/submissions' element={<SubmissionList />}/>
       <Route path='assignments/:assignmentId' element={<StudentSubmission />} />
+      <Route path='notifications' element={<NotificationsWidgetMenu />} />
     </Route>
   </Routes>
 )

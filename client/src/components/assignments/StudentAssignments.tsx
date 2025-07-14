@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import '../styles/assignments.css'
+import '../../styles/assignments.css'
 import AssignmentItem from './AssignmentItem'
-import { AssignmentStatus } from '../utils/AssignmentStatus'
+import { AssignmentStatus } from '../../utils/AssignmentStatus'
 
 interface studentAssignmentsProps {
   assignments: any
@@ -21,6 +21,7 @@ const StudentAssignments = ({assignments}: studentAssignmentsProps) => {
     setSubmittedAssignments([])
     setOverdueAssignments([])
     for (const assignment of assignments) {
+      console.log(assignment)
       if (assignment.submissions[0].submitted === true) {
         setSubmittedAssignments(prev => [...prev, assignment])
       } else if (new Date(assignment.dueDate) < new Date()) {

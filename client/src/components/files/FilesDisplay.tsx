@@ -2,15 +2,15 @@ import { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeftLong } from '@fortawesome/free-solid-svg-icons'
 import FileItemModal from './FileItemModal'
-import useClassroom from '../hooks/useClassroom'
-import fileSystemApi from '../api/fileSystemApi'
-import useAuth from '../hooks/useAuth'
+import useClassroom from '../../hooks/useClassroom'
+import fileSystemApi from '../../api/fileSystemApi'
+import useAuth from '../../hooks/useAuth'
 import FileSystemItem from './FileSystemItem'
-import '../styles/file-system.css'
+import '../../styles/file-system.css'
 
 const FilesDisplay = () => {
   const [toggleAddItemForm, setToggleAddItemForm] = useState<boolean>(false)
-  const [currItemChildren, setCurrItemChildren] = useState<any>()
+  const [currItemChildren, setCurrItemChildren] = useState<any>([])
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(true)
   const { userId } = useAuth()
@@ -48,17 +48,16 @@ const FilesDisplay = () => {
     setLoading(false)
   }
 
-  /**
-   * Fetches all the children from the root file of the class on render, sets
-   * them to a state if successful. If the fetch from the fileSystemApi was 
-   * not successful, the error message is also stored in a state.
-   */
   useEffect(() => {
-    fetchAllChildren(currClass.rootFile.id)
+    if (currFileItem === null) { fetchAllChildren(currClass.rootFile.id) } else { fetchAllChildren(currFileItem.id) } 
   }, [])
 
+  useEffect(() => {
+    fetchAllChildren(currClass.rootFile.id)
+  }, [currFileItem === null])
+
   return (
-    (!loading && (
+    ((!loading && currFileItem !== null && currItemChildren.length > 0) && (
       <div className="file-system-grid">
         {toggleAddItemForm ? <FileItemModal setToggleAddItemForm={setToggleAddItemForm} setCurrItemChildren={setCurrItemChildren} /> : []}
         <div style={{display: 'flex', justifyContent: 'space-between'}}>

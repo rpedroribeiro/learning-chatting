@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import classesApi from '../api/classesApi'
-import useAuth from '../hooks/useAuth'
-import useClassroom from '../hooks/useClassroom'
-import classesUtils from '../utils/classesUtils'
+import classesApi from '../../api/classesApi'
+import useAuth from '../../hooks/useAuth'
+import useClassroom from '../../hooks/useClassroom'
+import classesUtils from '../../utils/classesUtils'
 import CreateClassModal from './CreateClassModal'
 import AddClassModal from './AddClassModal'
-import '../styles/classrooms.css'
+import '../../styles/classrooms.css'
 
 const ClassroomsGrid = () => {
   const [classes, setClasses] = useState<any[]>([])

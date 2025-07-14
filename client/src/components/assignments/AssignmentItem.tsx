@@ -1,12 +1,12 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClock, faClockRotateLeft } from '@fortawesome/free-solid-svg-icons'
-import { AssignmentStatus } from '../utils/AssignmentStatus'
-import useAuth from '../hooks/useAuth'
-import '../styles/assignments.css'
-import { UserRole } from '../utils/UserRole'
+import { AssignmentStatus } from '../../utils/AssignmentStatus'
+import useAuth from '../../hooks/useAuth'
+import '../../styles/assignments.css'
+import { UserRole } from '../../utils/UserRole'
 import { useEffect, useState } from 'react'
-import assignmentsApi from '../api/assignmentsApi'
-import useClassroom from '../hooks/useClassroom'
+import assignmentsApi from '../../api/assignmentsApi'
+import useClassroom from '../../hooks/useClassroom'
 import { useNavigate } from 'react-router-dom'
 
 
@@ -19,7 +19,7 @@ const AssignmentItem = ({assignment, status}: assignmentItemProps) => {
   const [icon, setIcon] = useState<any>()
   const [color, setColor] = useState<any>()
   const { userId, accountType } = useAuth()
-  const { currClass, setCurrAssignment } = useClassroom()
+  const { currClass, setCurrAssignment, currAssignment } = useClassroom()
   const navigate = useNavigate()
 
   /**
@@ -59,7 +59,7 @@ const AssignmentItem = ({assignment, status}: assignmentItemProps) => {
     setCurrAssignment(fetchedAssignment)
     accountType === UserRole.Student ? 
     navigate(`/${userId}/classrooms/${currClass.id}/assignments/${fetchedAssignment.id}`) : 
-    navigate(`/${userId}/classrooms/${currClass.id}/assignments/submissions`)
+    navigate(`/${userId}/classrooms/${currClass.id}/assignments/${currAssignment.id}/submissions`)
   }
 
   return (

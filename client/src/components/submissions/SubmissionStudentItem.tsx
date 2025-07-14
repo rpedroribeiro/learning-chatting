@@ -1,9 +1,9 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGraduationCap, faFolder, faClock} from '@fortawesome/free-solid-svg-icons'
-import '../styles/submission.css'
+import '../../styles/submission.css'
 import { useEffect, useState } from 'react'
 import SubmissionFileItem from './SubmissionFileItem'
-import { UserRole } from '../utils/UserRole'
+import { UserRole } from '../../utils/UserRole'
 
 type submissionStudentItemProps = {
   submission: any;

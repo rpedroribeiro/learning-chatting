@@ -102,17 +102,17 @@ model Submission {
 }
 
 model Notification {
-  id           String     @id @default(uuid())
+  id           String            @id @default(uuid())
   classId      String
-  class        Classes    @relation("classNotifications", fields: [classId], references: [id])
+  class        Classes           @relation("classNotifications", fields: [classId], references: [id])
   creatorId    String
-  creator      User       @relation("creatorNotifications", fields: [creatorId], references: [id])
+  creator      User              @relation("creatorNotifications", fields: [creatorId], references: [id])
   receiverId   String 
-  receiver     User       @relation("receiverNotifications", fields: [receiverId], references: [id])
-  type         String
+  receiver     User              @relation("receiverNotifications", fields: [receiverId], references: [id])
+  type         NotificationType
   data         Json     
-  read         Boolean    @default(false)
-  createdAt    DateTime   @default(now())
+  read         Boolean           @default(false)
+  createdAt    DateTime          @default(now())
   readAt       DateTime?
 }
 

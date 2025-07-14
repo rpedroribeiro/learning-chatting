@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFolder, faFile } from '@fortawesome/free-solid-svg-icons'
-import fileSystemApi from '../api/fileSystemApi'
-import useAuth from '../hooks/useAuth'
-import useClassroom from '../hooks/useClassroom'
-import '../styles/file-system.css'
-import { FileType } from '../utils/FileType'
+import fileSystemApi from '../../api/fileSystemApi'
+import useAuth from '../../hooks/useAuth'
+import useClassroom from '../../hooks/useClassroom'
+import '../../styles/file-system.css'
+import { FileType } from '../../utils/FileType'
 
 interface fileSytemItemProps {
   props: any;

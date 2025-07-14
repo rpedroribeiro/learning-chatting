@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import useClassroom from '../hooks/useClassroom'
 import Sidebar from '../components/Sidebar'
-import ClassroomsGrid from '../components/ClassroomsGrid'
+import ClassroomsGrid from '../components/classes/ClassroomsGrid'
 import '../styles/classrooms.css'
 
 const ClassroomsPage = () => {

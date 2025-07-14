@@ -72,7 +72,7 @@ router.post('/:userId/class/:classId/filesystem', upload.single('file'), authent
     await notificationsUtils.createNotificationAsProfessor(
       userId,
       classId,
-      NotificationType,
+      NotificationType.FileSystemItemCreated,
       newFileSystemItem,
       res
     )

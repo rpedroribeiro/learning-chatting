@@ -1,7 +1,9 @@
-import type { NotificationType } from "../utils/NotificationType"
+import axios from 'axios'
+import { NotificationType } from "../utils/NotificationType"
 import axiosClient from "./client"
+type AxiosRequestConfig = typeof axios.defaults
 
-type fetchNotificationsPerCategoryResponse = {
+type fetchNotificationsResponse = {
   notifications: any
 }
 
@@ -18,19 +20,27 @@ type readNotificationResponse = {
  * @param classId - The class these notifications belong to.
  * @param notificationType - The category these notifications fall into.
  */
-const fetchNotificationsPerCategoryForUser = async (
+const fetchNotifications = async (
   userId: string,
   classId: string,
-  notificationType: NotificationType
+  notificationType: NotificationType | null
 ) => {
   try {
-    const response = await axiosClient.get<fetchNotificationsPerCategoryResponse>(
+    let options: AxiosRequestConfig = { 
+      headers: { 
+        common: { 'Content-Type': 'application/json' },
+        patch: {},
+        post: {},
+        put: {}
+      },
+      withCredentials: true 
+    }
+    if (notificationType) {
+      options = { ...options, params: { notificationType } }
+    }
+    const response = await axiosClient.get<fetchNotificationsResponse>(
       `/api/${userId}/class/${classId}/notifications`,
-      { 
-        params: { notificationType },
-        headers: { 'Content-Type': 'application/json' },
-        withCredentials: true 
-      }
+      options
     )
     return response.data.notifications
   } catch (error) {
@@ -69,7 +79,7 @@ const readNotification = async (
 }
 
 const notificationsApi = {
-  fetchNotificationsPerCategoryForUser,
+  fetchNotifications,
   readNotification
 }
 

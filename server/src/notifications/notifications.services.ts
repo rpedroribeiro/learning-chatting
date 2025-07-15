@@ -52,7 +52,7 @@ const createNotification = async (
 const getAllNotificationsForCategoryForUser = async (
   userId: string,
   classId: string,
-  notificationType: NotificationType,
+  notificationType: NotificationType | null,
   ctx: Context
 ) => {
   try {
@@ -60,7 +60,10 @@ const getAllNotificationsForCategoryForUser = async (
       where: {
         receiverId: userId,
         classId: classId,
-        type: notificationType
+        ...(notificationType && {type: notificationType})
+      },
+      orderBy: {
+        createdAt: 'desc'
       }
     })
   } catch (error) {

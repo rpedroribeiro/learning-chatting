@@ -1,0 +1,24 @@
+.chatting-page {
+  height: 100vh;
+  flex-grow: 1;
+}
+
+.chatting-header {
+  padding: 0 70px;
+  height: 100px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  background-color: var(--componentColor);
+}
+
+.chatbox-container {
+  padding: 30px 70px;
+  height: calc(100vh - 100px);
+  background-color: var(--backgroundColor);
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+}

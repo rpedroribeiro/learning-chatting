@@ -21,7 +21,7 @@ const CommandHelper = ({
 
   const commands = [["commandBot", faRobot], ["ping", faBell]]
 
-  const commandBotGuideLines = [["params:", "type inside single quotations"], ["accessible features:", "assignments, submisisons, announcements, filesystem"]]
+  const commandBotGuideLines = [["params:", "type inside single quotations"], ["accessible features:", "assignment, submisison, announcement, filesystem"]]
 
   const handleItemClick = (item: [string, IconDefinition]) => {
     setCommand(item[0])

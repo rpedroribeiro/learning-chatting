@@ -24,12 +24,18 @@
   align-items: center;
 }
 
+.chatbox-interactive-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  position: relative;
+}
+
 .input-and-send-container {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
   width: 100%;
 }
 
@@ -41,7 +47,7 @@
 
 .input-container {
   height: 45px;
-  width: 100%;
+  width: 95%;
   padding: 0 20px;
   display: flex;
   justify-content: space-between;
@@ -59,9 +65,11 @@
 }
 
 .command-helper-container {
-  width: 90%;
+  position: absolute;
+  z-index: 2;
+  width: 95%;
   background-color: #343E53;
-  transform: translateY(50px);
+  transform: translateY(-60px);
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   opacity: 0;
@@ -70,7 +78,7 @@
 
 .command-helper-container.visible {
   opacity: 1;
-  transform: translateY(7px);
+  transform: translateY(-110px);
   transition: opacity 0.6s ease-in-out, transform 0.3s ease-in;
   pointer-events: auto;
 }

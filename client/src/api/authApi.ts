@@ -20,6 +20,10 @@ type authResponse = {
   accountType: UserRole | null;
 }
 
+type logOutResponse = {
+  message: string
+}
+
 /**
  * This function takes in the data from the account creation form and 
  * passes the information into a POST request to create an account.
@@ -71,9 +75,34 @@ const signIntoAccount = async ({email, password}: logInParams): Promise<[boolean
   }
 }
 
+/**
+ * This function logs out the user by sending the accessToken and refreshToken
+ * to the server. The server will then revoke the clients access to both tokens
+ * by removing them from the cookies.
+ * 
+ * @returns A message that either states the user was logged out or
+ * an error message
+ */
+const logOutAccount = async () => {
+  try {
+    const response = await axiosClient.post<logOutResponse>(
+      '/api/auth/logout',
+      {},
+      { headers: { 'Content-Type': 'application/json' },
+        withCredentials: true 
+      }
+    )
+    const message = response.data.message
+    return message
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 const authApi = {
   createAccount,
-  signIntoAccount
+  signIntoAccount,
+  logOutAccount
 }
 
 export default authApi

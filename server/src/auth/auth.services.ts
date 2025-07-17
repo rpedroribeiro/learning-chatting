@@ -139,6 +139,51 @@ const revokeTokens = async (userId: string, ctx: Context) => {
   })
 }
 
+/**
+ * This function populates the empty socketId field for the specified
+ * user that connected to the socket io server.
+ * 
+ * @param userId - The id of the user connected.
+ * @param socketId - The socked id of the user connection.
+ * @param ctx - The prisma context that this function is being used in.
+ */
+const addSocketIdToUser = async (
+  userId: string,
+  socketId: string,
+  ctx: Context
+) => {
+  await ctx.prisma.user.update({
+    where: {
+      id: userId
+    },
+    data: {
+      socketId: socketId
+    }
+  })
+}
+
+/**
+ * This functions queries the user using the user id provided and removes
+ * the socket id previously stored as the user is now disconnected.
+ * 
+ * @param userId - The id of the user disconnecting from the socket io
+ * server.
+ * @param ctx - The prisma context that this function is being used in.
+ */
+const removeSocketIdFromUser = async (
+  userId: string,
+  ctx: Context
+) => {
+  await ctx.prisma.user.update({
+    where: {
+      id: userId
+    },
+    data: {
+      socketId: null
+    }
+  })
+}
+
 const authServices = {
   findUserByEmail,
   findUserById,
@@ -147,6 +192,8 @@ const authServices = {
   findRefreshToken,
   deleteRefreshTokenById,
   revokeTokens,
+  addSocketIdToUser,
+  removeSocketIdFromUser
 }
 
 export default authServices

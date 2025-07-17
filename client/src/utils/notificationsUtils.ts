@@ -21,6 +21,10 @@ type scoreArray = {
   unreadHours: number
 }
 
+/**
+ * Alpha is the weight for the number of notifications unread, Beta is the number of
+ * hours the unread notifications have been unread.
+ */
 const alpha = 2
 const beta = 1
 
@@ -95,6 +99,31 @@ const navigateToNotification = (
       return `/${userId}/classrooms/${classId}/files`
     case NotificationType.StudentSubmission:
       return `/${userId}/classrooms/${classId}/assignments/${assignmentId}/submissions`
+  }
+}
+
+/**
+ * Formats the notification message to appear on the notification banner.
+ * 
+ * @param notificationData - The data needed for the correct message to be displayed.
+ * @param notificationType - The notification category that is used in this function's
+ * switch case.
+ * @returns The new message to be displayed in the banner.
+ */
+const formatNotificationMessage = (
+  notificationData: any,
+  notificationType: NotificationType,
+) => {
+  switch (notificationType) {
+    case NotificationType.AnnouncementPosted:
+      return `${notificationData.announcementTitle}`
+    case NotificationType.AssignmentPosted:
+      return `${notificationData.name} was assigned`
+    case NotificationType.FileSystemItemCreated:
+      return `${notificationData.name} was uploaded`
+    case NotificationType.StudentSubmission:
+      return `${notificationData.submissions[0].student.firstName} ${notificationData.submissions[0].student.lastName} 
+      submitted the following assignment: ${notificationData.name}`
   }
 }
 
@@ -203,13 +232,21 @@ const sortWidgetsByScore = (
       if (aNoUnread && bNoUnread) {
         const aTotal = totalCounts.get(a.widget.type) || 0
         const bTotal = totalCounts.get(b.widget.type) || 0
-        return bTotal - aTotal;
+        return bTotal - aTotal
       }
       return b.score - a.score
     })
     .map(({ widget }) => [widget.name, widget.type] as [string, NotificationType])
 }
 
+/**
+ * This function takes in the notifications to be sorted for the student and runs 
+ * functions to get the notification data to sort and then sorts the notification 
+ * categories.
+ * 
+ * @param notifications - The notifications that decide the category sorting.
+ * @returns The widget name and type in a sorted list.
+ */
 const fetchedOrderStudentWidgets = (notifications: any) => {
   const notificationsData: Map<NotificationType, scoreArray> = sortStudentWidgets(notifications)
   const totalCounts = getTotalNotificationCounts(notifications)
@@ -223,7 +260,8 @@ const fetchedOrderStudentWidgets = (notifications: any) => {
 const notificationsUtils = {
   formatNotificationItem,
   navigateToNotification,
-  fetchedOrderStudentWidgets
+  fetchedOrderStudentWidgets,
+  formatNotificationMessage
 }
 
 export default notificationsUtils

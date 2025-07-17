@@ -23,7 +23,7 @@
   border: 1px solid var(--textColor);
   border-radius: 20px;
   overflow: hidden;
-  transition: height 0.6s ease;
+  transition: max-height 0.6s ease;
 }
 
 .notification-widget:hover {
@@ -59,4 +59,46 @@
 
 .notification-widget-item-text {
   font-size: 16px;
+}
+
+.notification-banner {
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+  /* Optional: keep the element in the layout during fade out */
+  pointer-events: none;
+}
+.notification-banner.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.notification-banner {
+  position: fixed;
+  top: 3.5vh;
+  right: 2vw;
+  height: 100px;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: var(--componentColor);
+  border: 1px solid var(--textColor);
+  border-radius: 15px;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+  pointer-events: none;
+}
+
+.notification-banner.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.notification-banner-message {
+  font-size: 20px;
+}
+
+.notification-banner-info {
+  font-size: 14px;
 }

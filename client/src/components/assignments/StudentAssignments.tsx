@@ -21,7 +21,6 @@ const StudentAssignments = ({assignments}: studentAssignmentsProps) => {
     setSubmittedAssignments([])
     setOverdueAssignments([])
     for (const assignment of assignments) {
-      console.log(assignment)
       if (assignment.submissions[0].submitted === true) {
         setSubmittedAssignments(prev => [...prev, assignment])
       } else if (new Date(assignment.dueDate) < new Date()) {

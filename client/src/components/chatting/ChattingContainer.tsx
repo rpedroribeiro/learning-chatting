@@ -1,6 +1,6 @@
 import useClassroom from '../../hooks/useClassroom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faImage } from '@fortawesome/free-solid-svg-icons'
+import { faImage, faPaperPlane } from '@fortawesome/free-solid-svg-icons'
 import '../../styles/chatting.css'
 import { useEffect, useState } from 'react'
 import CommandHelper from './CommandHelper'
@@ -39,18 +39,23 @@ const ChattingContainer = () => {
           setChatInput={setChatInput}
           className={`command-helper-container ${toggleCommandHelper ? 'visible' : ''}`}
         />
-        <div className='input-container'>
-          {command.length > 0 && <span style={{opacity: '40%', marginRight: '5px'}}>{command}:</span>}
-          <input 
-            value={chatInput} 
-            onChange={(event) => setChatInput(event.target.value)}
-            onKeyDown={(event) => handleKeyClick(event.key)}
-          />
-          <div style={{display: 'flex'}}>
-            <label htmlFor="chat-file-upload" style={{ cursor: 'pointer' }}>
-              <FontAwesomeIcon icon={faImage} />
-            </label>
-            <input onChange={(event) => handleFileChange(event)} id='chat-file-upload' type='file' style={{ display: 'none' }}/>
+        <div className='input-and-send-container'>
+          <div className='input-container'>
+            {command.length > 0 && <span style={{opacity: '40%', marginRight: '5px'}}>{command}:</span>}
+            <input 
+              value={chatInput} 
+              onChange={(event) => setChatInput(event.target.value)}
+              onKeyDown={(event) => handleKeyClick(event.key)}
+            />
+            <div style={{display: 'flex'}}>
+              <label htmlFor="chat-file-upload" style={{ cursor: 'pointer' }}>
+                <FontAwesomeIcon icon={faImage} />
+              </label>
+              <input onChange={(event) => handleFileChange(event)} id='chat-file-upload' type='file' style={{ display: 'none' }}/>
+            </div>
+          </div>
+          <div className='send-btn-container' style={chatInput.length > 0 ? {backgroundColor: 'var(--button)'} : {backgroundColor: 'var(--componentColor'}}>
+            <FontAwesomeIcon icon={faPaperPlane}/>
           </div>
         </div>
       </div>

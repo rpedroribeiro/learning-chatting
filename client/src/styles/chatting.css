@@ -24,6 +24,21 @@
   align-items: center;
 }
 
+.input-and-send-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.send-btn-container {
+  padding: 12px 13px;
+  border-radius: 100%;
+  background-color: var(--button);
+}
+
 .input-container {
   height: 45px;
   width: 100%;
@@ -44,7 +59,7 @@
 }
 
 .command-helper-container {
-  width: 100%;
+  width: 90%;
   background-color: #343E53;
   transform: translateY(50px);
   border-top-left-radius: 10px;
@@ -82,10 +97,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.command-helper-guideline-title {
-  padding: 20px;
 }
 
 .command-helper-guideline-item {

@@ -1,15 +1,20 @@
 class commandBot {
   private vocabWords: Set<string>
-  private synonymMap: Record<string, string>
+  private synonymMap: Map<string, Set<string>>
+  private reverseSynonymMap: Map<string, string>
   private suffixes: string[]
   private termFrequencies: Record<string, number>
   private sentenceFrequency: Record<string, number>
   private sentenceCount: number
   private sentenceVectorMap: Map<string, (number | undefined)[]>
 
-  constructor(targetSentences: Set<string>) {
-    this.vocabWords = this.createVocabWords(targetSentences)
-    this.synonymMap = {}
+  constructor(targetSentences: string[]) {
+    const synonyms = new Map<string, Set<string>>([
+      ["get", new Set(["find", "fetch"])]
+    ])
+    this.vocabWords = new Set<string>()
+    this.synonymMap = synonyms
+    this.reverseSynonymMap = this.createReverseSynonymMap(synonyms)
     this.suffixes = []
     this.termFrequencies = {}
     this.sentenceFrequency = {}
@@ -17,14 +22,73 @@ class commandBot {
     this.sentenceVectorMap = this.computeTargetSentenceVectors(targetSentences)
   }
 
-  // Step 1, 2, 3: Tokenize sentence applying stop word removal, synonym normalization, and stemming
-  tokenize(sentence: string): string[] {
+  /**
+   * This method takes in an array of target sentences and goes through the NLP pipeline
+   * to make a map made up of the sentence as the key and their vector as the value.
+   * 
+   * @param sentences - The target sentences we want to map.
+   * @returns A map of the sentence as the key and the vector as the value.
+   */
+  computeTargetSentenceVectors(sentences: string[]): Map<string, number[]> {
+    for (const sentence of sentences) {
+      const [tokenizedSentence, tokenizedParams] = this.tokenize(sentence)
+    }
 
+    return // TODO
   }
 
-  // Step 2: Replace with synonym
+  /**
+   * This meethod takes in a sentence and tokenizes the words and the params seperately.
+   * 
+   * @param sentence - The sentence to be tokenized.
+   * @returns The tokens of words and params.
+   */
+  tokenize(sentence: string): [string[], string[]] {
+    const regex: RegExp = /'[\w]+'|(\w+)/g
+    let tokens: string[] = []
+    let params: string[] = []
+    let match
+    while ((match = regex.exec(sentence)) !== null) {
+      if (match[1] === undefined) {  params.push(match[1]) } 
+      else if (match[0]) {
+        const token = match[0]
+        const finalToken = this.normalizeToken(token.toLocaleLowerCase())
+        tokens.push(finalToken)
+      }
+    }
+    return [tokens, params]
+  }
+
+  /**
+   * This method takes in the synonym map and reverses it by making every synonym in the synonym
+   * array a key and the value is its corresponding original key, making the new synonym map have
+   * a O(1) lookup. 
+   * 
+   * @param synonymMap - The original synonym map.
+   * @returns The new reversed synonym map that has O(1) lookup.
+   */
+  private createReverseSynonymMap(synonymMap: Map<string, Set<string>>): Map<string, string> {
+    const reverseMap = new Map<string, string>()
+    for (const [canonical, synonyms] of synonymMap.entries()) {
+      reverseMap.set(canonical, canonical)
+      for (const synonym of synonyms) {
+        reverseMap.set(synonym, canonical)
+      }
+    }
+    return reverseMap
+  }
+
+  /**
+   * This method checks if the token passed in exists in the reverse synonym map, returns the
+   * synonym if found, and the original token if no synonym is found.
+   * 
+   * @param token - The token we try to find the synonym of. 
+   * @returns Either the synonym or the original token.
+   */
   normalizeToken(token: string): string {
-  
+    const normalized = this.reverseSynonymMap.get(token)
+    if (normalized !== undefined) { return normalized }
+    return token
   }
 
   // Step 3: Remove the suffixes
@@ -32,7 +96,7 @@ class commandBot {
   }
 
   // Step 4: Extract parameter and count them
-  exctractParameters(sentence: string): { newSentence: string, paramCount: number } {
+  exctractParameters(tokens: string[]): { newSentence: string, paramCount: number } {
 
   }
 
@@ -52,11 +116,6 @@ class commandBot {
   // Get current vocabulary as array for vectorization
   getVocabWords(): Set<string> {
     
-  }
-
-  // Step 7: Store the sentence and its vector in the map for later retrieval
-  computeTargetSentenceVectors(sentences: Set<string>): Map<string, (number | undefined)[]> {
-  
   }
 
   // Used to find the closest math to the target sentence, can return null if not close enough

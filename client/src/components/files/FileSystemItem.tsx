@@ -9,12 +9,11 @@ import { FileType } from '../../utils/FileType'
 
 interface fileSytemItemProps {
   props: any;
-  setCurrItemChildren: React.Dispatch<React.SetStateAction<any>>;
 }
 
-const FileSystemItem = ({props, setCurrItemChildren}: fileSytemItemProps) => {
+const FileSystemItem = ({props}: fileSytemItemProps) => {
   const [errorMessage, setErrorMessage] = useState<string>('')
-  const { currClass, currFileItem, setCurrFileItem } = useClassroom()
+  const { currClass, currFileItem, setCurrFileItem, setCurrFileItemChildren } = useClassroom()
   const { userId } = useAuth()
 
   const handleItemClick = async () => {
@@ -25,7 +24,7 @@ const FileSystemItem = ({props, setCurrItemChildren}: fileSytemItemProps) => {
         currClass.id,
         props.id,
       )
-      status ? setCurrItemChildren(allChildren) : setErrorMessage(message)
+      status ? setCurrFileItemChildren(allChildren) : setErrorMessage(message)
     } else {
       const [url, status, message] = await fileSystemApi.getSignedUrlForFile(
         userId,

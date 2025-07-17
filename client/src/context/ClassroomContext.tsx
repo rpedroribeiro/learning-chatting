@@ -9,6 +9,8 @@ type ClassroomContextType = {
   setCurrFileItem: React.Dispatch<React.SetStateAction<any>>;
   currAssignment: any;
   setCurrAssignment: React.Dispatch<React.SetStateAction<any>>;
+  currFileItemChildren: any;
+  setCurrFileItemChildren: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
 const ClassroomContext = createContext<ClassroomContextType | undefined>(undefined)
@@ -35,6 +37,11 @@ export const ClassroomProvider = ({ children }: ClassroomContextChildren) => {
     return stored ? JSON.parse(stored): null
   })
 
+  const [currFileItemChildren, setCurrFileItemChildren] = useState<any>(() => {
+    const stored = localStorage.getItem('currFileItemChildren')
+    return stored ? JSON.parse(stored): []
+  })
+
   const [currAssignment, setCurrAssignment] = useState<any>(() => {
     const stored = localStorage.getItem('currAssignment')
     return stored ? JSON.parse(stored): null
@@ -51,6 +58,14 @@ export const ClassroomProvider = ({ children }: ClassroomContextChildren) => {
       localStorage.removeItem('currClass')
     }
   }, [currClass])
+
+  useEffect(() => {
+    if (currFileItemChildren) {
+      localStorage.setItem('currFileItemChildren', JSON.stringify(currFileItemChildren))
+    } else {
+      localStorage.removeItem('currFileItemChildren')
+    }
+  }, [currFileItemChildren])
 
   useEffect(() => {
     if (currFileItem) {
@@ -76,8 +91,10 @@ export const ClassroomProvider = ({ children }: ClassroomContextChildren) => {
     currFileItem,
     setCurrFileItem,
     currAssignment,
-    setCurrAssignment
-  }), [isClassroom, currClass, currFileItem, currAssignment])
+    setCurrAssignment,
+    currFileItemChildren,
+    setCurrFileItemChildren
+  }), [isClassroom, currClass, currFileItem, currAssignment, currFileItemChildren])
 
   return (
     <ClassroomContext.Provider value={value}>

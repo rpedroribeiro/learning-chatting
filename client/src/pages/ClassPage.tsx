@@ -29,7 +29,6 @@ const ClassPage = () => {
         data,
         notificationType
       )
-      console.log(formattedMessage)
       const [classInfo, status, message] = await classesApi.getClassDetails(
         userId,
         classId

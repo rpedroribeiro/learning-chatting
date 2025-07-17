@@ -25,13 +25,13 @@
 }
 
 .input-container {
-  height: 35px;
+  height: 45px;
   width: 100%;
   padding: 0 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-radius: 12px;
+  border-radius: 10px;
   background-color: var(--componentColor);
 }
 
@@ -41,4 +41,46 @@
   color: inherit;
   box-sizing: border-box;
   width: 100%;
+}
+
+.command-helper-container {
+  width: 100%;
+  background-color: #343E53;
+  transform: translateY(50px);
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  opacity: 0;
+  transition: opacity 0.2s ease-out, transform 0.2s ease-in;
+  pointer-events: none;
+}
+
+.command-helper-container.visible {
+  opacity: 1;
+  transform: translateY(7px);
+  transition: opacity 0.6s ease-in-out, transform 0.3s ease-in;
+  pointer-events: auto;
+}
+
+.command-helper-container.visible > div:first-child {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.command-helper-item {
+  padding: 20px 0px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  cursor: pointer;
+}
+
+.command-helper-item:hover {
+  background-color: #434B5B;
+}
+
+.command-helper-item-icon {
+  width: 58px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

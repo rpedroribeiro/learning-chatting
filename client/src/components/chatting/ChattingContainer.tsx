@@ -2,11 +2,13 @@ import useClassroom from '../../hooks/useClassroom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faImage } from '@fortawesome/free-solid-svg-icons'
 import '../../styles/chatting.css'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import CommandHelper from './CommandHelper'
 
 const ChattingContainer = () => {
   const [chatInput, setChatInput] = useState<string>('')
   const [file, setFile] = useState<null | File>(null)
+  const [toggleCommandHelper, setToggleCommandHelper] = useState<boolean>(false)
   const { currClass } = useClassroom()
 
   const handleFileChange = (event: any) => {
@@ -14,12 +16,18 @@ const ChattingContainer = () => {
     if (file) { setFile(file) }
   }
 
+  useEffect(() => {
+    if (chatInput.startsWith('@')) { setToggleCommandHelper(true) }
+    else { setToggleCommandHelper(false) }
+  }, [chatInput])
+
   return (
     <div className="chatting-page">
       <div className='chatting-header'>
         <h1>{currClass.className} | Class Chat</h1>
       </div>
       <div className='chatbox-container'>
+        <CommandHelper className={`command-helper-container ${toggleCommandHelper ? 'visible' : ''}`}/>
         <div className='input-container'>
           <input value={chatInput} onChange={(event) => setChatInput(event.target.value)}/>
           <div style={{display: 'flex'}}>

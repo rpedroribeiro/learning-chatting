@@ -1,7 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faRobot, faBell, type IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import '../../styles/chatting.css'
-import type { ReactFormState } from 'react-dom/client'
 
 interface commandHelperProps {
   command: string;
@@ -43,7 +42,7 @@ const CommandHelper = ({
       )) : command === "commandBot" ? (
         <>
           {commandBotGuideLines.map((guideline: any, key: any) => (
-            <div className='command-helper-guideline-item'>
+            <div key={key} className='command-helper-guideline-item'>
               <span>{guideline[0]}</span>
               <span style={{opacity: '40%'}}>{guideline[1]}</span>
             </div>

@@ -7,6 +7,7 @@ import CommandHelper from './CommandHelper'
 
 const ChattingContainer = () => {
   const [chatInput, setChatInput] = useState<string>('')
+  const [command, setCommand] = useState<string>('')
   const [file, setFile] = useState<null | File>(null)
   const [toggleCommandHelper, setToggleCommandHelper] = useState<boolean>(false)
   const { currClass } = useClassroom()
@@ -16,8 +17,16 @@ const ChattingContainer = () => {
     if (file) { setFile(file) }
   }
 
+  const handleKeyPress = (keyPressed: string) => {
+    if (
+      keyPressed === "Backspace" && 
+      chatInput.length === 0 &&
+      command.length > 0
+    ) { setCommand('') }
+  }
+
   useEffect(() => {
-    if (chatInput.startsWith('@')) { setToggleCommandHelper(true) }
+    if (chatInput.startsWith('@') && command.length === 0) { setToggleCommandHelper(true) }
     else { setToggleCommandHelper(false) }
   }, [chatInput])
 
@@ -27,9 +36,19 @@ const ChattingContainer = () => {
         <h1>{currClass.className} | Class Chat</h1>
       </div>
       <div className='chatbox-container'>
-        <CommandHelper className={`command-helper-container ${toggleCommandHelper ? 'visible' : ''}`}/>
+        <CommandHelper 
+          setCommand={setCommand}
+          setToggleCommandHelper={setToggleCommandHelper}
+          setChatInput={setChatInput}
+          className={`command-helper-container ${toggleCommandHelper ? 'visible' : ''}`}
+        />
         <div className='input-container'>
-          <input value={chatInput} onChange={(event) => setChatInput(event.target.value)}/>
+          {command.length > 0 && <span style={{opacity: '40%', marginRight: '5px'}}>{command}:</span>}
+          <input 
+            value={chatInput} 
+            onChange={(event) => setChatInput(event.target.value)}
+            onKeyDown={(event) => handleKeyPress(event.key)}
+          />
           <div style={{display: 'flex'}}>
             <label htmlFor="chat-file-upload" style={{ cursor: 'pointer' }}>
               <FontAwesomeIcon icon={faImage} />

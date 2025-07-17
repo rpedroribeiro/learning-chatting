@@ -50,7 +50,6 @@
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   opacity: 0;
-  transition: opacity 0.2s ease-out, transform 0.2s ease-in;
   pointer-events: none;
 }
 
@@ -83,4 +82,14 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.command-helper-guideline-title {
+  padding: 20px;
+}
+
+.command-helper-guideline-item {
+  padding: 20px;
+  display: flex;
+  gap: 5px;
 }

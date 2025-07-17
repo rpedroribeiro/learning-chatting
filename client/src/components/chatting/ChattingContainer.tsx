@@ -17,18 +17,14 @@ const ChattingContainer = () => {
     if (file) { setFile(file) }
   }
 
-  const handleKeyPress = (keyPressed: string) => {
-    if (
-      keyPressed === "Backspace" && 
-      chatInput.length === 0 &&
-      command.length > 0
-    ) { setCommand('') }
-  }
-
   useEffect(() => {
     if (chatInput.startsWith('@') && command.length === 0) { setToggleCommandHelper(true) }
-    else { setToggleCommandHelper(false) }
+    else if (command.length === 0) { setToggleCommandHelper(false) }
   }, [chatInput])
+
+  const handleKeyClick = (lastKey: string) => {
+    if (lastKey === "Backspace" && chatInput.length === 0) { setCommand(''); setToggleCommandHelper(false)}
+  }
 
   return (
     <div className="chatting-page">
@@ -36,7 +32,8 @@ const ChattingContainer = () => {
         <h1>{currClass.className} | Class Chat</h1>
       </div>
       <div className='chatbox-container'>
-        <CommandHelper 
+        <CommandHelper
+          command={command} 
           setCommand={setCommand}
           setToggleCommandHelper={setToggleCommandHelper}
           setChatInput={setChatInput}
@@ -47,7 +44,7 @@ const ChattingContainer = () => {
           <input 
             value={chatInput} 
             onChange={(event) => setChatInput(event.target.value)}
-            onKeyDown={(event) => handleKeyPress(event.key)}
+            onKeyDown={(event) => handleKeyClick(event.key)}
           />
           <div style={{display: 'flex'}}>
             <label htmlFor="chat-file-upload" style={{ cursor: 'pointer' }}>

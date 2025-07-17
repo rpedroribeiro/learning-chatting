@@ -4,6 +4,7 @@ import '../../styles/chatting.css'
 import type { ReactFormState } from 'react-dom/client'
 
 interface commandHelperProps {
+  command: string;
   className: string;
   setToggleCommandHelper: React.Dispatch<React.SetStateAction<boolean>>;
   setCommand: React.Dispatch<React.SetStateAction<string>>;
@@ -11,6 +12,7 @@ interface commandHelperProps {
 }
 
 const CommandHelper = ({
+  command,
   className,
   setCommand,
   setToggleCommandHelper,
@@ -19,15 +21,16 @@ const CommandHelper = ({
 
   const commands = [["commandBot", faRobot], ["ping", faBell]]
 
+  const commandBotGuideLines = [["params:", "type inside single quotations"], ["accessible features:", "assignments, submisisons, announcements, filesystem"]]
+
   const handleItemClick = (item: [string, IconDefinition]) => {
     setCommand(item[0])
-    setToggleCommandHelper(false)
     setChatInput('')
   }
 
   return (
     <div className={className}>
-      {commands.map((item: any, key: any) => (
+      {command.length === 0 ? commands.map((item: any, key: any) => (
         <div 
           onClick={() => handleItemClick(item)}
           className='command-helper-item' key={key}
@@ -37,7 +40,16 @@ const CommandHelper = ({
             </div>
             <span>{item[0]}</span>
         </div>
-      ))}
+      )) : command === "commandBot" ? (
+        <>
+          {commandBotGuideLines.map((guideline: any, key: any) => (
+            <div className='command-helper-guideline-item'>
+              <span>{guideline[0]}</span>
+              <span style={{opacity: '40%'}}>{guideline[1]}</span>
+            </div>
+          ))}
+        </>
+      ) : []}
     </div>
   )
 }

@@ -60,7 +60,6 @@ export const AuthProvider = ({children}: AuthContextChildren) => {
       })
       newSocket.on('connect', () => {
         setSocket(newSocket)
-        console.log('Socket connected:', newSocket.id)
       })
     }
     return () => {

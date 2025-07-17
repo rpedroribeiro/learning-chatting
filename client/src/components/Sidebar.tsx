@@ -17,7 +17,7 @@ const Sidebar = () => {
   const [baseUrl, setBaseUrl] = useState<string>('')
   const [isHovered, setIsHovered] = useState(false)
   const { setUserId, setAccountType } = useAuth()
-  const { isClassroom, setCurrFileItem, setIsClassroom, setCurrClass } = useClassroom()
+  const { isClassroom, setCurrFileItem, setIsClassroom, setCurrClass, setCurrFileItemChildren} = useClassroom()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -49,6 +49,7 @@ const Sidebar = () => {
       setCurrClass(null)
       setCurrFileItem(null)
       setAccountType(null)
+      setCurrFileItemChildren([])
       navigate('/login')
     }
   }

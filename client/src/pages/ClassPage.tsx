@@ -34,7 +34,7 @@ const ClassPage = () => {
         classId
       )
       if (status) {
-        setNotificationClassName(classInfo.name)
+        setNotificationClassName(classInfo.className)
         setNotificationClassId(classId)
         setNotificationType(notificationType)
         setNotificationMessage(formattedMessage)

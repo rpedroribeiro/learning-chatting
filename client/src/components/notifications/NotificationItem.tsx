@@ -17,9 +17,8 @@ type notificationItemProps = {
 const NotificationItem = ({notification, notificationType}: notificationItemProps) => {
   const [notificationMessage, setNotificationMessage] = useState<string>('')
   const [notificationTime, setNotificationTime] = useState<string>('')
-  const [errorMessage, setErrorMessage] = useState<string>('')
   const { userId } = useAuth()
-  const { currClass, setCurrFileItem } = useClassroom()
+  const { currClass, setCurrFileItem, setCurrFileItemChildren } = useClassroom()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -38,13 +37,24 @@ const NotificationItem = ({notification, notificationType}: notificationItemProp
     if (notificationType === NotificationType.FileSystemItemCreated) {
       if (notification.data.type === FileType.Folder) {
         setCurrFileItem(notification.data)
+        const [currChildren, status, message] = await fileSystemApi.getAllChidrenFromItemId(
+          userId,
+          currClass.id,
+          notification.data.id
+        )
+        status ? setCurrFileItemChildren(currChildren) : console.error(message)
       } else {
         const [newFileSystemItem, status, message] = await fileSystemApi.getFileSystemItemFromItemId(
           userId,
           currClass.id,
           notification.data.parentId
         )
-        status ? setCurrFileItem(newFileSystemItem) : setErrorMessage(message)
+        if (status) {
+          setCurrFileItem(newFileSystemItem)
+          setCurrFileItemChildren(newFileSystemItem.children)
+        } else {
+          console.error(message)
+        }
       }
     }
   }
@@ -60,7 +70,6 @@ const NotificationItem = ({notification, notificationType}: notificationItemProp
     ) : true
 
     await handleNotificationStates()
-
     const url = markedRead ? notificationsUtils.navigateToNotification(
       notificationType,
       userId,

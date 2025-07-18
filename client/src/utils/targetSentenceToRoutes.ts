@@ -1,10 +1,9 @@
 export const targetSentenceToRoute = {
-  "get the filesystem file ''": "",
+  "get the filesystem file ''": "/:userId/class/:classId/filesystem/:itemName",
   "post the filesystem file ''": "",
-  "get the filesystem folder ''": "",
+  "get the filesystem folder ''": "/:userId/class/:classId/filesystem/:itemName",
   "post the filesystem folder ''": "",
   "get the assignment '' information": "",
-  "post the assignment ''": "",
   "get the assignment '' due date": "",
   "get the assignment '' description": "",
   "get the assignment '' docs": "",

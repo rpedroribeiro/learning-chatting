@@ -23,10 +23,15 @@ const fetchCommandBotInformation = async (
   let paramIndex = 0;
   url = url.replace(placeholderRegex, (match) => {
     if (match === ':userId' || match === ':classId') return match
-    const value = params[paramIndex++]
-    return value !== undefined ? value : match
+    let value = params[paramIndex++]
+    if (value !== undefined) {
+      value = value.replace(/^['"]|['"]$/g, '')
+      return value
+    }
+    return match
   })
-  await axiosClient.get<any>(
+  url = '/api' + url
+  const response = await axiosClient.get<any>(
     url,
     { headers: { 
       'Content-Type': 'application/json' 
@@ -34,6 +39,7 @@ const fetchCommandBotInformation = async (
       withCredentials: true 
     }
   )
+  console.log(response.data)
 }
 
 const chattingApi = {

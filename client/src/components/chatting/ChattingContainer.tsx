@@ -3,14 +3,21 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faImage, faPaperPlane } from '@fortawesome/free-solid-svg-icons'
 import '../../styles/chatting.css'
 import { useEffect, useState } from 'react'
+import { commandBot } from '../../utils/commandBot'
+import { targetSentenceToRoute } from '../../utils/targetSentenceToRoutes'
 import CommandHelper from './CommandHelper'
+import { CommandType } from '../../utils/CommandType'
+import chattingApi from '../../api/chattingApi'
+import useAuth from '../../hooks/useAuth'
 
 const ChattingContainer = () => {
   const [chatInput, setChatInput] = useState<string>('')
-  const [command, setCommand] = useState<string>('')
+  const [bot, setBot] = useState<commandBot | null>(null)
+  const [command, setCommand] = useState<any>(null)
   const [file, setFile] = useState<null | File>(null)
   const [toggleCommandHelper, setToggleCommandHelper] = useState<boolean>(false)
   const { currClass } = useClassroom()
+  const { userId } = useAuth()
 
   const handleFileChange = (event: any) => {
     const file = event.target.files?.[0]
@@ -18,12 +25,31 @@ const ChattingContainer = () => {
   }
 
   useEffect(() => {
-    if (chatInput.startsWith('@') && command.length === 0) { setToggleCommandHelper(true) }
-    else if (command.length === 0) { setToggleCommandHelper(false) }
+    const newBot = new commandBot(Object.keys(targetSentenceToRoute))
+    setBot(newBot)
+  }, [])
+
+  const handleSendButton = () => {
+    if (command === CommandType.CommandBot) {
+      setCommand(null)
+      setChatInput('')
+      const result = bot?.findClosestMatch(chatInput)
+      result !== null ? chattingApi.fetchCommandBotInformation(
+        userId,
+        currClass.id,
+        result?.sentenceFound!,
+        result?.tokenizedParams!
+      ) : console.error(result)
+    }
+  }
+
+  useEffect(() => {
+    if (chatInput.startsWith('@') && command === null) { setToggleCommandHelper(true) }
+    else if (command === null) { setToggleCommandHelper(false) }
   }, [chatInput])
 
   const handleKeyClick = (lastKey: string) => {
-    if (lastKey === "Backspace" && chatInput.length === 0) { setCommand(''); setToggleCommandHelper(false)}
+    if (lastKey === "Backspace" && chatInput.length === 0) { setCommand(null); setToggleCommandHelper(false)}
   }
 
   return (
@@ -42,7 +68,7 @@ const ChattingContainer = () => {
           />
           <div className='input-and-send-container'>
             <div className='input-container'>
-              {command.length > 0 && <span style={{opacity: '40%', marginRight: '5px'}}>{command}:</span>}
+              {command !== null && <span style={{opacity: '40%', marginRight: '5px'}}>{command}:</span>}
               <input 
                 value={chatInput} 
                 onChange={(event) => setChatInput(event.target.value)}
@@ -55,7 +81,11 @@ const ChattingContainer = () => {
                 <input onChange={(event) => handleFileChange(event)} id='chat-file-upload' type='file' style={{ display: 'none' }}/>
               </div>
             </div>
-            <div className='send-btn-container' style={chatInput.length > 0 ? {backgroundColor: 'var(--button)'} : {backgroundColor: 'var(--componentColor'}}>
+            <div 
+              className='send-btn-container' 
+              style={chatInput.length > 0 ? {backgroundColor: 'var(--button)'} : {backgroundColor: 'var(--componentColor'}}
+              onClick={handleSendButton}
+            >
               <FontAwesomeIcon icon={faPaperPlane}/>
             </div>
           </div>

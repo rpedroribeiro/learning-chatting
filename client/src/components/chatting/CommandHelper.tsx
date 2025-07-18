@@ -1,12 +1,13 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faRobot, faBell, type IconDefinition } from '@fortawesome/free-solid-svg-icons'
+import { CommandType } from '../../utils/CommandType';
 import '../../styles/chatting.css'
 
 interface commandHelperProps {
-  command: string;
+  command: any;
   className: string;
   setToggleCommandHelper: React.Dispatch<React.SetStateAction<boolean>>;
-  setCommand: React.Dispatch<React.SetStateAction<string>>;
+  setCommand: React.Dispatch<React.SetStateAction<any>>;
   setChatInput: React.Dispatch<React.SetStateAction<string>>;
 }
 
@@ -18,7 +19,7 @@ const CommandHelper = ({
   setChatInput
 }: commandHelperProps) => {
 
-  const commands = [["commandBot", faRobot], ["ping", faBell]]
+  const commands = [[CommandType.CommandBot, faRobot], [CommandType.Ping, faBell]]
 
   const commandBotGuideLines = [["params:", "type inside single quotations"], ["accessible features:", "assignment, submisison, announcement, filesystem"]]
 
@@ -29,7 +30,7 @@ const CommandHelper = ({
 
   return (
     <div className={className}>
-      {command.length === 0 ? commands.map((item: any, key: any) => (
+      {command === null ? commands.map((item: any, key: any) => (
         <div 
           onClick={() => handleItemClick(item)}
           className='command-helper-item' key={key}
@@ -39,7 +40,7 @@ const CommandHelper = ({
             </div>
             <span>{item[0]}</span>
         </div>
-      )) : command === "commandBot" ? (
+      )) : command === CommandType.CommandBot ? (
         <>
           {commandBotGuideLines.map((guideline: any, key: any) => (
             <div key={key} className='command-helper-guideline-item'>

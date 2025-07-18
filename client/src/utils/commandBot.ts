@@ -158,7 +158,8 @@ export class commandBot {
    * @param inputSentence - The sentnece we are trying to match to one of the target sentences.
    * @returns The target sentence that matched to the input sentence.
    */
-  public findClosestMatch(inputSentence: string): string | null {
+  public findClosestMatch(inputSentence: string): [string, number] | [null, null] {
+    console.log("input sentence:", inputSentence)
     const [tokenizedSentence, tokenizedParams] = this.tokenize(inputSentence, true)
     const paramCount = tokenizedParams.length
     const [sentence, vector] = this.vectorize(
@@ -170,13 +171,17 @@ export class commandBot {
     let maxSimilarity = 0
     let sentenceFound = ""
     for (const targetSentence of targetSentences) {
-      const similarityScore = this.cosineSimilarity(vector, targetSentence[1])
+      const tokenSet = new Set(tokenizedSentence)
+      const targetTokens = new Set(this.tokenize(targetSentence[0], false)[0])
+      const jaccardScore = this.jaccardSimilarity(tokenSet, targetTokens)
+      const cosineScore = this.cosineSimilarity(vector, targetSentence[1])
+      const similarityScore = jaccardScore * cosineScore
       if (Math.max(maxSimilarity, similarityScore) > maxSimilarity) { 
         maxSimilarity = Math.max(maxSimilarity, similarityScore)
         sentenceFound = targetSentence[0]
       }
     }
-    return (maxSimilarity > 0.7) ? sentenceFound : null
+    return (maxSimilarity > 0.1) ? [sentenceFound, maxSimilarity] : [null, null]
   }
 
   /**
@@ -326,5 +331,18 @@ export class commandBot {
     const magnitudeA = Math.hypot(...vectorA)
     const magnitudeB = Math.hypot(...vectorB)
     return (magnitudeA === 0 || magnitudeB === 0) ? 0 : dotProduct / (magnitudeA * magnitudeB)
+  }
+
+  /**
+   * This method uses jaccard similarity to compare two sets of tokens.
+   * 
+   * @param setA - The first set of tokens.
+   * @param setB - The second set of tokens.
+   * @returns The similarity score using jaccard similarity.
+   */
+  private jaccardSimilarity(setA: Set<string>, setB: Set<string>): number {
+    const intersectionSize = new Set([...setA].filter(x => setB.has(x))).size
+    const unionSize = new Set([...setA, ...setB]).size
+    return unionSize === 0 ? 0 : intersectionSize / unionSize
   }
 }

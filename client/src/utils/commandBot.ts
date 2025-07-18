@@ -1,12 +1,12 @@
-class commandBot {
+export class commandBot {
   private vocabWords: string[]
   private synonymMap: Map<string, Set<string>>
   private reverseSynonymMap: Map<string, string>
   private suffixes: string[]
-  private termFrequencies: Map<string, number>
+  private sentenceFrequencies: Map<string, number>
   private sentenceCount: number
   private sentenceParamCount: Map<string, number>
-  private sentenceVectorMap: Map<string, (number | undefined)[]>
+  private sentenceVectorMap: Map<string, number[]>
 
   constructor(targetSentences: string[]) {
     const synonyms = new Map<string, Set<string>>([
@@ -18,9 +18,10 @@ class commandBot {
     this.reverseSynonymMap = this.createReverseSynonymMap(synonyms)
     this.suffixes = ["ing", "ed", "es", "s"]
     this.sentenceCount = 0
-    this.termFrequencies = new Map<string, number>()
+    this.sentenceFrequencies = new Map<string, number>()
     this.sentenceParamCount = new Map<string, number>()
-    this.sentenceVectorMap = this.computeTargetSentenceVectors(targetSentences)
+    this.sentenceVectorMap = new Map<string, number[]>()
+    this.computeTargetSentenceVectors(targetSentences)
   }
 
   /**
@@ -55,8 +56,8 @@ class commandBot {
    * 
    * @param wordFrequency - The build word frequency map.
    */
-  private setTermFrequency(wordFrequency: Map<string, number>): void {
-    this.termFrequencies = wordFrequency
+  private setSentenceFrequencies(sentenceFrequencies: Map<string, number>): void {
+    this.sentenceFrequencies = sentenceFrequencies
   }
 
   /**
@@ -69,38 +70,53 @@ class commandBot {
   }
 
   /**
+   * This method stores the sentence to vector map.
+   * 
+   * @param map - The map we are setting to the sentenceVectorMap.
+   */
+  private setSentenceVectorMap(map: Map<string, number[]>): void {
+    this.sentenceVectorMap = map
+  }
+
+  /**
    * This method takes in an array of target sentences and goes through the NLP pipeline
    * to make a map made up of the sentence as the key and their vector as the value.
    * 
    * @param sentences - The target sentences we want to map.
    * @returns A map of the sentence as the key and the vector as the value.
    */
-  private computeTargetSentenceVectors(sentences: string[]): Map<string, number[]> {
+  private computeTargetSentenceVectors(sentences: string[]): void {
     const words = new Set<string>([])
-    const wordFrequency = new Map<string, number>([])
+    const sentenceFrequencies = new Map<string, number>([])
     const allTokenizedSentence = new Set<string[]>()
     const sentenceParamCount = new Map<string, number>([])
+    const localSentenceVectorMap = new Map<string, number[]>([])
     this.setSentenceCount(sentences)
     for (const sentence of sentences) {
       const [tokenizedSentence, tokenizedParams] = this.tokenize(sentence)
       allTokenizedSentence.add(tokenizedSentence)
       sentenceParamCount.set(sentence, tokenizedParams.length)
-      for (const token in tokenizedSentence) {
-        if (wordFrequency.has(token)) { wordFrequency.set(token, wordFrequency.get(token)! + 1) }
-        else { wordFrequency.set(token, 1) }
-        words.add(token) 
+      let localSet = new Set<string>()
+      for (const token of tokenizedSentence) {
+        if (!localSet.has(token)) {
+          sentenceFrequencies.set(token, (sentenceFrequencies.get(token) || 0) + 1)
+          localSet.add(token)
+        }
+        words.add(token)
       }
     }
     const sortedVocabWords = Array.from(words).sort((a, b) => a.localeCompare(b))
     const sortedSentenceParamCount = this.sortMapByKey(sentenceParamCount)
-    const sortedWordFrequency = this.sortMapByKey(wordFrequency)
+    const sortedSentenceFrequencies = this.sortMapByKey(sentenceFrequencies)
     this.setSentenceParamCount(sortedSentenceParamCount)
-    this.setTermFrequency(sortedWordFrequency)
+    this.setSentenceFrequencies(sortedSentenceFrequencies)
     this.setVocabWords(sortedVocabWords)
     const tokenSentencesArray: string[][] = Array.from(allTokenizedSentence)
     for (let i = 0; i < sentences.length; i++) {
-      this.vectorize(tokenSentencesArray[i], sentences[i])
+      const [sentence, vector] = this.vectorize(tokenSentencesArray[i], sentences[i])
+      localSentenceVectorMap.set(sentence, vector)
     }
+    this.setSentenceVectorMap(localSentenceVectorMap)
   }
 
   /**
@@ -137,8 +153,7 @@ class commandBot {
       else if (match[0]) {
         const token = match[0]
         const normalizedToken = this.normalizeToken(token.toLocaleLowerCase())
-        const stemedToken = this.stemToken(normalizedToken)
-        tokens.push(stemedToken)
+        tokens.push(normalizedToken)
       }
     }
     return [tokens, params]
@@ -202,19 +217,40 @@ class commandBot {
    */
   private findLocalWordCount(sentenceTokens: string[]): Map<string, number> {
     const wordCount = new Map<string, number>([])
-    for (const token in sentenceTokens) {
+    for (const token of sentenceTokens) {
       if (wordCount.has(token)) { wordCount.set(token, wordCount.get(token)! + 1) }
       else { wordCount.set(token, 1) }
     }
     return this.sortMapByKey(wordCount)
   }
 
-  // Step 5 & 6: Compute TF-IDF weighted vector for a sentence including parameter count
-  vectorize(tokenizedSentence: string[], sentence: string): (number | undefined)[] {
+  /**
+   * This method vectorizes the tokens into a vector with n dimensions, where n is the length of
+   * the vocabWords array. This method returns the 
+   * 
+   * @param tokenizedSentence - The tokens of the sentence.
+   * @param sentence - The senentce the tokens were composed of.
+   * @returns The sentennce and the vector in an array.
+   */
+  vectorize(tokenizedSentence: string[], sentence: string): [string, number[]] {
     const termCount = this.findLocalWordCount(tokenizedSentence)
+    const words = this.getVocabWords()
+    let vector: number[] = []
+    for (let i = 0; i < words.length; i++) {
+      if (tokenizedSentence.indexOf(words[i]) !== -1) {
+        const tf: number = termCount.get(words[i])! / tokenizedSentence.length
+        const df: number = this.sentenceFrequencies.get(words[i])!
+        const idf: number = Math.log(1 + this.sentenceCount / (1 + df))
+        const vectorValue = tf * idf
+        vector.push(vectorValue)
+      } else {
+        vector.push(0)
+      }
+    }
+    return [sentence, vector]
   }
 
-  // Loops through all words from target sentences and stores them in set.
+  // // Loops through all words from target sentences and stores them in set.
   createVocabWords(targetSentences: Set<string>): Set<string> {
 
   }

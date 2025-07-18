@@ -9,6 +9,7 @@ import ClassPage from './pages/ClassPage'
 import StudentSubmission from './components/submissions/StudentSubmission'
 import SubmissionList from './components/submissions/SubmissionList'
 import NotificationsWidgetMenu from './components/notifications/NotificationsWidgetMenu'
+import ChattingContainer from './components/chatting/ChattingContainer'
 
 const AppRoutes = () => (
   <Routes>
@@ -35,6 +36,7 @@ const AppRoutes = () => (
       <Route path='assignments/:assignmentId/submissions' element={<SubmissionList />}/>
       <Route path='assignments/:assignmentId' element={<StudentSubmission />} />
       <Route path='notifications' element={<NotificationsWidgetMenu />} />
+      <Route path='chatting' element={<ChattingContainer />} />
     </Route>
   </Routes>
 )

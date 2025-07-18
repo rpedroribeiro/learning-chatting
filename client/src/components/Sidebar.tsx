@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBell, faRightFromBracket, faFolderOpen, faBook, type IconDefinition } from '@fortawesome/free-solid-svg-icons'
+import { faBell, faComment, faRightFromBracket, faFolderOpen, faBook, type IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import useClassroom from '../hooks/useClassroom'
 import profilePic from '../assets/images/people-face-avatar-icon-cartoon-character-png.webp'
 import '../styles/sidebar.css'
@@ -30,6 +30,7 @@ const Sidebar = () => {
     "Notifications": [faBell, "notifications"],
     "File System": [faFolderOpen, "files"],
     "Assignments": [faBook, "assignments"],
+    "Chatting": [faComment, "chatting"]
   }
 
   const handleLinkClick = (key: string) => {

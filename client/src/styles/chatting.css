@@ -1,0 +1,114 @@
+.chatting-page {
+  height: 100vh;
+  flex-grow: 1;
+}
+
+.chatting-header {
+  padding: 0 70px;
+  height: 100px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  background-color: var(--componentColor);
+}
+
+.chatbox-container {
+  padding: 30px 70px;
+  box-sizing: border-box;
+  height: calc(100vh - 100px);
+  background-color: var(--backgroundColor);
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.chatbox-interactive-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  position: relative;
+}
+
+.input-and-send-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.send-btn-container {
+  padding: 12px 13px;
+  border-radius: 100%;
+  background-color: var(--button);
+}
+
+.input-container {
+  height: 45px;
+  width: 95%;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 10px;
+  background-color: var(--componentColor);
+}
+
+.input-container input {
+  all: unset;
+  font: inherit;
+  color: inherit;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.command-helper-container {
+  position: absolute;
+  z-index: 2;
+  width: 95%;
+  background-color: #343E53;
+  transform: translateY(-60px);
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.command-helper-container.visible {
+  opacity: 1;
+  transform: translateY(-110px);
+  transition: opacity 0.6s ease-in-out, transform 0.3s ease-in;
+  pointer-events: auto;
+}
+
+.command-helper-container.visible > div:first-child {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.command-helper-item {
+  padding: 20px 0px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  cursor: pointer;
+}
+
+.command-helper-item:hover {
+  background-color: #434B5B;
+}
+
+.command-helper-item-icon {
+  width: 58px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.command-helper-guideline-item {
+  padding: 20px;
+  display: flex;
+  gap: 5px;
+}

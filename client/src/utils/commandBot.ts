@@ -34,6 +34,33 @@ export class commandBot {
   }
 
   /**
+   * This method returns the array of suffixes.
+   * 
+   * @returns The array of suffixes.
+   */
+  private getSuffixes(): string[] {
+    return this.suffixes
+  }
+
+  /**
+   * This method reutrns the map of the sentence to param count.
+   * 
+   * @returns The map of the sentence to param count.
+   */
+  private getSentenceParamCounts(): Map<string, number> {
+    return this.sentenceParamCount
+  }
+
+  /**
+   * This method returns the sentence to vector map.
+   * 
+   * @returns The sentence to vector map.
+   */
+  private getSentenceVectorMap(): Map<string, number[]> {
+    return this.sentenceVectorMap
+  }
+
+  /**
    * This method sets the param count.
    * 
    * @param paramCount 
@@ -89,13 +116,13 @@ export class commandBot {
     const words = new Set<string>([])
     const sentenceFrequencies = new Map<string, number>([])
     const allTokenizedSentence = new Set<string[]>()
-    const sentenceParamCount = new Map<string, number>([])
+    const localSentenceParamCount = new Map<string, number>([])
     const localSentenceVectorMap = new Map<string, number[]>([])
     this.setSentenceCount(sentences)
     for (const sentence of sentences) {
-      const [tokenizedSentence, tokenizedParams] = this.tokenize(sentence)
+      const [tokenizedSentence, tokenizedParams] = this.tokenize(sentence, false)
       allTokenizedSentence.add(tokenizedSentence)
-      sentenceParamCount.set(sentence, tokenizedParams.length)
+      localSentenceParamCount.set(sentence, tokenizedParams.length)
       let localSet = new Set<string>()
       for (const token of tokenizedSentence) {
         if (!localSet.has(token)) {
@@ -106,17 +133,50 @@ export class commandBot {
       }
     }
     const sortedVocabWords = Array.from(words).sort((a, b) => a.localeCompare(b))
-    const sortedSentenceParamCount = this.sortMapByKey(sentenceParamCount)
+    const sortedSentenceParamCount = this.sortMapByKey(localSentenceParamCount)
     const sortedSentenceFrequencies = this.sortMapByKey(sentenceFrequencies)
     this.setSentenceParamCount(sortedSentenceParamCount)
     this.setSentenceFrequencies(sortedSentenceFrequencies)
     this.setVocabWords(sortedVocabWords)
     const tokenSentencesArray: string[][] = Array.from(allTokenizedSentence)
+    const sentenceParamCount = this.getSentenceParamCounts()
     for (let i = 0; i < sentences.length; i++) {
-      const [sentence, vector] = this.vectorize(tokenSentencesArray[i], sentences[i])
+      const [sentence, vector] = this.vectorize(
+        tokenSentencesArray[i], 
+        sentences[i],
+        sentenceParamCount.get(sentences[i])!
+      )
       localSentenceVectorMap.set(sentence, vector)
     }
     this.setSentenceVectorMap(localSentenceVectorMap)
+  }
+
+  /**
+   * This method is public and finds the closes matching sentence to the input sentnece provided,
+   * if the similarity score is not greater than the predecided treshold, the method returns null.
+   * 
+   * @param inputSentence - The sentnece we are trying to match to one of the target sentences.
+   * @returns The target sentence that matched to the input sentence.
+   */
+  public findClosestMatch(inputSentence: string): string | null {
+    const [tokenizedSentence, tokenizedParams] = this.tokenize(inputSentence, true)
+    const paramCount = tokenizedParams.length
+    const [sentence, vector] = this.vectorize(
+      tokenizedSentence,
+      inputSentence,
+      paramCount
+    )
+    const targetSentences = this.getSentenceVectorMap()
+    let maxSimilarity = 0
+    let sentenceFound = ""
+    for (const targetSentence of targetSentences) {
+      const similarityScore = this.cosineSimilarity(vector, targetSentence[1])
+      if (Math.max(maxSimilarity, similarityScore) > maxSimilarity) { 
+        maxSimilarity = Math.max(maxSimilarity, similarityScore)
+        sentenceFound = targetSentence[0]
+      }
+    }
+    return (maxSimilarity > 0.7) ? sentenceFound : null
   }
 
   /**
@@ -132,10 +192,6 @@ export class commandBot {
     return new Map(sortedArray)
   }
 
-  // Step 8: Find the closest target sentence match to the input sentence
-  findClosestMatch(inputSentence: string): { sentence: string; similarity: number } {
-    
-  }
 
   /**
    * This method takes in a sentence and tokenizes the words and the params seperately.
@@ -143,7 +199,7 @@ export class commandBot {
    * @param sentence - The sentence to be tokenized.
    * @returns The tokens of words and params.
    */
-  tokenize(sentence: string): [string[], string[]] {
+  private tokenize(sentence: string, input: boolean): [string[], string[]] {
     const regex: RegExp = /'[\w]+'|(\w+)/g
     let tokens: string[] = []
     let params: string[] = []
@@ -153,7 +209,10 @@ export class commandBot {
       else if (match[0]) {
         const token = match[0]
         const normalizedToken = this.normalizeToken(token.toLocaleLowerCase())
-        tokens.push(normalizedToken)
+        if (input) {
+          const stemedToken = this.stemToken(normalizedToken)
+          tokens.push(stemedToken)
+        } else { tokens.push(normalizedToken) }
       }
     }
     return [tokens, params]
@@ -199,11 +258,14 @@ export class commandBot {
    * @returns The new token if prefix was removed, the old token if no change was needed.
    */
   private stemToken(token: string): string {
-    const matchingSuffixes = this.suffixes.filter(suffix => token.endsWith(suffix))
-    if (matchingSuffixes.length > 0) { 
-      const index = token.indexOf(matchingSuffixes[0])
-      const newToken = token.substring(0, index)
-      return newToken
+    const suffixes = this.getSuffixes()
+    const vocabWords = this.getVocabWords()
+    for (const suffix of suffixes) {
+      if (token.indexOf(suffix) !== -1) {
+        const index = token.indexOf(suffix)
+        const stemToken = token.substring(0, index)
+        if (stemToken in vocabWords) { return stemToken }
+      }
     }
     return token
   }
@@ -232,7 +294,7 @@ export class commandBot {
    * @param sentence - The senentce the tokens were composed of.
    * @returns The sentennce and the vector in an array.
    */
-  vectorize(tokenizedSentence: string[], sentence: string): [string, number[]] {
+  private vectorize(tokenizedSentence: string[], sentence: string, sentenceParamCount: number): [string, number[]] {
     const termCount = this.findLocalWordCount(tokenizedSentence)
     const words = this.getVocabWords()
     let vector: number[] = []
@@ -247,17 +309,22 @@ export class commandBot {
         vector.push(0)
       }
     }
+    vector.push(sentenceParamCount)
     return [sentence, vector]
   }
 
-  // // Loops through all words from target sentences and stores them in set.
-  createVocabWords(targetSentences: Set<string>): Set<string> {
-
+  /**
+   * This method compares the similarity between two vectors using cosine similarity.
+   * 
+   * @param vectorA - The first vector.
+   * @param vectorB - The second vector.
+   * @returns The similarity score between the two vectors.
+   */
+  private cosineSimilarity(vectorA: number[], vectorB: number[]): number {
+    if (vectorA.length !== vectorB.length) { throw new Error("Vectors are not of equal dimensions") }
+    const dotProduct = vectorA.reduce((sum, val, i) => sum + val * vectorB[i], 0)
+    const magnitudeA = Math.hypot(...vectorA)
+    const magnitudeB = Math.hypot(...vectorB)
+    return (magnitudeA === 0 || magnitudeB === 0) ? 0 : dotProduct / (magnitudeA * magnitudeB)
   }
-
-  // Used to find the closest math to the target sentence, can return null if not close enough
-  cosineSimilarity(vectorA: number[], vectorB: number[]): number | null {
-    
-  }
-
 }

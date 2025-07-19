@@ -5,8 +5,6 @@ import authServices from '../auth/auth.services'
 import { UserRole, FileType, NotificationType } from '@prisma/client'
 import fileSystemServices from './filesystem.services'
 import multer from 'multer'
-import path from 'path'
-import fs from 'fs'
 import fileSystemUtil from './filesystem.utils'
 import gcpBucketUtils from '../gcpbucket/gcpbucket.utils'
 import notificationsUtils from '../notifications/notifications.utils'
@@ -130,7 +128,6 @@ router.get('/:userId/class/:classId/filesystem/:itemId', authenticateToken, asyn
         itemName,
         ctx
       )
-      console.log(itemFound)
       itemFound ? res.status(200).json({fileSystemItem: itemFound}) : res.status(400).json({errorMessage: "Could not find filesystem item"})
     }
   } catch (error) {

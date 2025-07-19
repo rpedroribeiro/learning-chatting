@@ -12,6 +12,7 @@ import notificationsUtils from '../notifications/notifications.utils'
 const router = express.Router()
 const ctx = { prisma }
 const upload = multer({ dest: 'uploads/assignments'})
+const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
 /**
  * This POST route handles the creation of a new assignment in a class. It verifies
@@ -77,22 +78,37 @@ router.get('/:userId/class/:classId/assignment/:assignmentId', authenticateToken
   try {
     const userId = req.params.userId
     const assignmentId = req.params.assignmentId
-
     const currUser = await authServices.findUserById(userId, ctx)
-    if (currUser?.accountType === UserRole.Professor) {
-      const assignmentWithSubmissions = await assignmentServices.findAllSubmissionByAssignmentId(
-        assignmentId,
-        ctx  
-      )
-      res.status(200).json({assignmentWithSubmissions: assignmentWithSubmissions})
+    let assignmentWithSubmissions
+    if (uuidRegex.test(assignmentId)) {
+      if (currUser?.accountType === UserRole.Professor) {
+        assignmentWithSubmissions = await assignmentServices.findAllSubmissionByAssignmentId(
+          assignmentId,
+          ctx  
+        )
+      } else {
+       assignmentWithSubmissions = await assignmentServices.findAssignmentById(
+          userId,
+          assignmentId,
+          ctx  
+        )
+      }
     } else {
-      const assignmentWithSubmissions = await assignmentServices.findAssignmentById(
-        userId,
-        assignmentId,
-        ctx  
-      )
-      res.status(200).json({assignmentWithSubmissions: assignmentWithSubmissions})
+      const assignmentName = assignmentId
+      if (currUser?.accountType === UserRole.Professor) {
+        assignmentWithSubmissions = await assignmentServices.findAllSubmissionsByAssignmentName(
+          assignmentName,
+          ctx  
+        )
+      } else {
+        assignmentWithSubmissions = await assignmentServices.findAssignmentByName(
+          userId,
+          assignmentName,
+          ctx  
+        )
+      }
     }
+    res.status(200).json({assignmentWithSubmissions: assignmentWithSubmissions})
   } catch (error) {
     console.error(error)
   }

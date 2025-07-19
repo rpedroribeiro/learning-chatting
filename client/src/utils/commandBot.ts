@@ -12,7 +12,8 @@ export class commandBot {
     const synonyms = new Map<string, Set<string>>([
       ["get", new Set(["find", "fetch", "search"])],
       ["post", new Set(["create", "make"])],
-      ["information", new Set(["data", "info"])]
+      ["information", new Set(["data", "info"])],
+      ["put", new Set(["submit", "update"])]
     ])
     this.vocabWords = []
     this.synonymMap = synonyms

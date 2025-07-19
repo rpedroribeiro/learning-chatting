@@ -1,4 +1,3 @@
-import { targetSentenceToRoute } from "../utils/targetSentenceToRoutes"
 import axiosClient from "./client"
 
 /**
@@ -14,14 +13,13 @@ import axiosClient from "./client"
 const fetchCommandBotInformation = async (
   userId: string,
   classId: string,
-  matchedSentence: string,
+  route: string,
   params: string[]
 ) => {
-  let url = targetSentenceToRoute[matchedSentence as keyof typeof targetSentenceToRoute]
-  url = url.replace(':userId', userId).replace(':classId', classId)
+  route = route.replace(':userId', userId).replace(':classId', classId)
   const placeholderRegex = /:([a-zA-Z0-9_]+)/g
   let paramIndex = 0;
-  url = url.replace(placeholderRegex, (match) => {
+  route = route.replace(placeholderRegex, (match) => {
     if (match === ':userId' || match === ':classId') return match
     let value = params[paramIndex++]
     if (value !== undefined) {
@@ -30,16 +28,17 @@ const fetchCommandBotInformation = async (
     }
     return match
   })
-  url = '/api' + url
+  route = '/api' + route
   const response = await axiosClient.get<any>(
-    url,
+    route,
     { headers: { 
       'Content-Type': 'application/json' 
       },
       withCredentials: true 
     }
   )
-  console.log(response.data)
+  console.log('here')
+  console.log(response)
 }
 
 const chattingApi = {

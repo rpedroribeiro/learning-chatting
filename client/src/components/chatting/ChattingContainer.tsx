@@ -25,21 +25,27 @@ const ChattingContainer = () => {
   }
 
   useEffect(() => {
-    const newBot = new commandBot(Object.keys(targetSentenceToRoute))
+    const newBot = new commandBot([...targetSentenceToRoute.keys()])
     setBot(newBot)
   }, [])
 
-  const handleSendButton = () => {
+  const handleSendButton = async () => {
     if (command === CommandType.CommandBot) {
       setCommand(null)
       setChatInput('')
       const result = bot?.findClosestMatch(chatInput)
-      result !== null ? chattingApi.fetchCommandBotInformation(
-        userId,
-        currClass.id,
-        result?.sentenceFound!,
-        result?.tokenizedParams!
-      ) : console.error(result)
+      if (result) {
+        const [method, route, params] = targetSentenceToRoute.get(result.sentenceFound!)!
+        switch (method) {
+          case 'get':
+            const fetchResult = await chattingApi.fetchCommandBotInformation(
+              userId,
+              currClass.id,
+              route,
+              result.tokenizedParams
+            )
+        }
+      }
     }
   }
 

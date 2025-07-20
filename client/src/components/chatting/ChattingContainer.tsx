@@ -38,12 +38,21 @@ const ChattingContainer = () => {
         const [method, route, params] = targetSentenceToRoute.get(result.sentenceFound!)!
         switch (method) {
           case 'get':
-            const fetchResult = await chattingApi.fetchCommandBotInformation(
+            const fetchResults = await chattingApi.fetchCommandBotInformation(
               userId,
               currClass.id,
               route,
-              result.tokenizedParams
+              result.tokenizedParams,
             )
+            break
+          case 'put':
+            const putResults = await chattingApi.putCommandBotInformation(
+              userId,
+              currClass.id,
+              route,
+              result.tokenizedParams,
+            )
+            break
         }
       }
     }

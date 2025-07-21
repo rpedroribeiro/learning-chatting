@@ -2,11 +2,13 @@ import chattingUtils from "../utils/chattingUtils"
 import axiosClient from "./client"
 
 type fetchCommandBotResponse = {
-  commandBotData: any
+  commandBotData: any;
+  commandCategory: any;
 }
 
 type putCommandBotResponse = {
-  commandBotUpdate: any
+  commandBotUpdate: any;
+  commandCategory: any;
 }
 
 /**
@@ -39,7 +41,7 @@ const fetchCommandBotInformation = async (
       withCredentials: true 
     }
   )
-  return response.data.commandBotData
+  return [response.data.commandBotData, response.data.commandCategory]
 }
 
 /**
@@ -64,7 +66,7 @@ const putCommandBotInformation = async (
     route,
     params
   )
-  const response = await axiosClient.put<fetchCommandBotResponse>(
+  const response = await axiosClient.put<putCommandBotResponse>(
     finalRoute,
     {},
     { headers: { 
@@ -73,7 +75,7 @@ const putCommandBotInformation = async (
       withCredentials: true 
     }
   )
-  return response.data.commandBotData
+  return [response.data.commandBotUpdate, response.data.commandCategory]
 }
 
 const chattingApi = {

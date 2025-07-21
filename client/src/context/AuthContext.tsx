@@ -52,7 +52,6 @@ export const AuthProvider = ({children}: AuthContextChildren) => {
       }
       return
     }
-
     if (!socket) {
       const newSocket = io(import.meta.env.VITE_SERVER_URL, {
         withCredentials: true,

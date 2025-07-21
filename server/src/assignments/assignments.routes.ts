@@ -6,7 +6,7 @@ import classService from '../classes/classes.services'
 import assignmentUtils from './assignments.utils'
 import assignmentServices from './assignments.services'
 import authServices from '../auth/auth.services'
-import { NotificationType, UserRole } from '@prisma/client'
+import { CommandCategory, NotificationType, UserRole } from '@prisma/client'
 import notificationsUtils from '../notifications/notifications.utils'
 
 const router = express.Router()
@@ -79,6 +79,7 @@ router.get('/:userId/class/:classId/assignment/:assignmentId', authenticateToken
     const userId = req.params.userId
     const assignmentId = req.params.assignmentId
     const currUser = await authServices.findUserById(userId, ctx)
+    let assignmentName = ''
     let assignmentWithSubmissions
     if (uuidRegex.test(assignmentId)) {
       if (currUser?.accountType === UserRole.Professor) {
@@ -94,7 +95,7 @@ router.get('/:userId/class/:classId/assignment/:assignmentId', authenticateToken
         )
       }
     } else {
-      const assignmentName = assignmentId
+      assignmentName = assignmentId
       if (currUser?.accountType === UserRole.Professor) {
         assignmentWithSubmissions = await assignmentServices.findAllSubmissionsByAssignmentName(
           assignmentName,
@@ -108,7 +109,7 @@ router.get('/:userId/class/:classId/assignment/:assignmentId', authenticateToken
         )
       }
     }
-    res.status(200).json({assignmentWithSubmissions: assignmentWithSubmissions})
+    assignmentName.length > 0 ? res.status(200).json({commandBotData: assignmentWithSubmissions, commandCategory: CommandCategory.ViewAssignment}) : res.status(200).json({assignmentWithSubmissions: assignmentWithSubmissions})
   } catch (error) {
     console.error(error)
   }

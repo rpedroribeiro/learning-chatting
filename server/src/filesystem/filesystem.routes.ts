@@ -2,7 +2,7 @@ import express from 'express'
 import { prisma } from '../context/context'
 import { authenticateToken } from '../auth/auth.jwt'
 import authServices from '../auth/auth.services'
-import { UserRole, FileType, NotificationType } from '@prisma/client'
+import { UserRole, FileType, NotificationType, CommandCategory } from '@prisma/client'
 import fileSystemServices from './filesystem.services'
 import multer from 'multer'
 import fileSystemUtil from './filesystem.utils'
@@ -128,7 +128,7 @@ router.get('/:userId/class/:classId/filesystem/:itemId', authenticateToken, asyn
         itemName,
         ctx
       )
-      itemFound ? res.status(200).json({fileSystemItem: itemFound}) : res.status(400).json({errorMessage: "Could not find filesystem item"})
+      itemFound ? res.status(200).json({commandBotData: itemFound, commandCategory: CommandCategory.ViewFileSystemItem}) : res.status(400).json({errorMessage: "Could not find filesystem item"})
     }
   } catch (error) {
     console.error(error)

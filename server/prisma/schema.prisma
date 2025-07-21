@@ -48,18 +48,18 @@ model RefreshToken {
 }
 
 model Classes {
-  id             String            @id @unique @default(uuid())
-  classCode      String            @unique
-  sectionId      String            @unique
+  id             String           @id @unique @default(uuid())
+  classCode      String           @unique
+  sectionId      String           @unique
   className      String 
   startTimes     DateTime[] 
   endTimes       DateTime[] 
   professorId    String 
-  professor      User              @relation("professorClasses", fields: [professorId], references: [id])
-  students       User[]            @relation("studentClasses")
-  rootFile       FileSystemItem?   @relation("classRootFile")
-  assignments    Assignment[]      @relation("classAssignments")
-  notifications  Notification[]  @relation("classNotifications")
+  professor      User             @relation("professorClasses", fields: [professorId], references: [id])
+  students       User[]           @relation("studentClasses")
+  rootFile       FileSystemItem?  @relation("classRootFile")
+  assignments    Assignment[]     @relation("classAssignments")
+  notifications  Notification[]   @relation("classNotifications")
 }
 
 enum FileType {
@@ -122,4 +122,13 @@ enum NotificationType {
   StudentSubmission
   FileSystemItemCreated
   AnnouncementPosted
+}
+
+enum CommandCategory {
+  PostAnnoucement
+  ViewAnnouncement
+  ViewStudentSubmission
+  ViewAssignment
+  ViewFileSystemItem
+  PingUser
 }

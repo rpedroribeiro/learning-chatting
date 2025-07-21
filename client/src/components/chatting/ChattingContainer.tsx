@@ -38,7 +38,7 @@ const ChattingContainer = () => {
         const [method, route, params] = targetSentenceToRoute.get(result.sentenceFound!)!
         switch (method) {
           case 'get':
-            const fetchResults = await chattingApi.fetchCommandBotInformation(
+            const [data, category] = await chattingApi.fetchCommandBotInformation(
               userId,
               currClass.id,
               route,

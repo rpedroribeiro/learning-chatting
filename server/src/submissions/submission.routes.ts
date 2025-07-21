@@ -4,7 +4,7 @@ import { authenticateToken } from '../auth/auth.jwt'
 import multer from 'multer'
 import submissionServices from './submission.services'
 import authServices from '../auth/auth.services'
-import { NotificationType, UserRole } from '@prisma/client'
+import { CommandCategory, NotificationType, UserRole } from '@prisma/client'
 import gcpBucketUtils from '../gcpbucket/gcpbucket.utils'
 import submissionUtils from './submission.utils'
 import assignmentServices from '../assignments/assignments.services'
@@ -137,8 +137,9 @@ router.delete('/:userId/class/:classId/assignment/:assignmentId/uploadfiles', au
 router.put('/:userId/class/:classId/assignment/:assignmentId/submit', authenticateToken, async (req, res, next) => {
   try {
     const userId = req.params.userId
-    let assignmentId = req.params.assignmentId
     const classId = req.params.classId
+    let assignmentId = req.params.assignmentId
+    let assignmentName = ''
 
     let currSubmission
     if (uuidRegex.test(assignmentId)) {
@@ -148,7 +149,7 @@ router.put('/:userId/class/:classId/assignment/:assignmentId/submit', authentica
         ctx
       )
     } else {
-      const assignmentName = assignmentId
+      assignmentName = assignmentId
       const result = await submissionServices.findSubmissionWithUserIdAndAssignmentName(
         userId,
         assignmentName,
@@ -194,7 +195,7 @@ router.put('/:userId/class/:classId/assignment/:assignmentId/submit', authentica
       res
     )
 
-    res.status(200).json({submission: updatedSubmission})
+    assignmentName.length > 0 ? res.status(200).json({commandBotData: updatedSubmission, commandCategory: CommandCategory.ViewStudentSubmission}) : res.status(200).json({submission: updatedSubmission})
   } catch (error) {
     console.error(error)
   }

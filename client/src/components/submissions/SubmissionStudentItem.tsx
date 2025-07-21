@@ -17,6 +17,7 @@ const SubmissionStudentItem = ({submission, dueDate}: submissionStudentItemProps
   const { accountType } = useAuth()
 
   useEffect(() => {
+    console.log(submission)
     const date = new Date(dueDate)
     if (submission.submitted) {
       new Date(submission.submissionTime) > date ? 
@@ -35,7 +36,7 @@ const SubmissionStudentItem = ({submission, dueDate}: submissionStudentItemProps
           </div>
           <div className='submission-student-item-name'>
             <span className='submission-student-file-name'>
-              {accountType === UserRole.Student 
+              {accountType === UserRole.Professor 
                 ? `${submission.student.firstName} ${submission.student.lastName}` 
                 : submission.name
               }

@@ -16,18 +16,13 @@ const fillOutRoute = (
   userId: string,
   classId: string,
   route: string,
-  params: string[]
+  record: Record<string, string>
 ) => {
   route = route.replace(':userId', userId).replace(':classId', classId)
   const placeholderRegex = /:([a-zA-Z0-9_]+)/g
-  let paramIndex = 0;
-  route = route.replace(placeholderRegex, (match) => {
-    if (match === ':userId' || match === ':classId') return match
-    let value = params[paramIndex++]
-    if (value !== undefined) {
-      value = value.replace(/^['"]|['"]$/g, '')
-      return value
-    }
+  route = route.replace(placeholderRegex, (match, key) => {
+    if (key === 'userId' || key === 'classId') return match
+    if (key in record) { return record[key].replace(/^['"]|['"]$/g, '') }
     return match
   })
   route = '/api' + route
@@ -45,7 +40,8 @@ const fillOutRoute = (
 const formatCommandBotMessage = (
   accountType: string,
   data: any,
-  commandCategory: CommandCategory
+  commandCategory: CommandCategory,
+  params: string[]
 ): string => {
   switch (commandCategory) {
     case CommandCategory.ViewFileSystemItem:
@@ -54,8 +50,8 @@ const formatCommandBotMessage = (
       return `CommandBot linked the assignment ${data.name} to the chat`
     case CommandCategory.ViewStudentSubmission:
       if (accountType === UserRole.Student) { return `CommandBot linked the submission of assignment ${data.name}` } 
-      else { return `CommandBot linked the submission of student ${data.student.firstName} ${data.student.lastName} 
-      in the assignment ${data.assignment.name}`}
+      else { return params.length > 1 ? `CommandBot linked the submission of students for ${data.name}`
+      : `CommandBot linked the submission from ${params[params.length - 1]} for ${data.name}`}
   }
   return ""
 }

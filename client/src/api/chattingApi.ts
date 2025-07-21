@@ -26,14 +26,14 @@ const fetchCommandBotInformation = async (
   userId: string,
   classId: string,
   route: string,
-  params: string[],
+  record: Record<string, string>,
   submission: boolean
 ) => {
   const finalRoute = chattingUtils.fillOutRoute(
     userId,
     classId,
     route,
-    params
+    record
   )
   const response = await axiosClient.get<fetchCommandBotResponse>(
     finalRoute,
@@ -61,13 +61,13 @@ const putCommandBotInformation = async (
   userId: string,
   classId: string,
   route: string,
-  params: string[],
+  record: Record<string, string>,
 ) => {
   const finalRoute = chattingUtils.fillOutRoute(
     userId,
     classId,
     route,
-    params
+    record
   )
   const response = await axiosClient.put<putCommandBotResponse>(
     finalRoute,

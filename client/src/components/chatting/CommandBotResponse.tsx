@@ -18,7 +18,8 @@ const CommandBotResponse = ({commandBotInfo}: commandBotProps) => {
     const newMessage = chattingUtils.formatCommandBotMessage(
       accountType!,
       commandBotInfo[2],
-      commandBotInfo[1]
+      commandBotInfo[1],
+      commandBotInfo[3]
     )
     setCommandBotMessage(newMessage)
   }, [])

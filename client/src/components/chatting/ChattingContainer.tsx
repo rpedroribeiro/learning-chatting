@@ -41,14 +41,19 @@ const ChattingContainer = () => {
       const result = bot?.findClosestMatch(chatInput)
       if (result) {
         let chatData: chatData
-        const [method, route, params] = targetSentenceToRoute.get(result.sentenceFound!)!
+        const [method, route, params, record] = targetSentenceToRoute.get(result.sentenceFound!)!
+        const filledRecord: Record<string, string> = {}
+        const recordKeys = Object.keys(record)
+        recordKeys.forEach((key, index) => {
+          filledRecord[key] = result.tokenizedParams[index] ?? ""
+        })
         switch (method) {
           case 'get':
             const [fetchData, fetchCategory] = await chattingApi.fetchCommandBotInformation(
               userId,
               currClass.id,
               route,
-              result.tokenizedParams,
+              filledRecord,
               params.includes('submission') ? true : false
             )
             chatData = [CommandType.CommandBot, fetchCategory, fetchData, params]

@@ -1,14 +1,15 @@
 import chattingUtils from "../utils/chattingUtils"
+import type { CommandCategory } from "../utils/CommandCategory";
 import axiosClient from "./client"
 
 type fetchCommandBotResponse = {
   commandBotData: any;
-  commandCategory: any;
+  commandCategory: CommandCategory;
 }
 
 type putCommandBotResponse = {
   commandBotUpdate: any;
-  commandCategory: any;
+  commandCategory: CommandCategory;
 }
 
 /**

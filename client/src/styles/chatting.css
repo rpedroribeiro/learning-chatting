@@ -112,3 +112,23 @@
   display: flex;
   gap: 5px;
 }
+
+.chat-history {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  gap: 20px;
+  border: 1px solid red;
+}
+
+.command-bot-chat-container {
+  background-color: #202227;
+  width: 500px;
+  padding: 20px;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-radius: 20px;
+}

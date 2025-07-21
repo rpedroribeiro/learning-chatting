@@ -9,11 +9,16 @@ import CommandHelper from './CommandHelper'
 import { CommandType } from '../../utils/CommandType'
 import chattingApi from '../../api/chattingApi'
 import useAuth from '../../hooks/useAuth'
+import type { CommandCategory } from '../../utils/CommandCategory'
+import CommandBotResponse from './CommandBotResponse'
+
+type chatData = [CommandType | null, CommandCategory | null, any]
 
 const ChattingContainer = () => {
   const [chatInput, setChatInput] = useState<string>('')
   const [bot, setBot] = useState<commandBot | null>(null)
   const [command, setCommand] = useState<any>(null)
+  const [chats, setChats] = useState<chatData[]>([])
   const [file, setFile] = useState<null | File>(null)
   const [toggleCommandHelper, setToggleCommandHelper] = useState<boolean>(false)
   const { currClass } = useClassroom()
@@ -28,6 +33,10 @@ const ChattingContainer = () => {
     const newBot = new commandBot([...targetSentenceToRoute.keys()])
     setBot(newBot)
   }, [])
+
+  useEffect(() => {
+    console.log(chats)
+  }, [chats])
 
   const handleSendButton = async () => {
     if (command === CommandType.CommandBot) {
@@ -44,6 +53,8 @@ const ChattingContainer = () => {
               route,
               result.tokenizedParams,
             )
+            const chatData: chatData = [CommandType.CommandBot, category, data]
+            setChats(prev => [...prev, chatData])
             break
           case 'put':
             const putResults = await chattingApi.putCommandBotInformation(
@@ -73,6 +84,19 @@ const ChattingContainer = () => {
         <h1>{currClass.className} | Class Chat</h1>
       </div>
       <div className='chatbox-container'>
+        <div className='chat-history'>
+          {chats.length > 0 && chats.map((chat: any, key: any) => (
+            <>
+              {chat[0] === CommandType.CommandBot ? 
+                <CommandBotResponse 
+                  key={key}
+                  commandBotInfo={chat}
+                /> : 
+                []
+              }
+            </>
+          ))}
+        </div>
         <div className='chatbox-interactive-container'>
           <CommandHelper
             command={command}

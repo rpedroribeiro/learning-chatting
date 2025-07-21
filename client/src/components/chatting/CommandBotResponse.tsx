@@ -2,11 +2,9 @@ import { useEffect, useState } from "react"
 import { CommandCategory } from "../../utils/CommandCategory"
 import FileSystemItem from "../files/FileSystemItem"
 import chattingUtils from "../../utils/chattingUtils"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faClock } from "@fortawesome/free-solid-svg-icons"
-import SubmissionFileItem from "../submissions/SubmissionFileItem"
-import { UserRole } from "../../utils/UserRole"
 import CommandBotAssignment from "./CommandBotAssignment"
+import CommandBotSubmission from "./CommandBotSubmission"
+import useAuth from "../../hooks/useAuth"
 
 interface commandBotProps {
   commandBotInfo: any
@@ -14,9 +12,11 @@ interface commandBotProps {
 
 const CommandBotResponse = ({commandBotInfo}: commandBotProps) => {
   const [commandBotMessage, setCommandBotMessage] = useState<string>('')
+  const { accountType } = useAuth()
 
   useEffect(() => {
     const newMessage = chattingUtils.formatCommandBotMessage(
+      accountType!,
       commandBotInfo[2],
       commandBotInfo[1]
     )
@@ -35,6 +35,8 @@ const CommandBotResponse = ({commandBotInfo}: commandBotProps) => {
         </>
       ) : commandBotInfo[1] === CommandCategory.ViewAssignment ? (
         <CommandBotAssignment assignmentInfo={commandBotInfo[2]} params={commandBotInfo[3]}/>
+      ) : commandBotInfo[1] === CommandCategory.ViewStudentSubmission ? (
+        <CommandBotSubmission assignmentInfo={commandBotInfo[2]} />
       ) : []}
     </div>
   )

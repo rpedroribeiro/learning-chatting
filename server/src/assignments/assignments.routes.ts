@@ -79,6 +79,7 @@ router.get('/:userId/class/:classId/assignment/:assignmentId', authenticateToken
     const userId = req.params.userId
     const assignmentId = req.params.assignmentId
     const currUser = await authServices.findUserById(userId, ctx)
+    const submission = req.query.submission
     let assignmentName = ''
     let assignmentWithSubmissions
     if (uuidRegex.test(assignmentId)) {
@@ -109,7 +110,11 @@ router.get('/:userId/class/:classId/assignment/:assignmentId', authenticateToken
         )
       }
     }
-    assignmentName.length > 0 ? res.status(200).json({commandBotData: assignmentWithSubmissions, commandCategory: CommandCategory.ViewAssignment}) : res.status(200).json({assignmentWithSubmissions: assignmentWithSubmissions})
+    
+    assignmentName.length > 0 ? res.status(200).json({
+      commandBotData: assignmentWithSubmissions, 
+      commandCategory: submission ? CommandCategory.ViewStudentSubmission : CommandCategory.ViewAssignment
+    }) : res.status(200).json({assignmentWithSubmissions: assignmentWithSubmissions})
   } catch (error) {
     console.error(error)
   }

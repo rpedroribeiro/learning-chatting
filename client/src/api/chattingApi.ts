@@ -27,6 +27,7 @@ const fetchCommandBotInformation = async (
   classId: string,
   route: string,
   params: string[],
+  submission: boolean
 ) => {
   const finalRoute = chattingUtils.fillOutRoute(
     userId,
@@ -39,7 +40,8 @@ const fetchCommandBotInformation = async (
     { headers: { 
       'Content-Type': 'application/json' 
       },
-      withCredentials: true 
+      withCredentials: true ,
+      params: { submission },
     }
   )
   return [response.data.commandBotData, response.data.commandCategory]

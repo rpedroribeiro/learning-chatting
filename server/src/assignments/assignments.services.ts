@@ -199,6 +199,14 @@ const findAssignmentByName = async (
       submissions: {
         where: {
           studentId: studentId
+        },
+        include: {
+          student: {
+            select: {
+              firstName: true,
+              lastName: true
+            }
+          }
         }
       }
     }

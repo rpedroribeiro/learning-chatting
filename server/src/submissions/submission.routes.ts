@@ -140,7 +140,6 @@ router.put('/:userId/class/:classId/assignment/:assignmentId/submit', authentica
     const classId = req.params.classId
     let assignmentId = req.params.assignmentId
     let assignmentName = ''
-
     let currSubmission
     if (uuidRegex.test(assignmentId)) {
       currSubmission = await submissionServices.findSubmissionWithUserIdAndAssignmentId(
@@ -151,8 +150,8 @@ router.put('/:userId/class/:classId/assignment/:assignmentId/submit', authentica
     } else {
       assignmentName = assignmentId
       const result = await submissionServices.findSubmissionWithUserIdAndAssignmentName(
-        userId,
         assignmentName,
+        userId,
         ctx
       )
       if (result) {

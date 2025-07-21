@@ -40,25 +40,29 @@ const ChattingContainer = () => {
       setChatInput('')
       const result = bot?.findClosestMatch(chatInput)
       if (result) {
+        let chatData: chatData
         const [method, route, params] = targetSentenceToRoute.get(result.sentenceFound!)!
         switch (method) {
           case 'get':
-            const [data, category] = await chattingApi.fetchCommandBotInformation(
+            const [fetchData, fetchCategory] = await chattingApi.fetchCommandBotInformation(
               userId,
               currClass.id,
               route,
               result.tokenizedParams,
+              params.includes('submission') ? true : false
             )
-            const chatData: chatData = [CommandType.CommandBot, category, data, params]
+            chatData = [CommandType.CommandBot, fetchCategory, fetchData, params]
             setChats(prev => [...prev, chatData])
             break
           case 'put':
-            const [putResults] = await chattingApi.putCommandBotInformation(
+            const [putData, putCategory] = await chattingApi.putCommandBotInformation(
               userId,
               currClass.id,
               route,
               result.tokenizedParams,
             )
+            chatData = [CommandType.CommandBot, putCategory, putData, params]
+            setChats(prev => [...prev, chatData])
             break
         }
       }

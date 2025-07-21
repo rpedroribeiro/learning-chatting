@@ -1,4 +1,5 @@
 import { CommandCategory } from "./CommandCategory";
+import { UserRole } from "./UserRole";
 
 /**
  * This util function takes in the route with the placeholder for the params
@@ -42,6 +43,7 @@ const fillOutRoute = (
  * @returns The message to append to the command bot response.
  */
 const formatCommandBotMessage = (
+  accountType: string,
   data: any,
   commandCategory: CommandCategory
 ): string => {
@@ -49,9 +51,13 @@ const formatCommandBotMessage = (
     case CommandCategory.ViewFileSystemItem:
       return `CommandBot linked the ${data.name} ${data.type.toLowerCase()}`
     case CommandCategory.ViewAssignment:
-      return `CommanBot linked the assignment ${data.name} to the chat`
+      return `CommandBot linked the assignment ${data.name} to the chat`
+    case CommandCategory.ViewStudentSubmission:
+      if (accountType === UserRole.Student) { return `CommandBot linked the submission of assignment ${data.name}` } 
+      else { return `CommandBot linked the submission of student ${data.student.firstName} ${data.student.lastName} 
+      in the assignment ${data.assignment.name}`}
   }
-return ""
+  return ""
 }
 
 const chattingUtils = {

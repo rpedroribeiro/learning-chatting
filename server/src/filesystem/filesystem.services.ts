@@ -109,15 +109,30 @@ const findFileSystemItemByName = async (
   itemName: string,
   ctx: Context
 ) => {
-  const item = await ctx.prisma.fileSystemItem.findFirst({
-    where: {
+  const suffixes = ['.pdf', '.png', '.jpg', '.jpeg', '.docx', '.txt', '.xlsx']
+  let item = await ctx.prisma.fileSystemItem.findFirst({
+    where: { 
       name: itemName
     },
     include: {
       children: true
-    }
+    },
   })
-  return item
+  if (item) { return item }
+  for (const suffix of suffixes) {
+    item = await ctx.prisma.fileSystemItem.findFirst({
+      where: { 
+        name: itemName + suffix 
+      },
+      include: { 
+        children: true 
+      },
+    })
+    if (item) {
+      return item
+    }
+  }
+  return null;
 }
 
 const fileSystemServices = {

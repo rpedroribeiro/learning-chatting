@@ -116,10 +116,10 @@
 .chat-history {
   width: 100%;
   display: flex;
+  flex-direction: column;
   justify-content: flex-end;
   align-items: flex-end;
   gap: 20px;
-  border: 1px solid red;
 }
 
 .command-bot-chat-container {

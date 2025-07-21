@@ -1,3 +1,5 @@
+import { CommandCategory } from "./CommandCategory";
+
 /**
  * This util function takes in the route with the placeholder for the params
  * and fills them out using the user id, the class id, and the rest of the array
@@ -31,8 +33,28 @@ const fillOutRoute = (
   return route
 }
 
+/**
+ * This util function formats the mssage the command bot displays after the resposne 
+ * is fetched depending on the command category.
+ * 
+ * @param data - The data from the fetched route.
+ * @param commandCategory - The command category this falls under.
+ * @returns The message to append to the command bot response.
+ */
+const formatCommandBotMessage = (
+  data: any,
+  commandCategory: CommandCategory
+): string => {
+  switch (commandCategory) {
+    case CommandCategory.ViewFileSystemItem:
+      return `CommandBot linked the ${data.name} ${data.type.toLowerCase()}`
+  }
+return ""
+}
+
 const chattingUtils = {
-  fillOutRoute
+  fillOutRoute,
+  formatCommandBotMessage
 }
 
 export default chattingUtils

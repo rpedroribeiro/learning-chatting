@@ -12,7 +12,7 @@ import useAuth from '../../hooks/useAuth'
 import type { CommandCategory } from '../../utils/CommandCategory'
 import CommandBotResponse from './CommandBotResponse'
 
-type chatData = [CommandType | null, CommandCategory | null, any]
+type chatData = [CommandType | null, CommandCategory | null, any, string[]]
 
 const ChattingContainer = () => {
   const [chatInput, setChatInput] = useState<string>('')
@@ -49,7 +49,7 @@ const ChattingContainer = () => {
               route,
               result.tokenizedParams,
             )
-            const chatData: chatData = [CommandType.CommandBot, category, data]
+            const chatData: chatData = [CommandType.CommandBot, category, data, params]
             setChats(prev => [...prev, chatData])
             break
           case 'put':

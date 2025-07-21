@@ -34,7 +34,7 @@ const CommandBotResponse = ({commandBotInfo}: commandBotProps) => {
           )) : <FileSystemItem props={commandBotInfo[2]} />}
         </>
       ) : commandBotInfo[1] === CommandCategory.ViewAssignment ? (
-        <CommandBotAssignment assignmentInfo={commandBotInfo[2]} commandBotMessage={commandBotMessage}/>
+        <CommandBotAssignment assignmentInfo={commandBotInfo[2]} params={commandBotInfo[3]}/>
       ) : []}
     </div>
   )

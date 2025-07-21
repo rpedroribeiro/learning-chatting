@@ -8,10 +8,10 @@ import useClassroom from "../../hooks/useClassroom"
 
 interface commandBotAssignmentProps {
   assignmentInfo: any;
-  commandBotMessage: string;
+  params: string[]
 }
 
-const CommandBotAssignment = ({assignmentInfo}: commandBotAssignmentProps) => {
+const CommandBotAssignment = ({assignmentInfo, params}: commandBotAssignmentProps) => {
   const [dueDate, setDueDate] = useState<string>('')
   const [clockColor, setClockColor] = useState<string>('')
   const { setCurrAssignment } = useClassroom()
@@ -34,20 +34,26 @@ const CommandBotAssignment = ({assignmentInfo}: commandBotAssignmentProps) => {
   return (
     <div className="command-bot-assignment">
       <h3>{assignmentInfo.name}</h3>
-      <div className="command-bot-assignment-date">
-        <h4>{dueDate}</h4>
-        <FontAwesomeIcon icon={faClock} color={clockColor} />
-      </div>
-      <div className="command-bot-assignment-description">
-        <h4>Assignment Description</h4>
-        <p>{assignmentInfo.description}</p>
-      </div>
-      <div className="command-bot-assignment-files">
-        <h4 className="command-bot-assignment-files-title">Assignment Files</h4>
-        {assignmentInfo.files && assignmentInfo.files.length > 0 && assignmentInfo.files.map((file: any, key: any) => (
-          <SubmissionFileItem file={file} key={key} accountType={UserRole.Student}/>
-        ))}
-      </div>
+      {(params.length === 0 || params.includes('dueDate')) &&
+        <div className="command-bot-assignment-date">
+          <h4>{dueDate}</h4>
+          <FontAwesomeIcon icon={faClock} color={clockColor} />
+        </div>
+      }
+      {(params.length === 0 || params.includes('description')) &&
+        <div className="command-bot-assignment-description">
+          <h4>Assignment Description</h4>
+          <p>{assignmentInfo.description}</p>
+        </div>
+      }
+      {(params.length === 0 || params.includes('files')) &&
+        <div className="command-bot-assignment-files">
+          <h4 className="command-bot-assignment-files-title">Assignment Files</h4>
+          {assignmentInfo.files && assignmentInfo.files.length > 0 && assignmentInfo.files.map((file: any, key: any) => (
+            <SubmissionFileItem file={file} key={key} accountType={UserRole.Student}/>
+          ))}
+        </div>
+      }
     </div>
   )
 }

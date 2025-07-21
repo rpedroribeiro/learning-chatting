@@ -2,6 +2,11 @@ import { useEffect, useState } from "react"
 import { CommandCategory } from "../../utils/CommandCategory"
 import FileSystemItem from "../files/FileSystemItem"
 import chattingUtils from "../../utils/chattingUtils"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faClock } from "@fortawesome/free-solid-svg-icons"
+import SubmissionFileItem from "../submissions/SubmissionFileItem"
+import { UserRole } from "../../utils/UserRole"
+import CommandBotAssignment from "./CommandBotAssignment"
 
 interface commandBotProps {
   commandBotInfo: any
@@ -28,6 +33,8 @@ const CommandBotResponse = ({commandBotInfo}: commandBotProps) => {
             <FileSystemItem props={file} key={key}/>
           )) : <FileSystemItem props={commandBotInfo[2]} />}
         </>
+      ) : commandBotInfo[1] === CommandCategory.ViewAssignment ? (
+        <CommandBotAssignment assignmentInfo={commandBotInfo[2]} commandBotMessage={commandBotMessage}/>
       ) : []}
     </div>
   )

@@ -48,6 +48,8 @@ const formatCommandBotMessage = (
   switch (commandCategory) {
     case CommandCategory.ViewFileSystemItem:
       return `CommandBot linked the ${data.name} ${data.type.toLowerCase()}`
+    case CommandCategory.ViewAssignment:
+      return `CommanBot linked the assignment ${data.name} to the chat`
   }
 return ""
 }

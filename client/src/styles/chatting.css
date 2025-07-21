@@ -120,6 +120,7 @@
   justify-content: flex-end;
   align-items: flex-end;
   gap: 20px;
+  margin-bottom: 20px;
 }
 
 .command-bot-chat-container {
@@ -131,4 +132,35 @@
   flex-direction: column;
   gap: 8px;
   border-radius: 20px;
+}
+
+.command-bot-assignment {
+  text-align: left;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.command-bot-assignment-date {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 5px;
+}
+
+.command-bot-assignment-description p {
+  font-size: 14px;
+}
+
+.command-bot-assignment-files {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.command-bot-assignment-files span {
+  font-size: 15px;
+}
+.command-bot-assignment-files-title {
+  margin-bottom: 8px;
 }

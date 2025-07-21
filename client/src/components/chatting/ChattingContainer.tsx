@@ -34,10 +34,6 @@ const ChattingContainer = () => {
     setBot(newBot)
   }, [])
 
-  useEffect(() => {
-    console.log(chats)
-  }, [chats])
-
   const handleSendButton = async () => {
     if (command === CommandType.CommandBot) {
       setCommand(null)
@@ -57,7 +53,7 @@ const ChattingContainer = () => {
             setChats(prev => [...prev, chatData])
             break
           case 'put':
-            const putResults = await chattingApi.putCommandBotInformation(
+            const [putResults] = await chattingApi.putCommandBotInformation(
               userId,
               currClass.id,
               route,

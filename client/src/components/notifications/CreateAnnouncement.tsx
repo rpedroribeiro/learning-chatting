@@ -1,5 +1,8 @@
 import { useState } from 'react'
 import '../../styles/modal.css'
+import notificationsApi from '../../api/notificationsApi'
+import useAuth from '../../hooks/useAuth'
+import useClassroom from '../../hooks/useClassroom'
 
 interface createAnnoucementProps {
   setToggleAnnoucementModal: React.Dispatch<React.SetStateAction<boolean>>
@@ -9,9 +12,17 @@ const CreateAnnoucement = ({setToggleAnnoucementModal}: createAnnoucementProps) 
   const [announcementTitle, setAnnoncementTitle] = useState<string>('')
   const [annoucementDescription, setAnnoucementDescription] = useState<string>('')
   const [errorMessage, setErrorMessage] = useState<string>('')
+  const { userId } = useAuth()
+  const { currClass } = useClassroom()
 
-  const handleCreateAnnoucement = () => {
-    
+  const handleCreateAnnoucement = async () => {
+    const [status, message] = await notificationsApi.createAnnouncement(
+      userId,
+      currClass.id,
+      announcementTitle,
+      annoucementDescription
+    )
+    status ? setToggleAnnoucementModal(false) : setErrorMessage(message)
   }
 
   return (

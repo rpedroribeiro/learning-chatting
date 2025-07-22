@@ -98,10 +98,38 @@ const markNotificationAsRead = async (
   }
 }
 
+/**
+ * 
+ * @param classId 
+ * @param name 
+ * @param description 
+ * @param ctx 
+ * @returns 
+ */
+const createAnnouncement = async (
+  classId: string,
+  name: string,
+  description: string,
+  ctx: Context
+) => {
+  try {
+    return await ctx.prisma.announcement.create({
+      data: {
+        classId: classId,
+        name: name,
+        description: description
+      }
+    })
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 const notificationServices = {
   createNotification,
   getAllNotificationsForCategoryForUser,
-  markNotificationAsRead
+  markNotificationAsRead,
+  createAnnouncement
 }
 
 export default notificationServices

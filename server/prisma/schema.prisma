@@ -48,18 +48,19 @@ model RefreshToken {
 }
 
 model Classes {
-  id             String           @id @unique @default(uuid())
-  classCode      String           @unique
-  sectionId      String           @unique
-  className      String 
-  startTimes     DateTime[] 
-  endTimes       DateTime[] 
-  professorId    String 
-  professor      User             @relation("professorClasses", fields: [professorId], references: [id])
-  students       User[]           @relation("studentClasses")
-  rootFile       FileSystemItem?  @relation("classRootFile")
-  assignments    Assignment[]     @relation("classAssignments")
-  notifications  Notification[]   @relation("classNotifications")
+  id                 String           @id @unique @default(uuid())
+  classCode          String           @unique
+  sectionId          String           @unique
+  className          String 
+  startTimes         DateTime[] 
+  endTimes           DateTime[] 
+  professorId        String 
+  professor          User             @relation("professorClasses", fields: [professorId], references: [id])
+  students           User[]           @relation("studentClasses")
+  rootFile           FileSystemItem?  @relation("classRootFile")
+  assignments        Assignment[]     @relation("classAssignments")
+  notifications      Notification[]   @relation("classNotifications")
+  classAnnoucements  Announcement[]   @relation("classAnnoucements")
 }
 
 enum FileType {
@@ -115,6 +116,15 @@ model Notification {
   read         Boolean           @default(false)
   createdAt    DateTime          @default(now())
   readAt       DateTime?
+}
+
+model Announcement {
+  id           String    @id @unique @default(uuid())
+  classId      String
+  class        Classes   @relation("classAnnoucements", fields: [classId], references: [id])
+  name         String
+  description  String
+  createdAt    DateTime  @default(now())
 }
 
 enum NotificationType {

@@ -89,6 +89,7 @@ const navigateToNotification = (
   classId: string,
   assignmentId: string | null
 ): string => {
+  console.log(assignmentId)
   switch (notificationType) {
     case NotificationType.AnnouncementPosted:
       // TODO: Make the annoucement section, possible new page or modal popup

@@ -9,17 +9,16 @@ import '../../styles/modal.css'
 
 interface addFileItemProps {
   setToggleAddItemForm: React.Dispatch<React.SetStateAction<boolean>>;
-  setCurrItemChildren: React.Dispatch<React.SetStateAction<any>>;
 }
 
-const FileItemModal = ({setToggleAddItemForm, setCurrItemChildren}: addFileItemProps) => {
+const FileItemModal = ({setToggleAddItemForm}: addFileItemProps) => {
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [newFileName, setNewFileName] = useState<string>('')
   const [fileType, setFileType] = useState<string>('')
   const [actualFileName, setActualFileName] = useState<string>('')
   const [file, setFile] = useState<File | null>(null)
   const { userId } = useAuth()
-  const { currClass, currFileItem } = useClassroom()
+  const { currClass, currFileItem, setCurrFileItemChildren } = useClassroom()
 
   /**
    * This function handles the change of value in the file input tag,
@@ -65,7 +64,7 @@ const FileItemModal = ({setToggleAddItemForm, setCurrItemChildren}: addFileItemP
           currClass.id,
           currFileItem.id,
         )
-        status ? setCurrItemChildren(allChildren) : setErrorMessage(message)
+        status ? setCurrFileItemChildren(allChildren) : setErrorMessage(message)
       }
     }
     setToggleAddItemForm(false)

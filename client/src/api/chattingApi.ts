@@ -11,6 +11,7 @@ type fetchCommandBotResponse = {
 type putCommandBotResponse = {
   commandBotUpdate: any;
   commandCategory: CommandCategory;
+  errorMessage: string;
 }
 
 /**
@@ -36,6 +37,7 @@ const fetchCommandBotInformation = async (
     route,
     record
   )
+  console.log(finalRoute)
   const response = await axiosClient.get<fetchCommandBotResponse>(
     finalRoute,
     { headers: { 
@@ -45,6 +47,7 @@ const fetchCommandBotInformation = async (
       params: { submission },
     }
   )
+  console.log(response.data.commandBotData)
   if (response.data.errorMessage) { return response.data.errorMessage }
   return [response.data.commandBotData, response.data.commandCategory]
 }
@@ -80,6 +83,7 @@ const putCommandBotInformation = async (
       withCredentials: true 
     }
   )
+  if (response.data.errorMessage) { return response.data.errorMessage }
   return [response.data.commandBotUpdate, response.data.commandCategory]
 }
 

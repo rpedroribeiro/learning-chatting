@@ -18,6 +18,7 @@ const fillOutRoute = (
   route: string,
   record: Record<string, string>
 ) => {
+  console.log(record)
   route = route.replace(':userId', userId).replace(':classId', classId)
   const placeholderRegex = /:([a-zA-Z0-9_]+)/g
   route = route.replace(placeholderRegex, (match, key) => {

@@ -13,6 +13,7 @@ const CommandBotSubmission = ({ assignmentInfo, record }: commandBotSubmissionPr
   const [filteredSubmissions, setFilteredSubmissions] = useState<any[]>([])
 
   useEffect(() => {
+    console.log(assignmentInfo)
     if (record["studentName"]) {
       const rawName = record["studentName"]
       const cleanedName = rawName.replace(/^'+|'+$/g, '').toLowerCase()

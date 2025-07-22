@@ -12,7 +12,8 @@ export class commandBot {
     const synonyms = new Map<string, Set<string>>([
       ["get", new Set(["find", "fetch", "search"])],
       ["post", new Set(["create", "make"])],
-      ["information", new Set(["data", "info"])]
+      ["information", new Set(["data", "info"])],
+      ["put", new Set(["submit", "update"])]
     ])
     this.vocabWords = []
     this.synonymMap = synonyms
@@ -181,6 +182,7 @@ export class commandBot {
         sentenceFound = targetSentence[0]
       }
     }
+
     return (maxSimilarity > 0.35) ? { sentenceFound, tokenizedParams } : null
   }
 
@@ -205,12 +207,12 @@ export class commandBot {
    * @returns The tokens of words and params.
    */
   private tokenize(sentence: string, input: boolean): [string[], string[]] {
-    const regex: RegExp = /'[\w]+'|(\w+)/g
+    const regex: RegExp = /'[^']*'|(\w+)/g
     let tokens: string[] = []
     let params: string[] = []
     let match
     while ((match = regex.exec(sentence)) !== null) {
-      if (match[1] === undefined) {  params.push(match[1]) } 
+      if (match[1] === undefined) {  params.push(match[0]) } 
       else if (match[0]) {
         const token = match[0]
         const normalizedToken = this.normalizeToken(token.toLocaleLowerCase())

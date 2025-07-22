@@ -18,9 +18,7 @@ const CommandHelper = ({
   setToggleCommandHelper,
   setChatInput
 }: commandHelperProps) => {
-
   const commands = [[CommandType.CommandBot, faRobot], [CommandType.Ping, faBell]]
-
   const commandBotGuideLines = [["params:", "type inside single quotations"], ["accessible features:", "assignment, submisison, announcement, filesystem"]]
 
   const handleItemClick = (item: [string, IconDefinition]) => {

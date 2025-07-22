@@ -192,13 +192,46 @@ const updateSubmissionStatus = async (
   })
 }
 
+/**
+ * This function returns the submission object using both the assignment name
+ * and the userId to query the object.
+ * 
+ * @param assignmentName - The assignment name of the submission instance.
+ * @param studentId - The id of the student of the submission instance
+ * @param ctx - The prisma context that this function is being used in.
+ * @returns - The desired submission object.
+ */
+const findSubmissionWithUserIdAndAssignmentName = async (
+  assignementName: string,
+  studentId: string,
+  ctx: Context
+) => {
+  const assignment = await ctx.prisma.assignment.findFirst({
+    where: {
+      name: assignementName
+    }
+  })
+  let id
+  if (assignment) { id = assignment.id } else { return null }
+  const submisison = await ctx.prisma.submission.findUnique({
+    where: {
+      assignmentId_studentId: {
+        assignmentId: assignment.id,
+        studentId: studentId
+      }
+    }
+  })
+  return (submisison) ? {submisison, id} : null
+}
+
 const submissionServices = {
   createSubmissionForAssignment,
   uploadSubmissionFile,
   deleteSubmissionFile,
   findSubmissionWithUserIdAndAssignmentId,
   updateSubmissionStatus,
-  getNotificationSubmissionData
+  getNotificationSubmissionData,
+  findSubmissionWithUserIdAndAssignmentName
 }
 
 export default submissionServices

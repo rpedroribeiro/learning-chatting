@@ -4,7 +4,7 @@ import { authenticateToken } from '../auth/auth.jwt'
 import multer from 'multer'
 import submissionServices from './submission.services'
 import authServices from '../auth/auth.services'
-import { NotificationType, UserRole } from '@prisma/client'
+import { CommandCategory, NotificationType, UserRole } from '@prisma/client'
 import gcpBucketUtils from '../gcpbucket/gcpbucket.utils'
 import submissionUtils from './submission.utils'
 import assignmentServices from '../assignments/assignments.services'
@@ -13,6 +13,7 @@ import notificationsUtils from '../notifications/notifications.utils'
 const router = express.Router()
 const ctx = { prisma }
 const upload = multer({ dest: 'uploads/submissions'})
+const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
 /**
  * This POST request uploads files the student inputed into their submissions instance
@@ -136,14 +137,32 @@ router.delete('/:userId/class/:classId/assignment/:assignmentId/uploadfiles', au
 router.put('/:userId/class/:classId/assignment/:assignmentId/submit', authenticateToken, async (req, res, next) => {
   try {
     const userId = req.params.userId
-    const assignmentId = req.params.assignmentId
     const classId = req.params.classId
+    let assignmentId = req.params.assignmentId
+    let assignmentName = ''
 
-    const currSubmission = await submissionServices.findSubmissionWithUserIdAndAssignmentId(
-      userId,
-      assignmentId,
-      ctx
-    )
+    let currSubmission
+    if (uuidRegex.test(assignmentId)) {
+      currSubmission = await submissionServices.findSubmissionWithUserIdAndAssignmentId(
+        userId,
+        assignmentId,
+        ctx
+      )
+    } else {
+      assignmentName = assignmentId
+      const result = await submissionServices.findSubmissionWithUserIdAndAssignmentName(
+        userId,
+        assignmentName,
+        ctx
+      )
+      if (result) {
+        assignmentId = result.id
+        currSubmission = result.submisison
+      } else {
+        res.status(400).json({message: "Cannot find the submission"})
+        throw new Error('Cannot find the submission')
+      }
+    }
 
     if (currSubmission?.submitted === true) {
       res.status(400).json({message: "Cannot make this request when assignment is already submitted"})
@@ -167,8 +186,6 @@ router.put('/:userId/class/:classId/assignment/:assignmentId/submit', authentica
       assignmentId,
       ctx
     )
-    
-    console.log(notificationData)
 
     await notificationsUtils.createNotificationAsStudent(
       userId,
@@ -178,7 +195,7 @@ router.put('/:userId/class/:classId/assignment/:assignmentId/submit', authentica
       res
     )
 
-    res.status(200).json({submission: updatedSubmission})
+    assignmentName.length > 0 ? res.status(200).json({commandBotData: updatedSubmission, commandCategory: CommandCategory.ViewStudentSubmission}) : res.status(200).json({submission: updatedSubmission})
   } catch (error) {
     console.error(error)
   }

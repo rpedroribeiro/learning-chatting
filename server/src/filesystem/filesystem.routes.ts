@@ -2,11 +2,9 @@ import express from 'express'
 import { prisma } from '../context/context'
 import { authenticateToken } from '../auth/auth.jwt'
 import authServices from '../auth/auth.services'
-import { UserRole, FileType, NotificationType } from '@prisma/client'
+import { UserRole, FileType, NotificationType, CommandCategory } from '@prisma/client'
 import fileSystemServices from './filesystem.services'
 import multer from 'multer'
-import path from 'path'
-import fs from 'fs'
 import fileSystemUtil from './filesystem.utils'
 import gcpBucketUtils from '../gcpbucket/gcpbucket.utils'
 import notificationsUtils from '../notifications/notifications.utils'
@@ -15,6 +13,7 @@ const router = express.Router()
 const ctx = { prisma }
 const upload = multer({ dest: 'uploads/file-system'})
 const bucketName: string = process.env.GOOGLE_BUCKET_NAME!
+const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
 /**
  * This route uploads will create a new FileSystem item in the database
@@ -107,7 +106,7 @@ router.get('/:userId/class/:classId/filesystem/:parentId/children', authenticate
 })
 
 /**
- * This route takes the id of the desired FileSytemItem and returns all the 
+ * This route takes the id or name of the desired FileSytemItem and returns all the 
  * attributes for it.
  */
 router.get('/:userId/class/:classId/filesystem/:itemId', authenticateToken, async (req, res, next) => {
@@ -115,14 +114,22 @@ router.get('/:userId/class/:classId/filesystem/:itemId', authenticateToken, asyn
     const classId = req.params.classId
     const itemId = req.params.itemId
 
-    const rootFileSystemItem = await fileSystemServices.findRootFileSystemItem(itemId, ctx)
-    if (rootFileSystemItem?.classId !== classId) {
-      res.status(400).json({message: "Root directory is not connected to the same class or any class"})
-      throw new Error('Root directory is not connected to the same class or any class')
+    if (uuidRegex.test(itemId)) {
+      const rootFileSystemItem = await fileSystemServices.findRootFileSystemItem(itemId, ctx)
+      if (rootFileSystemItem?.classId !== classId) {
+        res.status(400).json({message: "Root directory is not connected to the same class or any class"})
+        throw new Error('Root directory is not connected to the same class or any class')
+      }
+      const currFileSystemItem = await fileSystemServices.findFileSystemItemById(itemId, ctx)
+      res.status(200).json({fileSystemItem: currFileSystemItem})
+    } else {
+      const itemName = itemId
+      const itemFound = await fileSystemServices.findFileSystemItemByName(
+        itemName,
+        ctx
+      )
+      itemFound ? res.status(200).json({commandBotData: itemFound, commandCategory: CommandCategory.ViewFileSystemItem}) : res.status(400).json({errorMessage: "Could not find filesystem item"})
     }
-
-    const currFileSystemItem = await fileSystemServices.findFileSystemItemById(itemId, ctx)
-    res.status(200).json({fileSystemItem: currFileSystemItem})
   } catch (error) {
     console.error(error)
   }

@@ -115,11 +115,45 @@ const findAllSubmissionByAssignmentId = async (
 }
 
 /**
+ * This functions finds and returns all the submissions instances related
+ * to the assignment using the assignment name, also includes basic student
+ * information for each submission.
+ * 
+ * @param assignmentName - The assignment name used to find all related submissions.
+ * @param ctx - The prisma context that this function is being used in.
+ * @returns - A list of all the submission for the assignment
+ */
+const findAllSubmissionsByAssignmentName = async (
+  assignmentName: string,
+  ctx: Context
+) => {
+  return await ctx.prisma.assignment.findFirst({
+    where: {
+      name: assignmentName
+    },
+    include: {
+      submissions: {
+        include: {
+          student: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true
+            }
+          }
+        }
+      }
+    }
+  })
+}
+
+/**
  * This function returns all the assignment information necessary for the
  * student, which includes the assignment name, description, uploaded files,
  * and the student's already uploaded files before/after submission.
  * 
  * @param assignmentId - The assignmentId used to find all assignment information.
+ * @param studentId - The student making this request, used to find his submisison.
  * @param ctx - The prisma context that this function is being used in.
  * @returns - A detailed object of the assignment and the student's submission.
  */
@@ -142,11 +176,42 @@ const findAssignmentById = async (
   })
 }
 
+/**
+ * This function returns all the assignment information necessary for the
+ * student, which includes the assignment name, description, uploaded files,
+ * and the student's already uploaded files before/after submission.
+ * 
+ * @param assignmentName - The name of the assignment used to find all assignment information.
+ * @param studentId - The student making this request, used to find his submisison.
+ * @param ctx - The prisma context that this function is being used in.
+ * @returns - A detailed object of the assignment and the student's submission.
+ */
+const findAssignmentByName = async (
+  studentId: string,
+  assignmentName: string,
+  ctx: Context
+) => {
+  return await ctx.prisma.assignment.findFirst({
+    where: {
+      name: assignmentName
+    },
+    include: {
+      submissions: {
+        where: {
+          studentId: studentId
+        }
+      }
+    }
+  })
+}
+
 const assignmentServices = {
   createNewAssignment,
   findAllAssignmentsByClassId,
   findAllSubmissionByAssignmentId,
-  findAssignmentById
+  findAssignmentById,
+  findAssignmentByName,
+  findAllSubmissionsByAssignmentName
 }
 
 export default assignmentServices

@@ -97,11 +97,50 @@ const findRootFileSystemItem = async (currId: string, ctx: Context) => {
   return currentFileSystemItem
 }
 
+/**
+ * This function looks at all stored fileSystemItems and returns the
+ * object of the desired item based off the given name.
+ * 
+ * @param id - The name of the desired item
+ * @param ctx - The prisma context that this function is being used in.
+ * @returns The object of the item.
+ */
+const findFileSystemItemByName = async (
+  itemName: string,
+  ctx: Context
+) => {
+  const suffixes = ['.pdf', '.png', '.jpg', '.jpeg', '.docx', '.txt', '.xlsx']
+  let item = await ctx.prisma.fileSystemItem.findFirst({
+    where: { 
+      name: itemName
+    },
+    include: {
+      children: true
+    },
+  })
+  if (item) { return item }
+  for (const suffix of suffixes) {
+    item = await ctx.prisma.fileSystemItem.findFirst({
+      where: { 
+        name: itemName + suffix 
+      },
+      include: { 
+        children: true 
+      },
+    })
+    if (item) {
+      return item
+    }
+  }
+  return null;
+}
+
 const fileSystemServices = {
   createFileSystemItem,
   findFileSystemItemById,
   findAllChidrenForFileSystemItem,
-  findRootFileSystemItem
+  findRootFileSystemItem,
+  findFileSystemItemByName
 }
 
 export default fileSystemServices

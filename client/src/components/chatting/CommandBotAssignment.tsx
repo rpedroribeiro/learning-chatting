@@ -34,19 +34,19 @@ const CommandBotAssignment = ({assignmentInfo, params}: commandBotAssignmentProp
   return (
     <div className="command-bot-assignment">
       <h3>{assignmentInfo.name}</h3>
-      {(params.length === 0 || params.includes('dueDate')) &&
+      {(params.length === 1 || params.includes('dueDate')) &&
         <div className="command-bot-assignment-date">
           <h4>{dueDate}</h4>
           <FontAwesomeIcon icon={faClock} color={clockColor} />
         </div>
       }
-      {(params.length === 0 || params.includes('description')) &&
+      {(params.length === 1 || params.includes('description')) &&
         <div className="command-bot-assignment-description">
           <h4>Assignment Description</h4>
           <p>{assignmentInfo.description}</p>
         </div>
       }
-      {(params.length === 0 || params.includes('files')) &&
+      {(params.length === 1 || params.includes('files')) &&
         <div className="command-bot-assignment-files">
           <h4 className="command-bot-assignment-files-title">Assignment Files</h4>
           {assignmentInfo.files && assignmentInfo.files.length > 0 && assignmentInfo.files.map((file: any, key: any) => (

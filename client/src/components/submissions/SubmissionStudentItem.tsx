@@ -17,7 +17,6 @@ const SubmissionStudentItem = ({submission, dueDate}: submissionStudentItemProps
   const { accountType } = useAuth()
 
   useEffect(() => {
-    console.log(submission)
     const date = new Date(dueDate)
     if (submission.submitted) {
       new Date(submission.submissionTime) > date ? 

@@ -1,10 +1,11 @@
 import chattingUtils from "../utils/chattingUtils"
-import type { CommandCategory } from "../utils/CommandCategory";
+import { CommandCategory } from "../utils/CommandCategory";
 import axiosClient from "./client"
 
 type fetchCommandBotResponse = {
   commandBotData: any;
   commandCategory: CommandCategory;
+  errorMessage: string
 }
 
 type putCommandBotResponse = {
@@ -20,14 +21,14 @@ type putCommandBotResponse = {
  * @param userId - The id of the user making the request.
  * @param classId - The id of the class from the commandBot
  * @param matchedSentence - The sentence used to find the url
- * @param params - The params that will be placed in the url.
+ * @param record - Used to create the route to input the params into the url.
  */
 const fetchCommandBotInformation = async (
   userId: string,
   classId: string,
   route: string,
   record: Record<string, string>,
-  submission: boolean
+  submission: boolean | undefined
 ) => {
   const finalRoute = chattingUtils.fillOutRoute(
     userId,
@@ -44,6 +45,7 @@ const fetchCommandBotInformation = async (
       params: { submission },
     }
   )
+  if (response.data.errorMessage) { return response.data.errorMessage }
   return [response.data.commandBotData, response.data.commandCategory]
 }
 

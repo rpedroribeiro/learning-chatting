@@ -110,11 +110,16 @@ router.get('/:userId/class/:classId/assignment/:assignmentId', authenticateToken
         )
       }
     }
-    
+    if (!assignmentWithSubmissions) {
+      res.status(200).json({errorMessage: 'Could not find any assignment with the name provided'})
+      return 
+    }
+    const category = (submission !== undefined) ? CommandCategory.ViewStudentSubmission : CommandCategory.ViewAssignment
     assignmentName.length > 0 ? res.status(200).json({
       commandBotData: assignmentWithSubmissions, 
-      commandCategory: submission ? CommandCategory.ViewStudentSubmission : CommandCategory.ViewAssignment
+      commandCategory: category
     }) : res.status(200).json({assignmentWithSubmissions: assignmentWithSubmissions})
+    return
   } catch (error) {
     console.error(error)
   }

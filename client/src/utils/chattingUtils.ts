@@ -9,7 +9,7 @@ import { UserRole } from "./UserRole";
  * @param userId - The id of the user.
  * @param classId - The id of the class the user is currently in.
  * @param route - The route with all the placeholder values.
- * @param params - An array of params needed to replace the placeholder values.
+ * @param record - An record with the key as the param and the value as the input.
  * @returns The new route to be used in an API call.
  */
 const fillOutRoute = (

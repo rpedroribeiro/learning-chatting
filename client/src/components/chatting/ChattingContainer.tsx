@@ -47,16 +47,21 @@ const ChattingContainer = () => {
         recordKeys.forEach((key, index) => {
           filledRecord[key] = result.tokenizedParams[index] ?? ""
         })
+        const submission: boolean = params.includes('submission')
         switch (method) {
           case 'get':
-            const [fetchData, fetchCategory] = await chattingApi.fetchCommandBotInformation(
+            const response = await chattingApi.fetchCommandBotInformation(
               userId,
               currClass.id,
               route,
               filledRecord,
-              params.includes('submission') ? true : false
+              (submission === true) ? true : undefined
             )
-            chatData = [CommandType.CommandBot, fetchCategory, fetchData, params]
+            if ( typeof response === 'string' ) { chatData = [CommandType.CommandBot, null, response, params] }
+            else {
+              const [fetchCategory, fetchData] = response
+              chatData = [CommandType.CommandBot, fetchCategory, fetchData, params]
+            }
             setChats(prev => [...prev, chatData])
             break
           case 'put':
@@ -64,7 +69,7 @@ const ChattingContainer = () => {
               userId,
               currClass.id,
               route,
-              result.tokenizedParams,
+              filledRecord,
             )
             chatData = [CommandType.CommandBot, putCategory, putData, params]
             setChats(prev => [...prev, chatData])

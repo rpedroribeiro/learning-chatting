@@ -8,7 +8,7 @@ interface createAnnoucementProps {
   setToggleAnnoucementModal: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const CreateAnnoucement = ({setToggleAnnoucementModal}: createAnnoucementProps) => {
+const CreateAnnouncementModal = ({setToggleAnnoucementModal}: createAnnoucementProps) => {
   const [announcementTitle, setAnnoncementTitle] = useState<string>('')
   const [annoucementDescription, setAnnoucementDescription] = useState<string>('')
   const [errorMessage, setErrorMessage] = useState<string>('')
@@ -55,4 +55,4 @@ const CreateAnnoucement = ({setToggleAnnoucementModal}: createAnnoucementProps) 
   )
 }
 
-export default CreateAnnoucement
+export default CreateAnnouncementModal

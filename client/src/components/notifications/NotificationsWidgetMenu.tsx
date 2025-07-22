@@ -6,7 +6,7 @@ import { UserRole } from '../../utils/UserRole'
 import NotificationWidget from './NotificationWidget'
 import notificationsApi from '../../api/notificationsApi'
 import useClassroom from '../../hooks/useClassroom'
-import CreateAnnoucement from './CreateAnnouncement'
+import CreateAnnouncementModal from './CreateAnnouncementModal'
 
 const NotificationsWidgetMenu = () => {
   const [sortedWidgets, setSortedWidgets] = useState<any[]>([])
@@ -32,7 +32,7 @@ const NotificationsWidgetMenu = () => {
 
   return (
     <div className='notifications-page'>
-      {toggleAnnoucementModal && <CreateAnnoucement setToggleAnnoucementModal={setToggleAnnoucementModal}/>}
+      {toggleAnnoucementModal && <CreateAnnouncementModal setToggleAnnoucementModal={setToggleAnnoucementModal}/>}
       <div style={{display: 'flex', justifyContent: 'space-between'}}>
         <div style={{display: 'flex', alignItems: 'center', gap: '1.5vw'}}>
           <h1 className='notifications-title'>Notifications</h1>

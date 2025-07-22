@@ -12,7 +12,7 @@ import useAuth from '../../hooks/useAuth'
 import type { CommandCategory } from '../../utils/CommandCategory'
 import CommandBotResponse from './CommandBotResponse'
 
-type chatData = [CommandType | null, CommandCategory | null, any, string[]]
+type chatData = [CommandType | null, CommandCategory | null, any, string[], Record<string, string> | null]
 
 const ChattingContainer = () => {
   const [chatInput, setChatInput] = useState<string>('')
@@ -57,10 +57,10 @@ const ChattingContainer = () => {
               filledRecord,
               (submission === true) ? true : undefined
             )
-            if ( typeof response === 'string' ) { chatData = [CommandType.CommandBot, null, response, params] }
+            if ( typeof response === 'string' ) { chatData = [CommandType.CommandBot, null, response, params, null] }
             else {
               const [fetchCategory, fetchData] = response
-              chatData = [CommandType.CommandBot, fetchCategory, fetchData, params]
+              chatData = [CommandType.CommandBot, fetchCategory, fetchData, params, filledRecord]
             }
             setChats(prev => [...prev, chatData])
             break
@@ -71,7 +71,7 @@ const ChattingContainer = () => {
               route,
               filledRecord,
             )
-            chatData = [CommandType.CommandBot, putCategory, putData, params]
+            chatData = [CommandType.CommandBot, putCategory, putData, params, filledRecord]
             setChats(prev => [...prev, chatData])
             break
         }

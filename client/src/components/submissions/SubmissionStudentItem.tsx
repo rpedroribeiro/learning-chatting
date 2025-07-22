@@ -8,10 +8,11 @@ import useAuth from '../../hooks/useAuth'
 
 type submissionStudentItemProps = {
   submission: any;
+  assignmentName?: any;
   dueDate: string
 }
 
-const SubmissionStudentItem = ({submission, dueDate}: submissionStudentItemProps) => {
+const SubmissionStudentItem = ({submission, dueDate, assignmentName}: submissionStudentItemProps) => {
   const [toggleUploadedFiles, setToggleUploadedFiles] = useState<boolean>(false)
   const [clockColor, setClockColor] = useState<string>('')
   const { accountType } = useAuth()
@@ -35,9 +36,9 @@ const SubmissionStudentItem = ({submission, dueDate}: submissionStudentItemProps
           </div>
           <div className='submission-student-item-name'>
             <span className='submission-student-file-name'>
-              {accountType === UserRole.Professor 
-                ? `${submission.student.firstName} ${submission.student.lastName}` 
-                : submission.name
+              {accountType === UserRole.Student && assignmentName 
+                ? assignmentName
+                : `${submission.student.firstName} ${submission.student.lastName}` 
               }
             </span>
           </div>

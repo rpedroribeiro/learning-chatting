@@ -39,7 +39,7 @@ const CommandBotResponse = ({commandBotInfo}: commandBotProps) => {
       ) : commandBotInfo[2] === CommandCategory.ViewAssignment ? (
         <CommandBotAssignment assignmentInfo={commandBotInfo[1]} params={commandBotInfo[3]}/>
       ) : commandBotInfo[2] === CommandCategory.ViewStudentSubmission ? (
-        <CommandBotSubmission assignmentInfo={commandBotInfo[1]} />
+        <CommandBotSubmission assignmentInfo={commandBotInfo[1]} record={commandBotInfo[4]}/>
       ) : []}
     </div>
   )

@@ -25,16 +25,16 @@ const categoryToWeight = new Map<NotificationType, number>([
  * ranked by their urgency score and if at least one notification is unread.
  * 
  * @param notifications All the notifications for the course.
- * @returns A map with the notification category as the key, and the data, final score, and boolean
- * signifying the uread status.
+ * @returns A map with the notification category as the key, and the data as the value.
  */
-const fetchSortedWidgets = (notifications: any): [NotificationType, [any, number, boolean]][] => {
-  const studentCategoryMap = new Map<NotificationType, [any, number, boolean]>([])
+const fetchSortedWidgets = (notifications: any) => {
+  const studentCategoryMap = new Map<NotificationType, any[]>([])
+  const groupedCategoryMap = new Map<NotificationType, any[]>([])
   for (const notification of notifications) {
     if (studentCategoryMap.has(notification.type)) {
-      studentCategoryMap.get(notification.type)!.push([notification])
+      studentCategoryMap.get(notification.type)!.push(notification)
     } else {
-      studentCategoryMap.set(notification.type, notification)
+      studentCategoryMap.set(notification.type, [notification])
     }
   }
 
@@ -46,23 +46,38 @@ const fetchSortedWidgets = (notifications: any): [NotificationType, [any, number
       const notiScore = calculateNotificationUrgencyScore(category, notification.data)
       notificationScore.set(notification, [notiScore, notification.read])
     })
-    const notiScoreArray = Array.from([...notificationScore])
+    const notiScoreArray = Array.from(notificationScore)
     notiScoreArray.sort(([catA, [scoreA, readA]], [catB,  [scoreB, readB]]) => {
       if (readA !== readB) { return readA ? -1 : 1 }
       return scoreB - scoreA
     })
-    const scoreArray = Array.from([...notiScoreArray[1]])
-    const categorySum: number = scoreArray.reduce((accumulator: number, currentValue: number) => accumulator + currentValue, 0)
+    let categorySum = 0
+    notiScoreArray.forEach(notification => {
+      categorySum += notification[1][0]
+    })
     const finalScore = categorySum * (categoryUnreadCount + 1) * categoryToWeight.get(category)!
-    studentCategoryMap.set(category, [notiScoreArray[0], finalScore, categoryUnreadCount > 0])
+    if (groupedCategoryMap.has(category)) {
+      groupedCategoryMap.get(category)!.push(notiScoreArray, finalScore, categoryUnreadCount > 0)
+    } else {
+      groupedCategoryMap.set(category, [notiScoreArray, finalScore, categoryUnreadCount > 0])
+    }
   }
-
-  const widgetArray = Array.from(studentCategoryMap.entries())
+  const widgetArray = Array.from(groupedCategoryMap)
   widgetArray.sort(([catA, [_, sumA, readA]], [catB, [__, sumB, readB]]) => {
     if (readA !== readB) { return readA ? -1 : 1 }
     return sumB - sumA
   })
-  return widgetArray
+  const finalMap = new Map<NotificationType, any[]>()
+  for (const [category] of widgetArray) {
+    for (const data of widgetArray[0][1][0]) {
+      if (finalMap.has(category)) {
+        finalMap.get(category)!.push(data[0])
+      } else {
+        finalMap.set(category, [data[0]])
+      }
+    }
+  }
+  return finalMap
 }
 
 /**
@@ -97,7 +112,7 @@ const calculateNotificationUrgencyScore = (category: NotificationType, data: any
 const decayEquationAnnouncement = (notification: any): number => {
   const timeNow = new Date()
   const notificationCreation = new Date(notification.createdAt)
-  const hoursSinceAnnouncement = Math.round(timeNow.getTime() - notificationCreation.getTime() / HOUR_DIVISER)
+  const hoursSinceAnnouncement = Math.round((timeNow.getTime() - notificationCreation.getTime()) / HOUR_DIVISER)
   const score = U_MAX * (Math.exp(ANNOUNCEMENT_DECAY * hoursSinceAnnouncement))
   return score <= 0.1 ? 0.01 : score
 }
@@ -111,7 +126,7 @@ const decayEquationAnnouncement = (notification: any): number => {
 const decayEquationFileSystem = (notification: any): number => {
   const timeNow = new Date()
   const notificationCreation = new Date(notification.createdAt)
-  const hoursSinceAnnouncement = Math.round(timeNow.getTime() - notificationCreation.getTime() / HOUR_DIVISER)
+  const hoursSinceAnnouncement = Math.round((timeNow.getTime() - notificationCreation.getTime()) / HOUR_DIVISER)
   const score = U_MAX * (Math.exp(FILE_SYSTEM_DECAY * hoursSinceAnnouncement))
   return score <= 0.1 ? 0.01 : score
 }
@@ -124,7 +139,7 @@ const decayEquationFileSystem = (notification: any): number => {
  */
 const assignmentUrgencyEquation = (notification: any): number => {
   const timeNow = new Date().getTime()
-  const dueDate = new Date(notification.data.dueDate).getTime()
+  const dueDate = new Date(notification.dueDate).getTime()
   const hoursUntilDue = (dueDate - timeNow) / HOUR_DIVISER
   if (hoursUntilDue < 0) { return U_MAX / (Math.exp(0)) } 
   const score = U_MAX / (Math.exp(ASSIGNMENT_SUBMISSION_DECAY * (hoursUntilDue)))
@@ -140,7 +155,7 @@ const assignmentUrgencyEquation = (notification: any): number => {
  */
 const submissionUrgencyEquation = (notification: any): number => {
   const timeNow = new Date().getTime()
-  const dueDate = new Date(notification.data.dueDate).getTime()
+  const dueDate = new Date(notification.dueDate).getTime()
   const hoursUntilDue = (dueDate - timeNow) / HOUR_DIVISER
   if (hoursUntilDue > 0) { return U_MAX / (Math.exp(ASSIGNMENT_SUBMISSION_DECAY * hoursUntilDue)) } 
   const lateScore = (U_MAX / (Math.exp(ASSIGNMENT_SUBMISSION_DECAY * hoursUntilDue))) + (LATE_WEIGHT * (1 - hoursUntilDue))

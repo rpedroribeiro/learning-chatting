@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react'
 import useAuth from '../../hooks/useAuth'
 import '../../styles/notifications.css'
-import notificationsUtils from '../../utils/notificationsUtils'
 import { UserRole } from '../../utils/UserRole'
 import NotificationWidget from './NotificationWidget'
 import notificationsApi from '../../api/notificationsApi'
 import useClassroom from '../../hooks/useClassroom'
 import CreateAnnouncementModal from './CreateAnnouncementModal'
+import notificationsRanking from '../../utils/notificationsRanking'
 
 const NotificationsWidgetMenu = () => {
-  const [sortedWidgets, setSortedWidgets] = useState<any[]>([])
+  const [sortedWidgets, setSortedWidgets] = useState<any>()
   const [toggleAnnoucementModal, setToggleAnnoucementModal] = useState<boolean>(false)
   const { accountType, userId } = useAuth()
   const { currClass } = useClassroom()
@@ -20,10 +20,8 @@ const NotificationsWidgetMenu = () => {
       currClass.id,
       null
     )
-    if (accountType === UserRole.Student) {
-      const widgetsInfo = notificationsUtils.fetchedOrderStudentWidgets(userNotifications)
-      setSortedWidgets(widgetsInfo)
-    }
+    const widgetsInfo = notificationsRanking.fetchSortedWidgets(userNotifications)
+    setSortedWidgets(widgetsInfo)
   }
 
   useEffect(() => {
@@ -48,9 +46,9 @@ const NotificationsWidgetMenu = () => {
       </div>
       <hr style={{marginTop: '10px'}}/>
       <div className='notifications-widget-container'>
-        {sortedWidgets.length > 0 &&
-          (sortedWidgets.map((widget: any, key: any) => (
-            <NotificationWidget key={key} widgetName={widget[0]} notificationType={widget[1]}/>
+        {(sortedWidgets) &&
+          (Array.from(sortedWidgets.entries()).map((notificationList: any, key: any) => (
+            <NotificationWidget key={key} notificationList={notificationList[1]} notificationType={notificationList[0]}/>
           )))
         }
       </div>

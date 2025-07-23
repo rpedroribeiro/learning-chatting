@@ -1,29 +1,5 @@
 import { NotificationType } from "./NotificationType"
 
-type WidgetInfo = {
-  name: string;
-  type: NotificationType;
-  weight: number;
-}
-
-const studentWidgets: WidgetInfo[] = [
-  { name: "File System Updates", type: NotificationType.FileSystemItemCreated, weight: 1 },
-  { name: "Assignments", type: NotificationType.AssignmentPosted, weight: 2 },
-  { name: "Announcements", type: NotificationType.AnnouncementPosted, weight: 3 }
-]
-
-const professorWidgets: WidgetInfo[] = [
-  { name: "Submissions", type: NotificationType.StudentSubmission, weight: 1}
-]
-
-/**
- * Alpha is the weight for the number of notifications unread, Beta is the number of
- * hours the unread notifications have been unread.
- */
-const alpha = 2
-const beta = 1
-const theta = 1
-
 /**
  * This function takes in the notification category and the notification item and
  * formats the notification message and the time since it was posted.
@@ -125,7 +101,6 @@ const formatNotificationMessage = (
 const notificationsUtils = {
   formatNotificationItem,
   navigateToNotification,
-  fetchedOrderStudentWidgets,
   formatNotificationMessage
 }
 

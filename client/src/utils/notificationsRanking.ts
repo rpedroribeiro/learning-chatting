@@ -7,23 +7,62 @@ const ASSIGNMENT_SUBMISSION_DECAY = -0.05
 const HOUR_DIVISER = 3600000
 const LATE_WEIGHT = 1
 
-const fetchedOrderStudentWidgets = (notifications: any) => {
-  const studentCategoryMap = new Map<NotificationType, any[]>([])
+const ANNOUNCEMENT_WEIGHT = 2.5
+const FILE_SYSTEM_WEIGHT = 0.8
+const ASSIGNMENT_WEIGHT = 1.2
+const SUBMISSION_WEIGHT = 1.2
+
+const categoryToWeight = new Map<NotificationType, number>([
+  [NotificationType.AnnouncementPosted, ANNOUNCEMENT_WEIGHT],
+  [NotificationType.FileSystemItemCreated, FILE_SYSTEM_WEIGHT],
+  [NotificationType.AssignmentPosted, ASSIGNMENT_WEIGHT],
+  [NotificationType.StudentSubmission, SUBMISSION_WEIGHT]
+])
+
+/**
+ * This functions takes in all the notifications and sorts them by widget. The notifications inside the 
+ * widgets are ranked by if they are unread and their urgency score, while the widgets themseleves are 
+ * ranked by their urgency score and if at least one notification is unread.
+ * 
+ * @param notifications All the notifications for the course.
+ * @returns A map with the notification category as the key, and the data, final score, and boolean
+ * signifying the uread status.
+ */
+const fetchSortedWidgets = (notifications: any): [NotificationType, [any, number, boolean]][] => {
+  const studentCategoryMap = new Map<NotificationType, [any, number, boolean]>([])
   for (const notification of notifications) {
     if (studentCategoryMap.has(notification.type)) {
-      studentCategoryMap.get(notification.type)!.push(notification)
+      studentCategoryMap.get(notification.type)!.push([notification])
     } else {
       studentCategoryMap.set(notification.type, notification)
     }
   }
 
   for (const [category, notificationList] of studentCategoryMap) {
-    const notificationScore = new Map<any, number>([])
+    const notificationScore = new Map<any, [number, boolean]>([])
+    let categoryUnreadCount = 0
     notificationList.forEach(notification => {
+      categoryUnreadCount = (notification.read) ? categoryUnreadCount + 1 : categoryUnreadCount
       const notiScore = calculateNotificationUrgencyScore(category, notification.data)
-      notificationScore.set(notification, notiScore)
+      notificationScore.set(notification, [notiScore, notification.read])
     })
+    const notiScoreArray = Array.from([...notificationScore])
+    notiScoreArray.sort(([catA, [scoreA, readA]], [catB,  [scoreB, readB]]) => {
+      if (readA !== readB) { return readA ? -1 : 1 }
+      return scoreB - scoreA
+    })
+    const scoreArray = Array.from([...notiScoreArray[1]])
+    const categorySum: number = scoreArray.reduce((accumulator: number, currentValue: number) => accumulator + currentValue, 0)
+    const finalScore = categorySum * (categoryUnreadCount + 1) * categoryToWeight.get(category)!
+    studentCategoryMap.set(category, [notiScoreArray[0], finalScore, categoryUnreadCount > 0])
   }
+
+  const widgetArray = Array.from(studentCategoryMap.entries())
+  widgetArray.sort(([catA, [_, sumA, readA]], [catB, [__, sumB, readB]]) => {
+    if (readA !== readB) { return readA ? -1 : 1 }
+    return sumB - sumA
+  })
+  return widgetArray
 }
 
 /**
@@ -78,9 +117,10 @@ const decayEquationFileSystem = (notification: any): number => {
 }
 
 /**
+ * This function uses the urgency equation to calculate the urgency score of the file system update.
  * 
- * @param notification 
- * @returns 
+ * @param notification - The notification with all the data.
+ * @returns The urgency score of the notification.
  */
 const assignmentUrgencyEquation = (notification: any): number => {
   const timeNow = new Date().getTime()
@@ -94,8 +134,9 @@ const assignmentUrgencyEquation = (notification: any): number => {
 /**
  * This function uses the urgency equation to calculate the urgency score of the file system update,
  * adds a late penalty if it is past the dueDate.
- * @param notification 
- * @returns 
+ * 
+ * @param notification - The notification with all the data.
+ * @returns The urgency score of the notification.
  */
 const submissionUrgencyEquation = (notification: any): number => {
   const timeNow = new Date().getTime()
@@ -105,3 +146,9 @@ const submissionUrgencyEquation = (notification: any): number => {
   const lateScore = (U_MAX / (Math.exp(ASSIGNMENT_SUBMISSION_DECAY * hoursUntilDue))) + (LATE_WEIGHT * (1 - hoursUntilDue))
   return lateScore
 }
+
+const notificationsRanking = {
+  fetchSortedWidgets
+}
+
+export default notificationsRanking

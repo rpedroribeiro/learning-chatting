@@ -188,6 +188,19 @@ const updateSubmissionStatus = async (
     data: {
       submitted: true,
       submissionTime: new Date()
+    },
+    include: {
+      student: { 
+        select: {
+          firstName: true,
+          lastName: true
+        } 
+      },
+      assignment: {
+        select: {
+          name: true
+        }
+      }
     }
   })
 }

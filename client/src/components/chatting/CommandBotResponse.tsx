@@ -2,6 +2,9 @@ import { useEffect, useState } from "react"
 import { CommandCategory } from "../../utils/CommandCategory"
 import FileSystemItem from "../files/FileSystemItem"
 import chattingUtils from "../../utils/chattingUtils"
+import CommandBotAssignment from "./CommandBotAssignment"
+import CommandBotSubmission from "./CommandBotSubmission"
+import useAuth from "../../hooks/useAuth"
 
 interface commandBotProps {
   commandBotInfo: any
@@ -9,25 +12,34 @@ interface commandBotProps {
 
 const CommandBotResponse = ({commandBotInfo}: commandBotProps) => {
   const [commandBotMessage, setCommandBotMessage] = useState<string>('')
+  const { accountType } = useAuth()
 
   useEffect(() => {
-    const newMessage = chattingUtils.formatCommandBotMessage(
-      commandBotInfo[2],
-      commandBotInfo[1]
-    )
-    setCommandBotMessage(newMessage)
+    if (commandBotInfo[1] !== null) {
+      const newMessage = chattingUtils.formatCommandBotMessage(
+        accountType!,
+        commandBotInfo[1],
+        commandBotInfo[2],
+        commandBotInfo[3]
+      )
+      setCommandBotMessage(newMessage)
+    } else { setCommandBotMessage(commandBotInfo[2]) }
   }, [])
 
   return (
     <div className="command-bot-chat-container">
       <h4 style={{color: 'var(--button)'}}>Command Bot</h4>
       <h4>{commandBotMessage}</h4>
-      {commandBotInfo[1] === CommandCategory.ViewFileSystemItem ? (
+      {commandBotInfo[2] === CommandCategory.ViewFileSystemItem ? (
         <>
-          {commandBotInfo[2].children.length > 0 ? commandBotInfo[2].children.map((file: any, key: any) => (
+          {commandBotInfo[1].children.length > 0 ? commandBotInfo[1].children.map((file: any, key: any) => (
             <FileSystemItem props={file} key={key}/>
-          )) : <FileSystemItem props={commandBotInfo[2]} />}
+          )) : <FileSystemItem props={commandBotInfo[1]} />}
         </>
+      ) : commandBotInfo[2] === CommandCategory.ViewAssignment ? (
+        <CommandBotAssignment assignmentInfo={commandBotInfo[1]} params={commandBotInfo[3]}/>
+      ) : commandBotInfo[2] === CommandCategory.ViewStudentSubmission ? (
+        <CommandBotSubmission assignmentInfo={commandBotInfo[1]} record={commandBotInfo[4]}/>
       ) : []}
     </div>
   )

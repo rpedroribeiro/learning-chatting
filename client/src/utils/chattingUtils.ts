@@ -1,4 +1,5 @@
 import { CommandCategory } from "./CommandCategory";
+import { UserRole } from "./UserRole";
 
 /**
  * This util function takes in the route with the placeholder for the params
@@ -8,25 +9,21 @@ import { CommandCategory } from "./CommandCategory";
  * @param userId - The id of the user.
  * @param classId - The id of the class the user is currently in.
  * @param route - The route with all the placeholder values.
- * @param params - An array of params needed to replace the placeholder values.
+ * @param record - An record with the key as the param and the value as the input.
  * @returns The new route to be used in an API call.
  */
 const fillOutRoute = (
   userId: string,
   classId: string,
   route: string,
-  params: string[]
+  record: Record<string, string>
 ) => {
+  console.log(record)
   route = route.replace(':userId', userId).replace(':classId', classId)
   const placeholderRegex = /:([a-zA-Z0-9_]+)/g
-  let paramIndex = 0;
-  route = route.replace(placeholderRegex, (match) => {
-    if (match === ':userId' || match === ':classId') return match
-    let value = params[paramIndex++]
-    if (value !== undefined) {
-      value = value.replace(/^['"]|['"]$/g, '')
-      return value
-    }
+  route = route.replace(placeholderRegex, (match, key) => {
+    if (key === 'userId' || key === 'classId') return match
+    if (key in record) { return record[key].replace(/^['"]|['"]$/g, '') }
     return match
   })
   route = '/api' + route
@@ -42,14 +39,22 @@ const fillOutRoute = (
  * @returns The message to append to the command bot response.
  */
 const formatCommandBotMessage = (
+  accountType: string,
   data: any,
-  commandCategory: CommandCategory
+  commandCategory: CommandCategory,
+  params: string[]
 ): string => {
   switch (commandCategory) {
     case CommandCategory.ViewFileSystemItem:
       return `CommandBot linked the ${data.name} ${data.type.toLowerCase()}`
+    case CommandCategory.ViewAssignment:
+      return `CommandBot linked the assignment ${data.name} to the chat`
+    case CommandCategory.ViewStudentSubmission:
+      if (accountType === UserRole.Student) { return `CommandBot linked the submission of assignment ${data.name}` } 
+      else { return params.length > 1 ? `CommandBot linked the submission of students for ${data.name}`
+      : `CommandBot linked the submission from ${params[params.length - 1]} for ${data.name}`}
   }
-return ""
+  return ""
 }
 
 const chattingUtils = {

@@ -128,7 +128,8 @@ router.get('/:userId/class/:classId/filesystem/:itemId', authenticateToken, asyn
         itemName,
         ctx
       )
-      itemFound ? res.status(200).json({commandBotData: itemFound, commandCategory: CommandCategory.ViewFileSystemItem}) : res.status(400).json({errorMessage: "Could not find filesystem item"})
+      if (itemFound !== null) { res.status(200).json({commandBotData: itemFound, commandCategory: CommandCategory.ViewFileSystemItem}) }
+      else { res.status(200).json({errorMessage: "Could not find filesystem item provided"}) }
     }
   } catch (error) {
     console.error(error)

@@ -23,9 +23,6 @@ const SubmissionFileItem = ({file, accountType}: submissionFileItemProps) => {
     setFileName(file.substring(index + 1))
   }, [])
 
-  /**
-   * 
-   */
   const handleItemClick = async () => {
     const url = await submissionApi.getSignedUrlForFile(
         userId,

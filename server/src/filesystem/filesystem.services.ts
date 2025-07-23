@@ -132,7 +132,7 @@ const findFileSystemItemByName = async (
       return item
     }
   }
-  return null;
+  return null
 }
 
 const fileSystemServices = {

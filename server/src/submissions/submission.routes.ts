@@ -140,7 +140,6 @@ router.put('/:userId/class/:classId/assignment/:assignmentId/submit', authentica
     const classId = req.params.classId
     let assignmentId = req.params.assignmentId
     let assignmentName = ''
-
     let currSubmission
     if (uuidRegex.test(assignmentId)) {
       currSubmission = await submissionServices.findSubmissionWithUserIdAndAssignmentId(
@@ -151,8 +150,8 @@ router.put('/:userId/class/:classId/assignment/:assignmentId/submit', authentica
     } else {
       assignmentName = assignmentId
       const result = await submissionServices.findSubmissionWithUserIdAndAssignmentName(
-        userId,
         assignmentName,
+        userId,
         ctx
       )
       if (result) {
@@ -171,7 +170,7 @@ router.put('/:userId/class/:classId/assignment/:assignmentId/submit', authentica
 
     const currUser = await authServices.findUserById(userId, ctx)
     if (!currUser || currUser.accountType !== UserRole.Student) {
-      res.status(400).json({message: "User is not a student or does not exist"})
+      res.status(200).json({errorMessage: "User is not a student or does not exist"})
       throw new Error('User is not a student or does not exist')
     }
 

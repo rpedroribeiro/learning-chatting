@@ -12,7 +12,7 @@ import useAuth from '../../hooks/useAuth'
 import type { CommandCategory } from '../../utils/CommandCategory'
 import CommandBotResponse from './CommandBotResponse'
 
-type chatData = [CommandType | null, CommandCategory | null, any]
+type chatData = [CommandType | null, CommandCategory | null, any, string[], Record<string, string> | null]
 
 const ChattingContainer = () => {
   const [chatInput, setChatInput] = useState<string>('')
@@ -22,7 +22,7 @@ const ChattingContainer = () => {
   const [file, setFile] = useState<null | File>(null)
   const [toggleCommandHelper, setToggleCommandHelper] = useState<boolean>(false)
   const { currClass } = useClassroom()
-  const { userId } = useAuth()
+  const { userId, accountType } = useAuth()
 
   const handleFileChange = (event: any) => {
     const file = event.target.files?.[0]
@@ -34,35 +34,54 @@ const ChattingContainer = () => {
     setBot(newBot)
   }, [])
 
-  useEffect(() => {
-    console.log(chats)
-  }, [chats])
-
   const handleSendButton = async () => {
     if (command === CommandType.CommandBot) {
       setCommand(null)
       setChatInput('')
       const result = bot?.findClosestMatch(chatInput)
       if (result) {
-        const [method, route, params] = targetSentenceToRoute.get(result.sentenceFound!)!
+        let chatData: chatData
+        const [method, route, params, record] = targetSentenceToRoute.get(result.sentenceFound!)!
+        if (record["accountType"] && record["accountType"] !== accountType) {
+          chatData = [CommandType.CommandBot, null, "This user role cannot make this type of request", params, null]
+          setChats(prev => [...prev, chatData])
+          return
+        }
+        const filledRecord: Record<string, string> = {}
+        const recordKeys = Object.keys(record)
+        recordKeys.forEach((key, index) => {
+          filledRecord[key] = result.tokenizedParams[index] ?? ""
+        })
+        const submission: boolean = params.includes('submission')
         switch (method) {
           case 'get':
-            const [data, category] = await chattingApi.fetchCommandBotInformation(
+            const fetchResponse = await chattingApi.fetchCommandBotInformation(
               userId,
               currClass.id,
               route,
-              result.tokenizedParams,
+              filledRecord,
+              (submission === true) ? true : undefined
             )
-            const chatData: chatData = [CommandType.CommandBot, category, data]
+            if ( typeof fetchResponse === 'string' ) { chatData = [CommandType.CommandBot, null, fetchResponse, params, null] }
+            else {
+              const [fetchCategory, fetchData] = fetchResponse
+              chatData = [CommandType.CommandBot, fetchCategory, fetchData, params, filledRecord]
+            }
             setChats(prev => [...prev, chatData])
             break
           case 'put':
-            const putResults = await chattingApi.putCommandBotInformation(
+            const putResponse = await chattingApi.putCommandBotInformation(
               userId,
               currClass.id,
               route,
-              result.tokenizedParams,
+              filledRecord,
             )
+            if ( typeof putResponse === 'string' ) { chatData = [CommandType.CommandBot, null, putResponse, params, null] }
+            else {
+              const [putCategory, putData] = putResponse
+              chatData = [CommandType.CommandBot, putCategory, putData, params, filledRecord]
+            }
+            setChats(prev => [...prev, chatData])
             break
         }
       }

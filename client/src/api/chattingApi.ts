@@ -1,15 +1,17 @@
 import chattingUtils from "../utils/chattingUtils"
-import type { CommandCategory } from "../utils/CommandCategory";
+import { CommandCategory } from "../utils/CommandCategory";
 import axiosClient from "./client"
 
 type fetchCommandBotResponse = {
   commandBotData: any;
   commandCategory: CommandCategory;
+  errorMessage: string
 }
 
 type putCommandBotResponse = {
   commandBotUpdate: any;
   commandCategory: CommandCategory;
+  errorMessage: string;
 }
 
 /**
@@ -20,28 +22,33 @@ type putCommandBotResponse = {
  * @param userId - The id of the user making the request.
  * @param classId - The id of the class from the commandBot
  * @param matchedSentence - The sentence used to find the url
- * @param params - The params that will be placed in the url.
+ * @param record - Used to create the route to input the params into the url.
  */
 const fetchCommandBotInformation = async (
   userId: string,
   classId: string,
   route: string,
-  params: string[],
+  record: Record<string, string>,
+  submission: boolean | undefined
 ) => {
   const finalRoute = chattingUtils.fillOutRoute(
     userId,
     classId,
     route,
-    params
+    record
   )
+  console.log(finalRoute)
   const response = await axiosClient.get<fetchCommandBotResponse>(
     finalRoute,
     { headers: { 
       'Content-Type': 'application/json' 
       },
-      withCredentials: true 
+      withCredentials: true ,
+      params: { submission },
     }
   )
+  console.log(response.data.commandBotData)
+  if (response.data.errorMessage) { return response.data.errorMessage }
   return [response.data.commandBotData, response.data.commandCategory]
 }
 
@@ -59,13 +66,13 @@ const putCommandBotInformation = async (
   userId: string,
   classId: string,
   route: string,
-  params: string[],
+  record: Record<string, string>,
 ) => {
   const finalRoute = chattingUtils.fillOutRoute(
     userId,
     classId,
     route,
-    params
+    record
   )
   const response = await axiosClient.put<putCommandBotResponse>(
     finalRoute,
@@ -76,6 +83,7 @@ const putCommandBotInformation = async (
       withCredentials: true 
     }
   )
+  if (response.data.errorMessage) { return response.data.errorMessage }
   return [response.data.commandBotUpdate, response.data.commandCategory]
 }
 

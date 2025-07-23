@@ -1,22 +1,37 @@
 import { NotificationType } from "./NotificationType"
 
+const U_MAX = 1
+const ANNOUNCEMENT_DECAY = 0.01
+const FILE_SYSTEM_DECAY = 0.05
+const HOUR_DIVISER = 3600000
+
 const fetchedOrderStudentWidgets = (notifications: any) => {
-  const studentCategoryMap = new Map<NotificationType, [data: any, read: boolean]>([]);
+  const studentCategoryMap = new Map<NotificationType, any[]>([])
   for (const notification of notifications) {
     if (studentCategoryMap.has(notification.type)) {
-      studentCategoryMap.get(notification.type)!.push({ data: notification.data, read: notification.read })
+      studentCategoryMap.get(notification.type)!.push(notification)
     } else {
-      studentCategoryMap.set(notification.type, { data: notification.data, read: notification.read })
+      studentCategoryMap.set(notification.type, notification)
     }
   }
 
   for (const [category, notificationList] of studentCategoryMap) {
+    const notificationScore = new Map<any, number>([])
     notificationList.forEach(notification => {
-      calculateNotificationUrgencyScore(category, notification.data)
+      const notiScore = calculateNotificationUrgencyScore(category, notification.data)
+      notificationScore.set(notification, notiScore)
     })
   }
 }
 
+/**
+ * This function takes in the notification category and data and determines which of the different
+ * equations to use depending on the category passed in.
+ * 
+ * @param category - The category of the notification.
+ * @param data - The data of the notification used for calculations.
+ * @returns The urgency score of the notification passed in.
+ */
 const calculateNotificationUrgencyScore = (category: NotificationType, data: any): number => {
   switch (category) {
     case NotificationType.AnnouncementPosted:
@@ -32,18 +47,36 @@ const calculateNotificationUrgencyScore = (category: NotificationType, data: any
   }
 }
 
-const decayEquationAnnouncement = (data: NotificationData): number => {
+/**
+ * This function uses the decay equation to calculate the urgency score of the announcement.
+ * 
+ * @param notification - The notification with all the data.
+ * @returns The urgency score of the notification.
+ */
+const decayEquationAnnouncement = (notification: any): number => {
+  const timeNow = new Date()
+  const notificationCreation = new Date(notification.createdAt)
+  const hoursSinceAnnouncement = Math.round(timeNow.getTime() - notificationCreation.getTime() / HOUR_DIVISER)
+  return U_MAX * (Math.exp(ANNOUNCEMENT_DECAY * hoursSinceAnnouncement))
+}
+
+/**
+ * This function uses the decay equation to calculate the urgency score of the file system update.
+ * 
+ * @param notification - The notification with all the data.
+ * @returns The urgency score of the notification.
+ */
+const decayEquationFileSystem = (notification: any): number => {
+  const timeNow = new Date()
+  const notificationCreation = new Date(notification.createdAt)
+  const hoursSinceAnnouncement = Math.round(timeNow.getTime() - notificationCreation.getTime() / HOUR_DIVISER)
+  return U_MAX * (Math.exp(FILE_SYSTEM_DECAY * hoursSinceAnnouncement))
+}
+
+const assignmentUrgencyEquation = (notification: any): number => {
 
 }
 
-const decayEquationFileSystem = (data: NotificationData): number => {
-
-}
-
-const assignmentUrgencyEquation = (data: NotificationData): number => {
-
-}
-
-const submissionUrgencyEquation = (data: NotificationData): number => {
+const submissionUrgencyEquation = (notification: any): number => {
 
 }

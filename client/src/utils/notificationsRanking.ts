@@ -68,8 +68,8 @@ const fetchSortedWidgets = (notifications: any) => {
     return sumB - sumA
   })
   const finalMap = new Map<NotificationType, any[]>()
-  for (const [category] of widgetArray) {
-    for (const data of widgetArray[0][1][0]) {
+  for (const [category, info] of widgetArray) {
+    for (const data of info[0]) {
       if (finalMap.has(category)) {
         finalMap.get(category)!.push(data[0])
       } else {

@@ -16,17 +16,13 @@ const professorWidgets: WidgetInfo[] = [
   { name: "Submissions", type: NotificationType.StudentSubmission, weight: 1}
 ]
 
-type scoreArray = {
-  unreadCount: number,
-  unreadHours: number
-}
-
 /**
  * Alpha is the weight for the number of notifications unread, Beta is the number of
  * hours the unread notifications have been unread.
  */
 const alpha = 2
 const beta = 1
+const theta = 1
 
 /**
  * This function takes in the notification category and the notification item and
@@ -124,136 +120,6 @@ const formatNotificationMessage = (
       return `${notificationData.submissions[0].student.firstName} ${notificationData.submissions[0].student.lastName} 
       submitted the following assignment: ${notificationData.name}`
   }
-}
-
-/**
- * This function takes in all the notifications fetched and counts the number of 
- * unread  notifications and how many hours they have been unread for each of the 
- * different student categories.
- * 
- * @param notifications - All the notifications fetched.
- * @returns A map with all the count data and the notification type as the key.
- */
-const sortStudentWidgets = (
-  notifications: any
-) => {
-  let announcementNotifications: scoreArray = { unreadCount: 0, unreadHours: 0 }
-  let assignmentNotifications: scoreArray = { unreadCount: 0, unreadHours: 0 }
-  let fileSystemNotifications: scoreArray = { unreadCount: 0, unreadHours: 0 }
-  for (const notification of notifications) {
-    switch (notification.type) {
-      case NotificationType.AnnouncementPosted:
-        if (!notification.read) {
-          announcementNotifications.unreadCount++
-          announcementNotifications.unreadHours += Math.round(
-            new Date(notification.createdAt).getTime() / 3600000
-          )
-        }
-        break
-      case NotificationType.AssignmentPosted:
-        if (!notification.read) {
-          assignmentNotifications.unreadCount++
-          assignmentNotifications.unreadHours += Math.round(
-            new Date(notification.createdAt).getTime() / 3600000
-          )
-        }
-        break
-      case NotificationType.FileSystemItemCreated:
-        if (!notification.read) {
-          fileSystemNotifications.unreadCount++
-          fileSystemNotifications.unreadHours += Math.round(
-            new Date(notification.createdAt).getTime() / 3600000
-          )
-        }
-        break
-    }
-  }
-
-  return new Map<NotificationType, scoreArray>([
-    [NotificationType.AnnouncementPosted, { 
-      unreadCount: announcementNotifications.unreadCount, 
-      unreadHours:announcementNotifications.unreadHours }
-    ],
-    [NotificationType.AssignmentPosted, {
-      unreadCount: assignmentNotifications.unreadCount,
-      unreadHours: assignmentNotifications.unreadHours
-    }],
-    [NotificationType.FileSystemItemCreated, { 
-      unreadCount: fileSystemNotifications.unreadCount,
-      unreadHours: fileSystemNotifications.unreadHours 
-    }],
-  ])
-}
-
-/**
- * This function gets the total notification count for each one of notification
- * categories, used as a secondary sorting method.
- * 
- * @param notifications - All notifications for a user.
- * @returns A map with the counts for each notification type.
- */
-const getTotalNotificationCounts = (notifications: any[]): Map<NotificationType, number> => {
-  const counts = new Map<NotificationType, number>()
-  for (const notification of notifications) {
-    counts.set(
-      notification.type,
-      (counts.get(notification.type) || 0) + 1
-    )
-  }
-  return counts
-}
-
-/**
- * This function takes in all the data saved into the map and sorts the
- * widgets, it then returns the widget name and type.
- * @param unreadData - The data stored in the map from all the fetched
- * notifications
- * @param widgets - The types of widgets being use, student or professor.
- * @returns The widget name and type in an array.
- */
-const sortWidgetsByScore = (
-  unreadData: Map<NotificationType, scoreArray>,
-  widgets: WidgetInfo[],
-  totalCounts: Map<NotificationType, number>
-): [string, NotificationType][] => {
-  return widgets
-    .map(widget => {
-      const stats = unreadData.get(widget.type) || { unreadCount: 0, unreadHours: 0 }
-      const score =
-        widget.weight *
-        (1 + alpha * stats.unreadCount) *
-        (1 + beta * stats.unreadHours)
-      return { widget, score, stats }
-    })
-    .sort((a, b) => {
-      const aNoUnread = a.score === a.widget.weight
-      const bNoUnread = b.score === b.widget.weight
-      if (aNoUnread && bNoUnread) {
-        const aTotal = totalCounts.get(a.widget.type) || 0
-        const bTotal = totalCounts.get(b.widget.type) || 0
-        return bTotal - aTotal
-      }
-      return b.score - a.score
-    })
-    .map(({ widget }) => [widget.name, widget.type] as [string, NotificationType])
-}
-
-/**
- * This function takes in the notifications to be sorted for the student and runs 
- * functions to get the notification data to sort and then sorts the notification 
- * categories.
- * 
- * @param notifications - The notifications that decide the category sorting.
- * @returns The widget name and type in a sorted list.
- */
-const fetchedOrderStudentWidgets = (notifications: any) => {
-  const notificationsData: Map<NotificationType, scoreArray> = sortStudentWidgets(notifications)
-  const totalCounts = getTotalNotificationCounts(notifications)
-  return sortWidgetsByScore(
-    notificationsData,
-    studentWidgets,
-    totalCounts
-  )
 }
 
 const notificationsUtils = {

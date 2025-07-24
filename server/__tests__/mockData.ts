@@ -107,6 +107,17 @@ const mockAssignment = {
   submissions: [mockSubmission],
 }
 
+const completeMockSubmission = {
+  id: "1",
+  classId: mockClass.id,
+  assignmentId: mockAssignment.id,
+  submitted: false,
+  studentId: mockStudent.id,
+  submissionTime: null,
+  uploadedFiles: ['file'],
+  createdAt: currentDate
+}
+
 const mockData = {
   mockUser,
   mockProfessor,
@@ -115,7 +126,8 @@ const mockData = {
   mockClass,
   mockRootFile,
   mockSubmission,
-  mockAssignment
+  mockAssignment,
+  completeMockSubmission
 }
 
 export default mockData

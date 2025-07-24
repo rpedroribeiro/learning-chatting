@@ -77,6 +77,7 @@ model FileSystemItem {
   parentId  String?
   parent    FileSystemItem?   @relation("FileToFile", fields: [parentId], references: [id])
   fileURL   String?
+  createdAt DateTime          @default(now())
   children  FileSystemItem[]  @relation("FileToFile")
 }
 
@@ -88,6 +89,7 @@ model Assignment {
   description  String
   dueDate      DateTime
   files        String[]
+  createdAt    DateTime      @default(now())
   submissions  Submission[]  @relation("assignmentSubmissions")
 }
 
@@ -100,6 +102,7 @@ model Submission {
   submitted       Boolean
   submissionTime  DateTime?
   uploadedFiles   String[]
+  createdAt       DateTime    @default(now())
   @@unique([assignmentId, studentId])
 }
 
@@ -114,6 +117,7 @@ model Notification {
   type         NotificationType
   data         Json     
   read         Boolean           @default(false)
+  urgent       Boolean           @default(false)
   createdAt    DateTime          @default(now())
   readAt       DateTime?
 }

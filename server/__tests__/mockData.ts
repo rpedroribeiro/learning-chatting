@@ -1,8 +1,20 @@
-import { UserRole } from "@prisma/client"
+import { FileType, UserRole } from "@prisma/client"
 
 test.skip('loaded mockData', () => {})
 
 const currentDate = new Date()
+
+const startTimes = [
+  new Date('2025-09-01T08:00:00Z'),
+  new Date('2025-09-03T08:00:00Z'),
+  new Date('2025-09-05T08:00:00Z'),
+]
+
+const endTimes = [
+  new Date('2025-09-01T09:30:00Z'),
+  new Date('2025-09-03T09:30:00Z'),
+  new Date('2025-09-05T09:30:00Z'),
+]
 
 const mockProfessor = {
   id: "1",
@@ -32,8 +44,23 @@ const mockClass = {
   sectionId: "23651",
   className: "Math 101 - Calculus I",
   professorId: "1",
+  startTimes,
+  endTimes,
   professor: mockProfessor,
   students: [mockStudent],
+}
+
+const mockRootFile = {
+  id: "1",
+  name: "root",
+  type: FileType.Folder,
+  classId: mockClass.id,
+  class: mockClass,
+  parentId: null,
+  parent: null,
+  fileURL: "example/path/to/folder/",
+  createdAt: currentDate,
+  children: null
 }
 
 const mockSubmission = {
@@ -59,6 +86,7 @@ const mockData = {
   mockProfessor,
   mockStudent,
   mockClass,
+  mockRootFile,
   mockSubmission,
   mockAssignment
 }

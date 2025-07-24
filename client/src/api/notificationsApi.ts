@@ -11,6 +11,10 @@ type readNotificationResponse = {
   updatedNotification: any
 }
 
+type createAnnoucementResponse = {
+  annoucement: any
+}
+
 /**
  * This funciton fetches all the notifications for the specified category
  * for the user in the specific class provided. It returns a list where
@@ -78,9 +82,43 @@ const readNotification = async (
   }
 }
 
+/**
+ * This function sends a POST request to create an annoucement using the data gathered
+ * from the announcement modal. Returns the status of the request alongside an error
+ * message if necessary.
+ * 
+ * @param userId - The id of the professor creating the announcement.
+ * @param classId - The id of the class the annoucement corresponds to.
+ * @param annoucementTitle - The desired title of the annoucement.
+ * @param annoucementDescription - The desired description of the annoucement.
+ * @returns The status of the response and a message with an error if necessary.
+ */
+const createAnnouncement = async (
+  userId: string,
+  classId: string,
+  announcementTitle: string,
+  announcementDescription: string
+): Promise<[boolean, string]> => {
+  try {
+    const response = await axiosClient.post<createAnnoucementResponse>(
+      `/api/${userId}/class/${classId}/notifications/announcement`,
+      { announcementTitle, announcementDescription },
+      { headers: { 'Content-Type': 'application/json' },
+        withCredentials: true 
+      }
+    )
+    if (response.data.annoucement) { return [true, ""] }
+    return [false, "Could not create annoucement"]
+  } catch (error) {
+    console.error(error)
+    return [false, "Could not create annoucement"]
+  }
+}
+
 const notificationsApi = {
   fetchNotifications,
-  readNotification
+  readNotification,
+  createAnnouncement
 }
 
 export default notificationsApi

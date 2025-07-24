@@ -64,7 +64,6 @@
 .notification-banner {
   opacity: 0;
   transition: opacity 0.5s ease-in-out;
-  /* Optional: keep the element in the layout during fade out */
   pointer-events: none;
 }
 .notification-banner.visible {
@@ -101,4 +100,14 @@
 
 .notification-banner-info {
   font-size: 14px;
+}
+
+.create-announcement-btn {
+  padding: 10px 15px;
+  background-color: var(--button);
+  color: var(--textColor);
+  font-size: 15px;
+  border: none;
+  border: 1px solid var(--textColor);
+  border-radius: 5px;
 }

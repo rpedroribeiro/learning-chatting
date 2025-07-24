@@ -8,6 +8,7 @@ import useAuth from "../../hooks/useAuth"
 import { useNavigate } from "react-router-dom"
 import { FileType } from "../../utils/FileType"
 import fileSystemApi from "../../api/fileSystemApi"
+import ViewAnnouncementModal from "./ViewAnnouncementModal"
 
 type notificationItemProps = {
   notification: any,
@@ -17,6 +18,7 @@ type notificationItemProps = {
 const NotificationItem = ({notification, notificationType}: notificationItemProps) => {
   const [notificationMessage, setNotificationMessage] = useState<string>('')
   const [notificationTime, setNotificationTime] = useState<string>('')
+  const [toggleViewAnnouncement, setToggleViewAnnouncement] = useState<boolean>(false)
   const { userId } = useAuth()
   const { currClass, setCurrFileItem, setCurrFileItemChildren } = useClassroom()
   const navigate = useNavigate()
@@ -30,9 +32,6 @@ const NotificationItem = ({notification, notificationType}: notificationItemProp
     setNotificationTime(formattedTime)
   }, [])
 
-  /**
-   * 
-   */
   const handleNotificationStates = async () => {
     if (notificationType === NotificationType.FileSystemItemCreated) {
       if (notification.data.type === FileType.Folder) {
@@ -59,9 +58,6 @@ const NotificationItem = ({notification, notificationType}: notificationItemProp
     }
   }
 
-  /**
-   * 
-   */
   const handleNotificationClick = async () => {
     const markedRead = !notification.read ? await notificationsApi.readNotification(
       userId,
@@ -69,31 +65,42 @@ const NotificationItem = ({notification, notificationType}: notificationItemProp
       notification.id
     ) : true
 
-    await handleNotificationStates()
-    const url = markedRead ? notificationsUtils.navigateToNotification(
-      notificationType,
-      userId,
-      currClass.id,
-      notification.data.id || null
-    ) : null
-    url && navigate(url)
+    if (notificationType === NotificationType.AnnouncementPosted) { setToggleViewAnnouncement(true) } 
+    else {
+      await handleNotificationStates()
+      const url = markedRead ? notificationsUtils.navigateToNotification(
+        notificationType,
+        userId,
+        currClass.id,
+        notification.data.id || null
+      ) : null
+      console.log(url)
+      url && navigate(url)
+    }
   }
 
   return (
-    <div onClick={handleNotificationClick} className="notification-widget-item">
-      <span
-        style={notification.read === false ? {fontWeight: 'bold'} : {}} 
-        className="notification-widget-item-text"
-      >
-        {notificationMessage}
-      </span>
-      <span
-        style={notification.read === false ? {fontWeight: 'bold'} : {fontWeight: 'normal'}} 
-        className="notification-widget-item-text"
-      >
-        {notificationTime}
-      </span>
-    </div>
+    <>
+      {toggleViewAnnouncement && <ViewAnnouncementModal
+        setToggleViewAnnouncement={setToggleViewAnnouncement}
+        announcementTitle={notification.data.name}
+        announcementDescription={notification.data.description}
+      />}
+      <div onClick={handleNotificationClick} className="notification-widget-item">
+        <span
+          style={notification.read === false ? {fontWeight: 'bold'} : {}} 
+          className="notification-widget-item-text"
+        >
+          {notificationMessage}
+        </span>
+        <span
+          style={notification.read === false ? {fontWeight: 'bold'} : {fontWeight: 'normal'}} 
+          className="notification-widget-item-text"
+        >
+          {notificationTime}
+        </span>
+      </div>
+    </>
   )
 }
 

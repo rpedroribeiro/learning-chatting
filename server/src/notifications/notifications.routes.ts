@@ -128,11 +128,18 @@ router.post('/:userId/class/:classId/notifications/announcement', authenticateTo
       throw new Error('User must be a professor to create an announcement')
     }
 
+    const announcement = await notificationServices.createAnnouncement(
+      classId,
+      announcementTitle,
+      announcementDescription,
+      ctx
+    )
+
     notificationsUtils.createNotificationAsProfessor(
       userId,
       classId,
       NotificationType.AnnouncementPosted,
-      { announcementTitle, announcementDescription },
+      announcement,
       res
     )
   } catch (error) {

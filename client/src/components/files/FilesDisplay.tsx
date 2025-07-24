@@ -49,7 +49,7 @@ const FilesDisplay = () => {
   }
 
   useEffect(() => {
-    if (currFileItem === null) { fetchAllChildren(currClass.rootFile.id) } else { setLoading(false) }
+    if (currFileItem === null && currClass) { fetchAllChildren(currClass.rootFile.id) } else { setLoading(false) }
   }, [currFileItem === null])
 
   return (

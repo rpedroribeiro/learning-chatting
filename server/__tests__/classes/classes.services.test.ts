@@ -1,163 +1,103 @@
 import { UserRole, FileType } from "@prisma/client"
 import { createMockContext, MockContext } from "../../src/context/mockContext"
 import classService from "../../src/classes/classes.services"
+import mockData from "../mockData"
 
 let mockCtx: MockContext
 beforeEach(() => {
   mockCtx = createMockContext()
 })
 
-const currentDate = new Date()
-
-const startTimes = [
-  new Date('2025-09-01T08:00:00Z'),
-  new Date('2025-09-03T08:00:00Z'),
-  new Date('2025-09-05T08:00:00Z'),
-]
-
-const endTimes = [
-  new Date('2025-09-01T09:30:00Z'),
-  new Date('2025-09-03T09:30:00Z'),
-  new Date('2025-09-05T09:30:00Z'),
-]
-
-const mockProfessor = {
-  id: "1",
-  email: 'professor@gmail.com',
-  password: '12345678',
-  firstName: 'professor',
-  lastName: 'user',
-  accountType: UserRole.Professor,
-  createdAt: currentDate,
-  updatedAt: currentDate
-}
-
-const mockStudent = {
-  id: "2",
-  email: 'student@gmail.com',
-  password: '12345678',
-  firstName: 'student',
-  lastName: 'user',
-  accountType: UserRole.Student,
-  createdAt: currentDate,
-  updatedAt: currentDate
-}
-
-const mockRootFile = {
-  id: "1",
-  name: "root",
-  type: FileType.Folder,
-  classId: "1",
-  parentId: null,
-  parent: null,
-  createdAt: currentDate,
-  fileURL: "example/path/to/folder/",
-  children: null
-}
-
-const mockClass = {
-  id: "1",
-  classCode: "2FU4Z1",
-  sectionId: "23651",
-  className: "Math 101 - Calculus I",
-  startTimes,
-  endTimes,
-  professorId: "1",
-  professor: mockProfessor,
-  students: [mockStudent],
-  rootFile: mockRootFile
-}
-
 test('findClassById returns the class with the matching Id', async () => {
-  mockCtx.prisma.classes.findUnique.mockResolvedValue(mockClass)
+  mockCtx.prisma.classes.findUnique.mockResolvedValue(mockData.mockClass)
   const result = await classService.findClassById("1", mockCtx)
-  expect(result).toMatchObject(mockClass)
+  expect(result).toMatchObject(mockData.mockClass)
 })
 
 test('findAllClassesByProfessorId returns the classes matching the professor Id', async () => {
-  mockCtx.prisma.classes.findMany.mockResolvedValue([mockClass])
+  mockCtx.prisma.classes.findMany.mockResolvedValue([mockData.mockClass])
   const result = await classService.findAllClassesByProfessorId("1", mockCtx)
-  expect(result).toMatchObject([mockClass])
+  expect(result).toMatchObject([mockData.mockClass])
 })
 
 test('findAllClassesByStudentId returns the classes matching the student Id', async () => {
-  mockCtx.prisma.classes.findMany.mockResolvedValue([mockClass])
+  mockCtx.prisma.classes.findMany.mockResolvedValue([mockData.mockClass])
   const result = await classService.findAllClassesByStudentId("2", mockCtx)
-  expect(result).toMatchObject([mockClass])
+  expect(result).toMatchObject([mockData.mockClass])
 })
 
 test('findClassByClassCode returns the class with the matching class code', async () => {
-  mockCtx.prisma.classes.findUnique.mockResolvedValue(mockClass)
+  mockCtx.prisma.classes.findUnique.mockResolvedValue(mockData.mockClass)
   const result = await classService.findClassByClassCode("2FU4Z1", mockCtx)
-  expect(result).toMatchObject(mockClass)
+  expect(result).toMatchObject(mockData.mockClass)
 })
 
 test('findAllStudentsByClassId returns the students matching the class Id', async () => {
-  mockCtx.prisma.classes.findUnique.mockResolvedValue(mockClass)
+  mockCtx.prisma.classes.findUnique.mockResolvedValue(mockData.mockClass)
   const result = await classService.findAllStudentsByClassId("1", mockCtx)
-  expect(result).toMatchObject(mockClass)
+  expect(result).toMatchObject(mockData.mockClass)
 })
 
 test('findProfessorByClassId returns the professor matching the class Id', async () => {
-  mockCtx.prisma.classes.findUnique.mockResolvedValue(mockClass)
+  mockCtx.prisma.classes.findUnique.mockResolvedValue(mockData.mockClass)
   const result = await classService.findProfessorByClassId("1", mockCtx)
-  expect(result).toMatchObject(mockClass)
+  expect(result).toMatchObject(mockData.mockClass)
 })
 
 test('createClass creates a brand new class with all necessary fields', async () => {
-  mockCtx.prisma.classes.create.mockResolvedValue(mockClass)
+  mockCtx.prisma.classes.create.mockResolvedValue(mockData.mockClass)
   const result = await classService.createClass(
-    mockClass.className,
-    mockClass.sectionId,
-    mockClass.startTimes,
-    mockClass.endTimes,
-    mockClass.professorId,
+    mockData.mockClass.className,
+    mockData.mockClass.sectionId,
+    mockData.mockClass.startTimes,
+    mockData.mockClass.endTimes,
+    mockData.mockClass.professorId,
     mockCtx
   )
-  expect(result).toMatchObject(mockClass)
+  expect(result).toMatchObject(mockData.mockClass)
   expect(mockCtx.prisma.user.update).toHaveBeenCalledWith({
-    where: { id: mockClass.professorId },
+    where: { id: mockData.mockClass.professorId },
     data: {
       professorClasses: {
-        connect: { id: mockClass.id }
+        connect: { id: mockData.mockClass.id }
       }
     }
   })
 })
 
 test('addStudentToClass adds the student to the class with the matching Id studentList', async () => {
-  mockCtx.prisma.classes.update.mockResolvedValue(mockClass)
+  mockCtx.prisma.classes.update.mockResolvedValue(mockData.mockClass)
   const result = await classService.addStudentToClass(
-    mockClass.id,
-    mockStudent.id,
+    mockData.mockClass.id,
+    mockData.mockStudent.id,
     mockCtx
   )
-  expect(result).toMatchObject(mockClass)
+  expect(result).toMatchObject(mockData.mockClass)
   expect(mockCtx.prisma.user.update).toHaveBeenCalledWith({
-    where: { id: mockStudent.id },
+    where: { id: mockData.mockStudent.id },
     data: {
       studentClasses: {
-        connect: { id: mockClass.id }
+        connect: { id: mockData.mockClass.id }
       }
     }
   })
 })
 
 test('findClassByUserIdAndClassId with student ID', async () => {
-  mockCtx.prisma.classes.findUnique.mockResolvedValue(mockClass)
+  mockCtx.prisma.classes.findUnique.mockResolvedValue(mockData.mockClass)
   const result = await classService.findClassByUserIdAndClassId(
-    mockClass.id,
-    mockStudent.id,
+    mockData.mockClass.id,
+    mockData.mockStudent.id,
     null,
     mockCtx
   )
-  expect(result).toMatchObject(mockClass)
+  expect(result).toMatchObject(mockData.mockClass)
   expect(mockCtx.prisma.classes.findUnique).toHaveBeenCalledWith({
     where: {
-      id: mockClass.id,
+      id: mockData.mockClass.id,
       students: {
         some: {
-          id: mockStudent.id
+          id: mockData.mockStudent.id
         }
       }
     },
@@ -168,19 +108,19 @@ test('findClassByUserIdAndClassId with student ID', async () => {
 })
 
 test('findClassByUserIdAndClassId with professor ID', async () => {
-  mockCtx.prisma.classes.findUnique.mockResolvedValue(mockClass)
+  mockCtx.prisma.classes.findUnique.mockResolvedValue(mockData.mockClass)
   const result = await classService.findClassByUserIdAndClassId(
-    mockClass.id,
+    mockData.mockClass.id,
     null,
-    mockProfessor.id,
+    mockData.mockProfessor.id,
     mockCtx
   )
-  expect(result).toMatchObject(mockClass)
+  expect(result).toMatchObject(mockData.mockClass)
   expect(mockCtx.prisma.classes.findUnique).toHaveBeenCalledWith({
     where: {
-      id: mockClass.id,
+      id: mockData.mockClass.id,
       professor: {
-        id: mockProfessor.id
+        id: mockData.mockProfessor.id
       }
     },
     include: {

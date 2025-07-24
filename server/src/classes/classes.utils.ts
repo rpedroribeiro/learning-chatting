@@ -13,7 +13,7 @@ interface Dictionary {
  * 
  * @returns The generated class code
  */
-const generateClassId = (): string => {
+const generateClassCode = (): string => {
   let result = ''
   let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
   for (let i = 0; i < 6; i++) {
@@ -121,7 +121,7 @@ const checkValidClassTimes = async (
 }
 
 const classUtils = {
-  generateClassId,
+  generateClassCode,
   checkValidClassTimes,
   weekdayMapping
 }

@@ -65,6 +65,7 @@ const mockRootFile = {
   parentId: null,
   parent: null,
   fileURL: "example/path/to/folder/",
+   createdAt: currentDate,
   children: null
 }
 

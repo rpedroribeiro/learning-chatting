@@ -3,6 +3,7 @@ import { Context } from '../context/context'
 import { FileType } from "@prisma/client"
 import fileSystemServices from "../filesystem/filesystem.services"
 import gcpBucketUtils from "../gcpbucket/gcpbucket.utils"
+import chattingServices from "../chatting/chatting.services"
 
 /**
  * This function takes in a class id and uses
@@ -138,7 +139,7 @@ const createClass = async (
 ) => {
   const newClass = await ctx.prisma.classes.create({
     data: {
-      classCode: classroomUtils.generateClassId(),
+      classCode: classroomUtils.generateClassCode(),
       className: className,
       sectionId: sectionId,
       startTimes: startTimes,
@@ -242,7 +243,7 @@ const findClassByUserIdAndClassId = async (
         }
       },
       include: {
-        rootFile: true
+        rootFile: true,
       }
     })
   }

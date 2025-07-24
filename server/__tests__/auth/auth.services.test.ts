@@ -31,6 +31,7 @@ const mockUser = {
   firstName: 'test',
   lastName: 'user',
   accountType: UserRole.Professor,
+  socketId: null,
   createdAt: currentDate,
   updatedAt: currentDate
 }

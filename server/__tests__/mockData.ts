@@ -16,6 +16,21 @@ const endTimes = [
   new Date('2025-09-05T09:30:00Z'),
 ]
 
+const refreshToken = 'refresh-token'
+const hashedToken = 'hashed-refresh-token'
+
+const mockUser = {
+  id: "1",
+  email: 'test@gmail.com',
+  password: '12345678',
+  firstName: 'test',
+  lastName: 'user',
+  accountType: UserRole.Professor,
+  socketId: null,
+  createdAt: currentDate,
+  updatedAt: currentDate
+}
+
 const mockProfessor = {
   id: "1",
   email: 'professor@gmail.com',
@@ -36,6 +51,16 @@ const mockStudent = {
   accountType: UserRole.Student,
   createdAt: currentDate,
   updatedAt: currentDate
+}
+
+const mockRefreshToken = {
+  id: '1',
+  createdAt: currentDate,
+  updatedAt: currentDate,
+  hashedToken,
+  userId: '1',
+  revoked: false,
+  expireAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
 }
 
 const mockClass = {
@@ -83,8 +108,10 @@ const mockAssignment = {
 }
 
 const mockData = {
+  mockUser,
   mockProfessor,
   mockStudent,
+  mockRefreshToken,
   mockClass,
   mockRootFile,
   mockSubmission,

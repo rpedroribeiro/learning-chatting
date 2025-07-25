@@ -12,6 +12,7 @@ import useAuth from '../../hooks/useAuth'
 import type { CommandCategory } from '../../utils/CommandCategory'
 import CommandBotResponse from './CommandBotResponse'
 import ChatMessage from './ChatMessage'
+import LoadingSpinner from '../LoadingSpinner'
 
 type chatData = [CommandType | null, CommandCategory | null, any, string[], Record<string, string> | null]
 
@@ -22,6 +23,7 @@ const ChattingContainer = () => {
   const [file, setFile] = useState<null | File>(null)
   const [chatList, setChatList] = useState<any[]>([])
   const [classChatId, setClassChatId] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(true)
   const [toggleCommandHelper, setToggleCommandHelper] = useState<boolean>(false)
   const { currClass } = useClassroom()
   const { userId, accountType, socket } = useAuth()
@@ -40,6 +42,7 @@ const ChattingContainer = () => {
       setClassChatId(response.id)
       setChatList(response.chats)
     }
+    setLoading(false)
   }
 
   useEffect(() => {
@@ -128,55 +131,59 @@ const ChattingContainer = () => {
   }
 
   return (
-    <div className="chatting-page">
-      <div className='chatting-header'>
-        <h1>{currClass.className} | Class Chat</h1>
-      </div>
-      <div className='chatbox-container'>
-        <div className='chat-history'>
-          {(chatList && chatList.length > 0) && chatList.map((chat: any, key: any) => (
-            <>
-              {
-                chat.command ? <CommandBotResponse commandBotInfo={chat.commandResponse} senderId={chat.senderId}/> :
-                <ChatMessage messageData={chat}/>
-              }
-            </>
-          ))}
-        </div>
-        <div className='chatbox-interactive-container'>
-          <CommandHelper
-            command={command}
-            setCommand={setCommand}
-            setToggleCommandHelper={setToggleCommandHelper}
-            setChatInput={setChatInput}
-            className={`command-helper-container ${toggleCommandHelper ? 'visible' : ''}`}
-          />
-          <div className='input-and-send-container'>
-            <div className='input-container'>
-              {command !== null && <span style={{opacity: '40%', marginRight: '5px'}}>{command}:</span>}
-              <input 
-                value={chatInput} 
-                onChange={(event) => setChatInput(event.target.value)}
-                onKeyDown={(event) => handleKeyClick(event.key)}
-              />
-              <div style={{display: 'flex'}}>
-                <label htmlFor="chat-file-upload" style={{ cursor: 'pointer' }}>
-                  <FontAwesomeIcon icon={faImage} />
-                </label>
-                <input onChange={(event) => handleFileChange(event)} id='chat-file-upload' type='file' style={{ display: 'none' }}/>
-              </div>
+    <>
+      {!loading ? 
+        <div className="chatting-page">
+          <div className='chatting-header'>
+            <h1>{currClass.className} | Class Chat</h1>
+          </div>
+          <div className='chatbox-container'>
+            <div className='chat-history'>
+              {(chatList && chatList.length > 0) && chatList.map((chat: any, key: any) => (
+                <>
+                  {
+                    chat.command ? <CommandBotResponse commandBotInfo={chat.commandResponse} senderId={chat.senderId}/> :
+                    <ChatMessage messageData={chat}/>
+                  }
+                </>
+              ))}
             </div>
-            <div 
-              className='send-btn-container' 
-              style={chatInput.length > 0 ? {backgroundColor: 'var(--button)'} : {backgroundColor: 'var(--componentColor'}}
-              onClick={handleSendButton}
-            >
-              <FontAwesomeIcon icon={faPaperPlane}/>
+            <div className='chatbox-interactive-container'>
+              <CommandHelper
+                command={command}
+                setCommand={setCommand}
+                setToggleCommandHelper={setToggleCommandHelper}
+                setChatInput={setChatInput}
+                className={`command-helper-container ${toggleCommandHelper ? 'visible' : ''}`}
+              />
+              <div className='input-and-send-container'>
+                <div className='input-container'>
+                  {command !== null && <span style={{opacity: '40%', marginRight: '5px'}}>{command}:</span>}
+                  <input 
+                    value={chatInput} 
+                    onChange={(event) => setChatInput(event.target.value)}
+                    onKeyDown={(event) => handleKeyClick(event.key)}
+                  />
+                  <div style={{display: 'flex'}}>
+                    <label htmlFor="chat-file-upload" style={{ cursor: 'pointer' }}>
+                      <FontAwesomeIcon icon={faImage} />
+                    </label>
+                    <input onChange={(event) => handleFileChange(event)} id='chat-file-upload' type='file' style={{ display: 'none' }}/>
+                  </div>
+                </div>
+                <div 
+                  className='send-btn-container' 
+                  style={chatInput.length > 0 ? {backgroundColor: 'var(--button)'} : {backgroundColor: 'var(--componentColor'}}
+                  onClick={handleSendButton}
+                >
+                  <FontAwesomeIcon icon={faPaperPlane}/>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      : <LoadingSpinner />}
+    </>
   )
 }
 

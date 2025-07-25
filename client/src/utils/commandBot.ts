@@ -1,6 +1,5 @@
 export class commandBot {
   private vocabWords: string[]
-  private synonymMap: Map<string, Set<string>>
   private reverseSynonymMap: Map<string, string>
   private suffixes: string[]
   private sentenceFrequencies: Map<string, number>
@@ -11,12 +10,12 @@ export class commandBot {
   constructor(targetSentences: string[]) {
     const synonyms = new Map<string, Set<string>>([
       ["get", new Set(["find", "fetch", "search"])],
-      ["post", new Set(["create", "make"])],
+      ["post", new Set(["create", "make", "add"])],
       ["information", new Set(["data", "info"])],
       ["put", new Set(["submit", "update"])]
     ])
     this.vocabWords = []
-    this.synonymMap = synonyms
+
     this.reverseSynonymMap = this.createReverseSynonymMap(synonyms)
     this.suffixes = ["ing", "ed", "es", "'s", "s"]
     this.sentenceCount = 0
@@ -163,7 +162,7 @@ export class commandBot {
   public findClosestMatch(inputSentence: string): { sentenceFound: string, tokenizedParams: string[] } | null {
     const [tokenizedSentence, tokenizedParams] = this.tokenize(inputSentence, true)
     const paramCount = tokenizedParams.length
-    const [sentence, vector] = this.vectorize(
+    const [_sentence, vector] = this.vectorize(
       tokenizedSentence,
       inputSentence,
       paramCount

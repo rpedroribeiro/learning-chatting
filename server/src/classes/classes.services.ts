@@ -155,6 +155,11 @@ const createClass = async (
     newClass.id,
     ctx
   )
+  await chattingServices.createNewClassChat(
+    newClass.id,
+    professorId,
+    ctx
+  )
   await gcpBucketUtils.addFolderToFileSystem(`file_system/${sectionId}_root/`)
   await ctx.prisma.user.update({
     where: {

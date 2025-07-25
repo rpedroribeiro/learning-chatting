@@ -20,19 +20,46 @@ const ChattingContainer = () => {
   const [command, setCommand] = useState<any>(null)
   const [chats, setChats] = useState<chatData[]>([])
   const [file, setFile] = useState<null | File>(null)
+  const [chatList, setChatList] = useState<any>(null)
+  const [classChatId, setClassChatId] = useState<string>('')
   const [toggleCommandHelper, setToggleCommandHelper] = useState<boolean>(false)
   const { currClass } = useClassroom()
-  const { userId, accountType } = useAuth()
+  const { userId, accountType, socket } = useAuth()
 
   const handleFileChange = (event: any) => {
     const file = event.target.files?.[0]
     if (file) { setFile(file) }
   }
 
+  const fetchAllChats = async () => {
+    const response = await chattingApi.fetchAllClassChats(
+      userId,
+      currClass.id
+    )
+    if (response) {
+      setClassChatId(response.id)
+      setChatList(response.chats)
+    }
+  }
+
   useEffect(() => {
+    fetchAllChats()
     const newBot = new commandBot([...targetSentenceToRoute.keys()])
     setBot(newBot)
   }, [])
+
+  useEffect(() => {
+    if (!socket) return
+
+    const handleMessageReceived = async (message: any) => {
+      
+    }
+
+    socket.on('newMessage', handleMessageReceived)
+    return () => {
+      socket.off('newMessage', handleMessageReceived)
+    }
+  }, [socket])
 
   const handleSendButton = async () => {
     if (command === CommandType.CommandBot) {
@@ -85,6 +112,9 @@ const ChattingContainer = () => {
             break
         }
       }
+    } else if (command === null) {
+      setChatInput('')
+      socket.emit('message', userId, classChatId, false, chatInput)
     }
   }
 

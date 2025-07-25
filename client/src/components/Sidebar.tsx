@@ -43,6 +43,7 @@ const Sidebar = () => {
    */
   const handleLogOut = async () => {
     const logoutMessage = await authApi.logOutAccount()
+    console.log(logoutMessage)
     if (logoutMessage) {
       setUserId('')
       setIsClassroom(false)

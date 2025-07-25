@@ -7,12 +7,13 @@ import CommandBotSubmission from "./CommandBotSubmission"
 import useAuth from "../../hooks/useAuth"
 
 interface commandBotProps {
-  commandBotInfo: any
+  commandBotInfo: any;
+  senderId: any;
 }
 
-const CommandBotResponse = ({commandBotInfo}: commandBotProps) => {
+const CommandBotResponse = ({commandBotInfo, senderId}: commandBotProps) => {
   const [commandBotMessage, setCommandBotMessage] = useState<string>('')
-  const { accountType } = useAuth()
+  const { accountType, userId } = useAuth()
 
   useEffect(() => {
     if (commandBotInfo[1] !== null) {
@@ -27,7 +28,10 @@ const CommandBotResponse = ({commandBotInfo}: commandBotProps) => {
   }, [])
 
   return (
-    <div className="command-bot-chat-container">
+    <div className="command-bot-chat-container" style={
+      senderId === userId ? {alignSelf: 'flex-end', textAlign: 'right'} : 
+      {alignSelf: 'flex-start', textAlign: 'left'}}
+    >
       <h4 style={{color: 'var(--button)'}}>Command Bot</h4>
       <h4>{commandBotMessage}</h4>
       {commandBotInfo[2] === CommandCategory.ViewFileSystemItem ? (

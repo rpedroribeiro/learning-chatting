@@ -182,7 +182,7 @@ router.post('/logout', async (req, res, next) => {
     'sameSite': 'none',
     'path': '/'
   })
-
+console.log('here')
   res.status(200).json({message: "User successfully logged out"})
 })
 

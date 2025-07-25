@@ -46,8 +46,11 @@ const createNewChat = async (
       classChatId: classChatId,
       senderId: senderId,
       command: command,
-      content: !command && data,
-      commandResponse: command && data
+      content: !command ? data : null,
+      commandResponse: command ? data : null
+    },
+    include: {
+      sender: true
     }
   })
 }
@@ -68,7 +71,7 @@ const fetchAllParticipants = async (
     where: {
       id: classChatId
     },
-    include: {
+    select: {
       participants: true
     }
   })
@@ -90,6 +93,13 @@ const fetchClassChat = async (
   return await ctx.prisma.classChat.findUnique({
     where: {
       classId: classId
+    },
+    include: {
+      chats: {
+        include: {
+          sender: true
+        }
+      }
     },
   })
 }

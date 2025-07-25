@@ -16,16 +16,16 @@ router.get("/:userId/class/:classId/classChat", async (req, res, next) => {
     const classId = req.params.classId
 
     const validUser = await authServices.findUserById(userId, ctx)
-    if (validUser?.accountType === UserRole.Student) {
-      res.status(400).json({message: "Students cannot create items in the file system"})
-      throw new Error('Students cannot create items in the file system')
+    if (!validUser) {
+      res.status(400).json({message: "Cannot find user"})
+      throw new Error('Cannot find user')
     }
 
     const classChat = await chattingServices.fetchClassChat(
       classId,
       ctx
     )
-
+    
     res.status(200).json({classChat: classChat})
   } catch (error) {
     console.error(error)

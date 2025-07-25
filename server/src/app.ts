@@ -7,6 +7,7 @@ import fileSystemRouter from './filesystem/filesystem.routes'
 import assignmentsRouter from './assignments/assignments.routes'
 import submissionsRouter from './submissions/submission.routes'
 import notificationsRoute from './notifications/notifications.routes'
+import chattingRoutes from './chatting/chatting.routes'
 
 const app = express()
 app.use(cors({
@@ -21,5 +22,6 @@ app.use('/api', fileSystemRouter)
 app.use('/api', assignmentsRouter)
 app.use('/api', submissionsRouter)
 app.use('/api', notificationsRoute)
+app.use('/api', chattingRoutes)
 
 export default app

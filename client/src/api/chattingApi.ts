@@ -14,6 +14,10 @@ type putCommandBotResponse = {
   errorMessage: string;
 }
 
+type fetchClassChat = {
+  classChat: any;
+}
+
 /**
  * This function makes a GET request for all commandBot's GET request, and returns
  * the information that was asked to fetch, returns an error message if nothing is
@@ -47,7 +51,6 @@ const fetchCommandBotInformation = async (
       params: { submission },
     }
   )
-  console.log(response.data.commandBotData)
   if (response.data.errorMessage) { return response.data.errorMessage }
   return [response.data.commandBotData, response.data.commandCategory]
 }
@@ -87,9 +90,33 @@ const putCommandBotInformation = async (
   return [response.data.commandBotUpdate, response.data.commandCategory]
 }
 
+/**
+ * This function makes a GET requeeset to find all of the information from the class
+ * chat.
+ * 
+ * @param userId - The id of the user fetching the chats.
+ * @param classId - The id of the class the class chat belongs to.
+ * @returns A list of all the chats.
+ */
+const fetchAllClassChats = async (
+  userId: string,
+  classId: string
+) => {
+  const response = await axiosClient.get<fetchClassChat>(
+    `/api/${userId}/class/${classId}/classChat`,
+    { headers: { 
+      'Content-Type': 'application/json' 
+      },
+      withCredentials: true 
+    }
+  )
+  return response ? response.data.classChat : null
+}
+
 const chattingApi = {
   fetchCommandBotInformation,
-  putCommandBotInformation
+  putCommandBotInformation,
+  fetchAllClassChats
 }
 
 export default chattingApi

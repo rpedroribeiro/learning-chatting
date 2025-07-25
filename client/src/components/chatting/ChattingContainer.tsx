@@ -11,6 +11,7 @@ import chattingApi from '../../api/chattingApi'
 import useAuth from '../../hooks/useAuth'
 import type { CommandCategory } from '../../utils/CommandCategory'
 import CommandBotResponse from './CommandBotResponse'
+import ChatMessage from './ChatMessage'
 
 type chatData = [CommandType | null, CommandCategory | null, any, string[], Record<string, string> | null]
 
@@ -18,21 +19,47 @@ const ChattingContainer = () => {
   const [chatInput, setChatInput] = useState<string>('')
   const [bot, setBot] = useState<commandBot | null>(null)
   const [command, setCommand] = useState<any>(null)
-  const [chats, setChats] = useState<chatData[]>([])
   const [file, setFile] = useState<null | File>(null)
+  const [chatList, setChatList] = useState<any[]>([])
+  const [classChatId, setClassChatId] = useState<string>('')
   const [toggleCommandHelper, setToggleCommandHelper] = useState<boolean>(false)
   const { currClass } = useClassroom()
-  const { userId, accountType } = useAuth()
+  const { userId, accountType, socket } = useAuth()
 
   const handleFileChange = (event: any) => {
     const file = event.target.files?.[0]
     if (file) { setFile(file) }
   }
 
+  const fetchAllChats = async () => {
+    const response = await chattingApi.fetchAllClassChats(
+      userId,
+      currClass.id
+    )
+    if (response) {
+      setClassChatId(response.id)
+      setChatList(response.chats)
+    }
+  }
+
   useEffect(() => {
+    fetchAllChats()
     const newBot = new commandBot([...targetSentenceToRoute.keys()])
     setBot(newBot)
   }, [])
+
+  useEffect(() => {
+    if (!socket) return
+
+    const handleMessageReceived = async (message: any) => {
+      setChatList(prev => [...prev, message])
+    }
+
+    socket.on('newMessage', handleMessageReceived)
+    return () => {
+      socket.off('newMessage', handleMessageReceived)
+    }
+  }, [socket])
 
   const handleSendButton = async () => {
     if (command === CommandType.CommandBot) {
@@ -44,7 +71,7 @@ const ChattingContainer = () => {
         const [method, route, params, record] = targetSentenceToRoute.get(result.sentenceFound!)!
         if (record["accountType"] && record["accountType"] !== accountType) {
           chatData = [CommandType.CommandBot, null, "This user role cannot make this type of request", params, null]
-          setChats(prev => [...prev, chatData])
+          setChatList(prev => [...prev, chatData])
           return
         }
         const filledRecord: Record<string, string> = {}
@@ -67,7 +94,7 @@ const ChattingContainer = () => {
               const [fetchCategory, fetchData] = fetchResponse
               chatData = [CommandType.CommandBot, fetchCategory, fetchData, params, filledRecord]
             }
-            setChats(prev => [...prev, chatData])
+            socket.emit('message', userId, classChatId, true, chatData)
             break
           case 'put':
             const putResponse = await chattingApi.putCommandBotInformation(
@@ -81,10 +108,13 @@ const ChattingContainer = () => {
               const [putCategory, putData] = putResponse
               chatData = [CommandType.CommandBot, putCategory, putData, params, filledRecord]
             }
-            setChats(prev => [...prev, chatData])
+            socket.emit('message', userId, classChatId, true, chatData)
             break
         }
       }
+    } else if (command === null) {
+      setChatInput('')
+      socket.emit('message', userId, classChatId, false, chatInput)
     }
   }
 
@@ -104,14 +134,11 @@ const ChattingContainer = () => {
       </div>
       <div className='chatbox-container'>
         <div className='chat-history'>
-          {chats.length > 0 && chats.map((chat: any, key: any) => (
+          {(chatList && chatList.length > 0) && chatList.map((chat: any, key: any) => (
             <>
-              {chat[0] === CommandType.CommandBot ? 
-                <CommandBotResponse 
-                  key={key}
-                  commandBotInfo={chat}
-                /> : 
-                []
+              {
+                chat.command ? <CommandBotResponse commandBotInfo={chat.commandResponse} senderId={chat.senderId}/> :
+                <ChatMessage messageData={chat}/>
               }
             </>
           ))}

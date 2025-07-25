@@ -27,7 +27,9 @@ const receiveMessage = (socket: Socket) => {
     )
     if (participants) {
       for (const receiver of participants) {
+        console.log(receiver.socketId)
         if (io && receiver.socketId) {
+          console.log('here')
           io.to(receiver.socketId).emit('newMessage',
             message
         )}

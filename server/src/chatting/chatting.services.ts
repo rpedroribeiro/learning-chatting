@@ -46,8 +46,11 @@ const createNewChat = async (
       classChatId: classChatId,
       senderId: senderId,
       command: command,
-      content: !command && data,
-      commandResponse: command && data
+      content: !command ? data : null,
+      commandResponse: command ? data : null
+    },
+    include: {
+      sender: true
     }
   })
 }
@@ -92,8 +95,12 @@ const fetchClassChat = async (
       classId: classId
     },
     include: {
-      chats: true
-    }
+      chats: {
+        include: {
+          sender: true
+        }
+      }
+    },
   })
 }
 

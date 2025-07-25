@@ -2,6 +2,7 @@ import { Server as SocketIOServer, Socket } from "socket.io"
 import socketUtils from "./socket"
 import { prisma } from "../context/context"
 import authServices from "../auth/auth.services"
+import socketChatting from "./socket.chatting"
 
 const ctx = { prisma }
 
@@ -22,6 +23,9 @@ const setUpSocketServer = async (io: SocketIOServer): Promise<void> => {
       socket.id,
       ctx
     )
+
+    socketChatting.receiveMessage(socket)
+    
     socket.on('disconnect', async () => {
       await authServices.removeSocketIdFromUser(
         userId,

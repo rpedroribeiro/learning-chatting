@@ -47,8 +47,8 @@ const fetchSortedWidgets = (notifications: any) => {
       notificationScore.set(notification, [notiScore, notification.read])
     })
     const notiScoreArray = Array.from(notificationScore)
-    notiScoreArray.sort(([catA, [scoreA, readA]], [catB,  [scoreB, readB]]) => {
-      if (readA !== readB) { return readA ? -1 : 1 }
+    notiScoreArray.sort(([_catA, [scoreA, readA]], [_catB,  [scoreB, readB]]) => {
+      if (readA !== readB) { return readA ? 1 : -1 }
       return scoreB - scoreA
     })
     let categorySum = 0
@@ -63,8 +63,8 @@ const fetchSortedWidgets = (notifications: any) => {
     }
   }
   const widgetArray = Array.from(groupedCategoryMap)
-  widgetArray.sort(([catA, [_, sumA, readA]], [catB, [__, sumB, readB]]) => {
-    if (readA !== readB) { return readA ? -1 : 1 }
+  widgetArray.sort(([_catA, [_, sumA, readA]], [_catB, [__, sumB, readB]]) => {
+    if (readA !== readB) { return readA ? 1 : -1 }
     return sumB - sumA
   })
   const finalMap = new Map<NotificationType, any[]>()
@@ -159,11 +159,16 @@ const submissionUrgencyEquation = (notification: any): number => {
   const hoursUntilDue = (dueDate - timeNow) / HOUR_DIVISER
   if (hoursUntilDue > 0) { return U_MAX / (Math.exp(ASSIGNMENT_SUBMISSION_DECAY * hoursUntilDue)) } 
   const lateScore = (U_MAX / (Math.exp(ASSIGNMENT_SUBMISSION_DECAY * hoursUntilDue))) + (LATE_WEIGHT * (1 - hoursUntilDue))
-  return lateScore
+  return Math.min(lateScore, 1)
 }
 
 const notificationsRanking = {
-  fetchSortedWidgets
+  fetchSortedWidgets,
+  calculateNotificationUrgencyScore,
+  decayEquationAnnouncement,
+  decayEquationFileSystem,
+  assignmentUrgencyEquation,
+  submissionUrgencyEquation
 }
 
 export default notificationsRanking

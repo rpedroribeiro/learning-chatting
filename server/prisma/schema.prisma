@@ -29,6 +29,8 @@ model User {
   submissions            Submission[]    @relation("studentSubmission")
   receiverNotifications  Notification[]  @relation("receiverNotifications")
   creatorNotifications   Notification[]  @relation("creatorNotifications")
+  senderChats            Chat[]          @relation("senderChats")
+  classChatParticipant   ClassChat[]     @relation("ClassChatParticipants")
 }
 
 enum UserRole {
@@ -61,6 +63,7 @@ model Classes {
   assignments        Assignment[]     @relation("classAssignments")
   notifications      Notification[]   @relation("classNotifications")
   classAnnoucements  Announcement[]   @relation("classAnnoucements")
+  classChat          ClassChat?       @relation("classChat")
 }
 
 enum FileType {
@@ -145,4 +148,26 @@ enum CommandCategory {
   ViewAssignment
   ViewFileSystemItem
   PingUser
+}
+
+model ClassChat {
+  id           String    @id @unique @default(uuid())
+  classId      String    @unique
+  class        Classes   @relation("classChat", fields: [classId], references: [id])
+  participants User[]    @relation("ClassChatParticipants")
+  chats        Chat[]    @relation("ClassChatMessages")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Chat {
+  id               String      @id @unique @default(uuid())
+  classChatId      String
+  classChat        ClassChat   @relation("ClassChatMessages", fields: [classChatId], references: [id], onDelete: Cascade)
+  senderId         String
+  sender           User        @relation("senderChats", fields: [senderId], references: [id])
+  command          Boolean     @default(false)
+  content          String?
+  commandResponse  Json?
+  createdAt        DateTime    @default(now())
 }

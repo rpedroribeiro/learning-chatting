@@ -1,15 +1,18 @@
 .loading-spinner {
+  position: absolute;
   display: flex;
   justify-content: center;
   align-items: center;
+  top: 50%;
+  left: 54%;
 }
 
 .spinner-circle {
-  border: 8px solid rgba(0, 0, 0, 0.1);
-  border-top: 8px solid #3498db;
+  border: 8px solid rgba(255, 255, 255, 0.1);
+  border-top: 8px solid var(--button);
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 60px;
+  height: 60px;
   animation: spin 1s linear infinite;
 }
 

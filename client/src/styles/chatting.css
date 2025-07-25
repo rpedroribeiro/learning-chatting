@@ -118,9 +118,9 @@
   height: 600px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-end;
-  gap: 20px;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 30px;
   margin-bottom: 20px;
   overflow-y: auto;
 }
@@ -165,4 +165,19 @@
 }
 .command-bot-assignment-files-title {
   margin-bottom: 8px;
+}
+
+.chat-message {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: right;
+  max-width: 500px;
+  padding: 10px 20px;
+  border-radius: 10px;
+}
+
+.chat-message-sender {
+  color: var(--button);
+  font-size: 15px;
 }

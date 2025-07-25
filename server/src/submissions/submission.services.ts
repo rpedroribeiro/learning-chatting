@@ -14,7 +14,7 @@ const createSubmissionForAssignment = async (
   studentId: string,
   ctx: Context
 ) => {
-  await ctx.prisma.submission.create({
+  return await ctx.prisma.submission.create({
     data: {
       assignmentId: assignmentId,
       studentId: studentId,

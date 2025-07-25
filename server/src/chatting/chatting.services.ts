@@ -68,7 +68,7 @@ const fetchAllParticipants = async (
     where: {
       id: classChatId
     },
-    include: {
+    select: {
       participants: true
     }
   })
@@ -91,6 +91,9 @@ const fetchClassChat = async (
     where: {
       classId: classId
     },
+    include: {
+      chats: true
+    }
   })
 }
 

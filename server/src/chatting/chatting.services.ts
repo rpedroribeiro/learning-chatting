@@ -75,10 +75,30 @@ const fetchAllParticipants = async (
   return classChat ? classChat.participants : null
 }
 
+/**
+ * This function fetches all the class chat information, queries the class chat using the
+ * provided class id.
+ * 
+ * @param classId - The id used to query the class chat.
+ * @param ctx - The prisma context that this function is being used in. 
+ * @returns The class chat object.
+ */
+const fetchClassChat = async (
+  classId: string,
+  ctx: Context
+) => {
+  return await ctx.prisma.classChat.findUnique({
+    where: {
+      classId: classId
+    },
+  })
+}
+
 const chattingServices = {
   createNewClassChat,
   createNewChat,
-  fetchAllParticipants
+  fetchAllParticipants,
+  fetchClassChat
 }
 
 export default chattingServices

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBell, faComment, faRightFromBracket, faFolderOpen, faBook, type IconDefinition } from '@fortawesome/free-solid-svg-icons'
+import { faBell, faComment, faRightFromBracket, faFolderOpen, faBook, faUser, type IconDefinition, faU } from '@fortawesome/free-solid-svg-icons'
 import useClassroom from '../hooks/useClassroom'
 import profilePic from '../assets/images/people-face-avatar-icon-cartoon-character-png.webp'
 import '../styles/sidebar.css'
@@ -16,7 +16,7 @@ interface navOptions {
 const Sidebar = () => {
   const [baseUrl, setBaseUrl] = useState<string>('')
   const [isHovered, setIsHovered] = useState(false)
-  const { setUserId, setAccountType } = useAuth()
+  const { setUserId, setAccountType, accountType } = useAuth()
   const { isClassroom, setCurrFileItem, setIsClassroom, setCurrClass, setCurrFileItemChildren} = useClassroom()
   const navigate = useNavigate()
 
@@ -77,6 +77,12 @@ const Sidebar = () => {
             <span>Ribeiro</span>
           </div>
           )}
+        </div>
+      </div>
+      <div style={{borderBottom: '1px solid #959595'}} className='sidebar-nav-container'>
+        <div style={{color: 'var(--button)'}} className='sidebar-nav-content'>
+          <FontAwesomeIcon style={{transform: 'scale(1.25)'}} icon={faUser} />
+          <span className={`sidebar-nav-content-text${isHovered ? ' hovered' : ''}`}>{accountType}</span>
         </div>
       </div>
       {isClassroom ? 

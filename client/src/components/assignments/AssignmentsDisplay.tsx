@@ -7,11 +7,13 @@ import CreateAssignmentModal from './CreateAssignmentModal'
 import { UserRole } from '../../utils/UserRole'
 import StudentAssignments from './StudentAssignments'
 import ProfessorAssignments from './ProfessorAssignments'
+import LoadingSpinner from '../LoadingSpinner'
 
 const AssignmentsDisplay = () => {
   const [assignments, setAssignments] = useState<any>([])
   const [toggleCreateAssignment, setToggleCreateAssignment] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(true)
   const { userId, accountType } = useAuth()
   const { currClass } = useClassroom()
 
@@ -26,6 +28,7 @@ const AssignmentsDisplay = () => {
       currClass.id
     )
     status ? setAssignments(fetchedAssignments) : console.log(message)
+    setLoading(false)
   }
 
   useEffect(() => {
@@ -33,32 +36,37 @@ const AssignmentsDisplay = () => {
   }, [toggleCreateAssignment])
 
   return (
-    <div className="assignments-list">
-      {toggleCreateAssignment && (<CreateAssignmentModal 
-        setToggleCreateAssignment={setToggleCreateAssignment}
-        setAssignments={setAssignments}
-      />)}
-      <div style={{display: 'flex', justifyContent: 'space-between'}}>
-        <div style={{display: 'flex', alignItems: 'center', gap: '1.5vw'}}>
-          <h1 className='assignments-list-title'>Assignments</h1>
+    <>
+      {!loading ? 
+        <div className="assignments-list">
+        {toggleCreateAssignment && (<CreateAssignmentModal 
+          setToggleCreateAssignment={setToggleCreateAssignment}
+          setAssignments={setAssignments}
+        />)}
+        <div style={{display: 'flex', justifyContent: 'space-between'}}>
+          <div style={{display: 'flex', alignItems: 'center', gap: '1.5vw'}}>
+            <h1 className='assignments-list-title'>Assignments</h1>
+          </div>
+          {(accountType === UserRole.Professor) && (
+            <button 
+              className='assignments-create-button'
+              onClick={() => setToggleCreateAssignment(true)}
+            >
+              Create New Assignment
+            </button>
+          )}
         </div>
-        {(accountType === UserRole.Professor) && (
-          <button 
-            className='assignments-create-button'
-            onClick={() => setToggleCreateAssignment(true)}
-          >
-            Create New Assignment
-          </button>
-        )}
+        <hr style={{marginTop: '10px'}}/>
+        <div className='assignments-list-container'>
+          {((assignments && assignments.length > 0) ? (accountType === UserRole.Student ? 
+            <StudentAssignments assignments={assignments}/> : 
+            <ProfessorAssignments assignments={assignments} />
+          ) : [])}
+        </div>
       </div>
-      <hr style={{marginTop: '10px'}}/>
-      <div className='assignments-list-container'>
-        {((assignments && assignments.length > 0) ? (accountType === UserRole.Student ? 
-          <StudentAssignments assignments={assignments}/> : 
-          <ProfessorAssignments assignments={assignments} />
-        ) : [])}
-      </div>
-    </div>
+      : <LoadingSpinner />
+    }
+    </>
   )
 }
 

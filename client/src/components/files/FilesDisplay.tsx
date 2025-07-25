@@ -8,6 +8,7 @@ import useAuth from '../../hooks/useAuth'
 import FileSystemItem from './FileSystemItem'
 import '../../styles/file-system.css'
 import { UserRole } from '../../utils/UserRole'
+import LoadingSpinner from '../LoadingSpinner'
 
 const FilesDisplay = () => {
   const [toggleAddItemForm, setToggleAddItemForm] = useState<boolean>(false)
@@ -53,7 +54,7 @@ const FilesDisplay = () => {
   }, [currFileItem === null])
 
   return (
-    ((!loading && currFileItem !== null && currFileItemChildren) && (
+    ((!loading && currFileItem !== null && currFileItemChildren) ? (
       <div className="file-system-grid">
         {toggleAddItemForm ? <FileItemModal setToggleAddItemForm={setToggleAddItemForm} /> : []}
         <div style={{display: 'flex', justifyContent: 'space-between'}}>
@@ -78,7 +79,7 @@ const FilesDisplay = () => {
           )) : <h4>No files or folders in this directory</h4>}
         </div>
       </div>
-    ))
+    ) : <LoadingSpinner />)
   )
 }
 

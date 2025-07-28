@@ -143,7 +143,14 @@ const SignUpForm = () => {
         <button>Sign Up With Facebook</button>
         <button>Sign Up With Google</button>
       </div>
-      <span>Already Have an Account? <Link to='/login'>Log in</Link></span>
+      <span> Already have an account?
+        <Link 
+          style={{ textDecoration: 'none', color: 'var(--button)', marginLeft:'5px' }} 
+          to='/login'
+        >
+          Log In
+          </Link>
+        </span>
     </div>
   )
 }

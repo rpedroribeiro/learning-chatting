@@ -26,7 +26,7 @@ const ChatMessage = ({messageData}: chatMessageProps) => {
       messageData.senderId === userId ? {alignSelf: 'flex-end', textAlign: 'right', display: 'flex', flexDirection: 'column'} : 
       {alignSelf: 'flex-start', textAlign: 'left', display: 'flex', flexDirection: 'column'}}
     >
-        <div className="chat-message">
+        <div className="chat-message" style={messageData.senderId === userId ? {textAlign: 'right'} : {textAlign: 'left'}}>
           <h3 className="chat-message-sender">{messageData.sender.firstName} {messageData.sender.lastName}</h3>
           <h3 style={{fontSize: '17px'}}>{messageData.content}</h3>
         </div>

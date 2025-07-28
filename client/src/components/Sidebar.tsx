@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBell, faComment, faRightFromBracket, faFolderOpen, faBook, faUser, type IconDefinition, faU } from '@fortawesome/free-solid-svg-icons'
+import { faBell, faComment, faRightFromBracket, faFolderOpen, faBook, faUser, faArrowLeft, type IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import useClassroom from '../hooks/useClassroom'
 import profilePic from '../assets/images/people-face-avatar-icon-cartoon-character-png.webp'
 import '../styles/sidebar.css'
@@ -16,7 +16,7 @@ interface navOptions {
 const Sidebar = () => {
   const [baseUrl, setBaseUrl] = useState<string>('')
   const [isHovered, setIsHovered] = useState(false)
-  const { setUserId, setAccountType, accountType, setSocket } = useAuth()
+  const { userId, setUserId, setAccountType, accountType, setSocket } = useAuth()
   const { isClassroom, setCurrFileItem, setIsClassroom, setCurrClass, setCurrFileItemChildren} = useClassroom()
   const navigate = useNavigate()
 
@@ -55,6 +55,14 @@ const Sidebar = () => {
     }
   }
 
+  const handleCourseList = async () => {
+    setIsClassroom(false)
+    setCurrClass(null)
+    setCurrFileItem(null)
+    setCurrFileItemChildren([])
+    navigate(`/${userId}/classrooms`)
+  }
+
   return (
     <div 
       className="sidebar-container"
@@ -85,26 +93,40 @@ const Sidebar = () => {
           <span className={`sidebar-nav-content-text${isHovered ? ' hovered' : ''}`}>{accountType}</span>
         </div>
       </div>
-      {isClassroom ? 
-        Object.entries(nav).map(([key, value]) => (
-          <Link 
-            to={value[1]} 
-            style={{textDecoration: 'none', color: 'var(--textColor)'}}
-            onClick={event => {
-              event.preventDefault()
-              handleLinkClick(key)
-              navigate(value[1])
-            }}
-          >
-            <div key={key} className='sidebar-nav-container'>
-              <div className='sidebar-nav-content'>
-                <FontAwesomeIcon style={{transform: 'scale(1.25)'}} icon={value[0]} />
-                <span className={`sidebar-nav-content-text${isHovered ? ' hovered' : ''}`}>{key}</span>
+      {isClassroom ? (
+        <>
+          {Object.entries(nav).map(([key, value]) => (
+            <Link
+              key={key}
+              to={value[1]}
+              style={{ textDecoration: 'none', color: 'var(--textColor)' }}
+              onClick={event => {
+                event.preventDefault()
+                handleLinkClick(key)
+                navigate(value[1])
+              }}
+            >
+              <div className='sidebar-nav-container'>
+                <div className='sidebar-nav-content'>
+                  <FontAwesomeIcon style={{ transform: 'scale(1.25)' }} icon={value[0]} />
+                  <span className={`sidebar-nav-content-text${isHovered ? ' hovered' : ''}`}>{key}</span>
+                </div>
               </div>
+            </Link>
+          ))}
+          <div
+            onClick={handleCourseList}
+            style={{ borderTop: '1px solid #959595' }}
+            className='sidebar-nav-container'
+          >
+            <div className='sidebar-nav-content'>
+              <FontAwesomeIcon style={{ transform: 'scale(1.25)' }} icon={faArrowLeft} />
+              <span className={`sidebar-nav-content-text${isHovered ? ' hovered' : ''}`}>Courses</span>
             </div>
-          </Link>
-        )) : []}
-        <div onClick={handleLogOut} style={{borderTop: '1px solid var(--textColor)'}} className='sidebar-nav-container'>
+          </div>
+        </>
+      ) : null}
+        <div onClick={handleLogOut} style={{borderBottom: '1px solid #959595'}} className='sidebar-nav-container'>
           <div className='sidebar-nav-content'>
             <FontAwesomeIcon style={{transform: 'scale(1.25)'}} icon={faRightFromBracket} />
             <span className={`sidebar-nav-content-text${isHovered ? ' hovered' : ''}`}>Log out</span>

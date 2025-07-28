@@ -50,10 +50,13 @@ const ChattingContainer = () => {
     fetchAllChats()
     const newBot = new commandBot([...targetSentenceToRoute.keys()])
     setBot(newBot)
+  }, [])
+
+  useEffect(() => {
     if (chatHistoryRef.current) {
       chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
     }
-  }, [])
+  }, [chatList])
 
   useEffect(() => {
     if (!socket) return
@@ -141,7 +144,7 @@ const ChattingContainer = () => {
           <div className='chatting-header'>
             <h1>{currClass.className} | Class Chat</h1>
           </div>
-          <div className='chatbox-container'>
+          <div className='chatbox-container' >
             <div className='chat-history' ref={chatHistoryRef}>
               {(chatList && chatList.length > 0) && chatList.map((chat: any, key: any) => (
                 <>

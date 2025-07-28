@@ -8,10 +8,11 @@ import useAuth from "../../hooks/useAuth"
 
 interface commandBotProps {
   commandBotInfo: any;
-  senderId: any;
+  senderId: string;
+  senderName: string;
 }
 
-const CommandBotResponse = ({commandBotInfo, senderId}: commandBotProps) => {
+const CommandBotResponse = ({commandBotInfo, senderId, senderName}: commandBotProps) => {
   const [formattedTime, setFormattedTime] = useState<string>('')
   const [commandBotMessage, setCommandBotMessage] = useState<string>('')
   const { accountType, userId } = useAuth()
@@ -42,7 +43,7 @@ const CommandBotResponse = ({commandBotInfo, senderId}: commandBotProps) => {
       senderId === userId ? {alignSelf: 'flex-end', textAlign: 'right'} : 
       {alignSelf: 'flex-start', textAlign: 'left'}}
     >
-      <h4 style={{color: 'var(--button)'}}>Command Bot</h4>
+      <h4 style={{color: 'var(--button)'}}>Command Bot - Linked By {senderName}</h4>
       <h4>{commandBotMessage}</h4>
       {commandBotInfo[2] === CommandCategory.ViewFileSystemItem ? (
         <>

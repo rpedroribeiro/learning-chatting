@@ -2,7 +2,7 @@ import useClassroom from '../../hooks/useClassroom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faImage, faPaperPlane } from '@fortawesome/free-solid-svg-icons'
 import '../../styles/chatting.css'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { commandBot } from '../../utils/commandBot'
 import { targetSentenceToRoute } from '../../utils/targetSentenceToRoutes'
 import CommandHelper from './CommandHelper'
@@ -25,6 +25,7 @@ const ChattingContainer = () => {
   const [classChatId, setClassChatId] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(true)
   const [toggleCommandHelper, setToggleCommandHelper] = useState<boolean>(false)
+  const chatHistoryRef = useRef<HTMLDivElement>(null)
   const { currClass } = useClassroom()
   const { userId, accountType, socket } = useAuth()
 
@@ -34,13 +35,13 @@ const ChattingContainer = () => {
   }
 
   const fetchAllChats = async () => {
-    const response = await chattingApi.fetchAllClassChats(
+    const [classChatId, sortedChats] = await chattingApi.fetchAllClassChats(
       userId,
       currClass.id
     )
-    if (response) {
-      setClassChatId(response.id)
-      setChatList(response.chats)
+    if (classChatId && sortedChats) {
+      setClassChatId(classChatId)
+      setChatList(sortedChats)
     }
     setLoading(false)
   }
@@ -49,6 +50,9 @@ const ChattingContainer = () => {
     fetchAllChats()
     const newBot = new commandBot([...targetSentenceToRoute.keys()])
     setBot(newBot)
+    if (chatHistoryRef.current) {
+      chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+    }
   }, [])
 
   useEffect(() => {
@@ -138,11 +142,15 @@ const ChattingContainer = () => {
             <h1>{currClass.className} | Class Chat</h1>
           </div>
           <div className='chatbox-container'>
-            <div className='chat-history'>
+            <div className='chat-history' ref={chatHistoryRef}>
               {(chatList && chatList.length > 0) && chatList.map((chat: any, key: any) => (
                 <>
                   {
-                    chat.command ? <CommandBotResponse commandBotInfo={chat.commandResponse} senderId={chat.senderId}/> :
+                    chat.command ? <CommandBotResponse 
+                      commandBotInfo={chat.commandResponse}
+                      senderId={chat.senderId}
+                      senderName={`${chat.sender.firstName} ${chat.sender.lastName}`}
+                      /> :
                     <ChatMessage messageData={chat}/>
                   }
                 </>

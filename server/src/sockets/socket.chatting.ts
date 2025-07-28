@@ -11,9 +11,10 @@ const ctx = { prisma }
  * 
  * @param socket - The socket IO server.
  */
-const receiveMessage = (socket: Socket) => {
+const receiveMessage = (socket: Socket, userId: string) => {
   const io = socketUtils.fetchIO()
   socket.on('message', async (senderId, classChatId, command, data) => {
+    console.log(senderId)
     const message = await chattingServices.createNewChat(
       senderId,
       classChatId,
@@ -27,9 +28,7 @@ const receiveMessage = (socket: Socket) => {
     )
     if (participants) {
       for (const receiver of participants) {
-        console.log(receiver.socketId)
         if (io && receiver.socketId) {
-          console.log('here')
           io.to(receiver.socketId).emit('newMessage',
             message
         )}

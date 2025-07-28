@@ -24,7 +24,7 @@ const setUpSocketServer = async (io: SocketIOServer): Promise<void> => {
       ctx
     )
 
-    socketChatting.receiveMessage(socket)
+    socketChatting.receiveMessage(socket, userId)
     
     socket.on('disconnect', async () => {
       await authServices.removeSocketIdFromUser(

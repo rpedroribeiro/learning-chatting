@@ -41,7 +41,6 @@ const fetchCommandBotInformation = async (
     route,
     record
   )
-  console.log(finalRoute)
   const response = await axiosClient.get<fetchCommandBotResponse>(
     finalRoute,
     { headers: { 
@@ -110,7 +109,12 @@ const fetchAllClassChats = async (
       withCredentials: true 
     }
   )
-  return response ? response.data.classChat : null
+  if (!response) { return [null, null] }
+  const chats = response.data.classChat.chats
+  const sortedChats = chats.sort((a: any, b: any) => {
+    return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+  })
+  return [response.data.classChat.id, sortedChats]
 }
 
 const chattingApi = {

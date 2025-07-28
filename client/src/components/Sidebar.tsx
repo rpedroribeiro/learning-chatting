@@ -16,7 +16,7 @@ interface navOptions {
 const Sidebar = () => {
   const [baseUrl, setBaseUrl] = useState<string>('')
   const [isHovered, setIsHovered] = useState(false)
-  const { setUserId, setAccountType, accountType } = useAuth()
+  const { setUserId, setAccountType, accountType, setSocket } = useAuth()
   const { isClassroom, setCurrFileItem, setIsClassroom, setCurrClass, setCurrFileItemChildren} = useClassroom()
   const navigate = useNavigate()
 
@@ -43,7 +43,6 @@ const Sidebar = () => {
    */
   const handleLogOut = async () => {
     const logoutMessage = await authApi.logOutAccount()
-    console.log(logoutMessage)
     if (logoutMessage) {
       setUserId('')
       setIsClassroom(false)
@@ -51,6 +50,7 @@ const Sidebar = () => {
       setCurrFileItem(null)
       setAccountType(null)
       setCurrFileItemChildren([])
+      setSocket(null)
       navigate('/login')
     }
   }

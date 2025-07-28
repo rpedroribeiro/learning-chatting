@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import useAuth from "../../hooks/useAuth"
 
 interface chatMessageProps {
@@ -6,10 +6,19 @@ interface chatMessageProps {
 }
 
 const ChatMessage = ({messageData}: chatMessageProps) => {
+  const [formattedTime, setFormattedTime] = useState<string>('')
   const { userId } = useAuth()
 
   useEffect(() => {
-    console.log(userId === messageData.senderId)
+    const messageSentTime = new Date(messageData.createdAt)
+    const formattedSentTime = messageSentTime.toLocaleString('en-US', {
+      month: 'long',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    })
+    setFormattedTime(formattedSentTime)
   }, [])
 
   return (
@@ -19,6 +28,7 @@ const ChatMessage = ({messageData}: chatMessageProps) => {
     >
       <h3 className="chat-message-sender">{messageData.sender.firstName} {messageData.sender.lastName}</h3>
       <h3 style={{fontSize: '17px'}}>{messageData.content}</h3>
+      <span style={{marginTop: '5px', fontSize: '12px'}}>{formattedTime}</span>
     </div>
   )
 }

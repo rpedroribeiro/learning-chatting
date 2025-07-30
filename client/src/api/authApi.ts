@@ -18,10 +18,15 @@ type authResponse = {
   userId: string;
   message: string;
   accountType: UserRole | null;
+  profileImg: string;
 }
 
 type logOutResponse = {
   message: string
+}
+
+type updateProfileResponse = {
+  updatedProfilePictureUrl: string
 }
 
 /**
@@ -31,7 +36,13 @@ type logOutResponse = {
  * @param param0 - All the user data needed to pass into the POST request 
  * @returns - The access token supplied or error message along with boolean status
  */
-const createAccount = async ({firstName, lastName, email, password, accountType}: accountCreationParams): Promise<[boolean, string, string, UserRole | null]> => {
+const createAccount = async ({
+  firstName,
+  lastName,
+  email, 
+  password,
+  accountType
+}: accountCreationParams): Promise<[boolean, string, string, UserRole | null, string]> => {
   try {
     const response = await axiosClient.post<authResponse>(
       '/api/auth/register',
@@ -42,10 +53,11 @@ const createAccount = async ({firstName, lastName, email, password, accountType}
     )
     const userId: string = response.data.userId
     const message: string = response.data.message
-    return [true, message, userId, accountType]
+    const profileImg: string = response.data.profileImg
+    return [true, message, userId, accountType, profileImg]
   } catch (error: any) {
     console.error(error)
-    return [false, String(error.response.data.message), "", accountType]
+    return [false, String(error.response.data.message), "", accountType, ""]
   }
 }
 
@@ -56,7 +68,7 @@ const createAccount = async ({firstName, lastName, email, password, accountType}
  * @param param0 - All the user data needed to pass into the POST request 
  * @returns - The access token supplied or error message along with boolean status
  */
-const signIntoAccount = async ({email, password}: logInParams): Promise<[boolean, string, string, UserRole | null]> => {
+const signIntoAccount = async ({email, password}: logInParams): Promise<[boolean, string, string, UserRole | null, string]> => {
   try {
     const response = await axiosClient.post<authResponse>(
       '/api/auth/login',
@@ -68,10 +80,11 @@ const signIntoAccount = async ({email, password}: logInParams): Promise<[boolean
     const message: string = response.data.message
     const userId: string = response.data.userId
     const accountType = response.data.accountType
-    return [true, message, userId, accountType]
+    const profileImg: string = response.data.profileImg
+    return [true, message, userId, accountType, profileImg]
   } catch (error: any) {
     console.error(error)
-    return [false, String(error.response.data.message), "", null]
+    return [false, String(error.response.data.message), "", null, ""]
   }
 }
 
@@ -99,10 +112,37 @@ const logOutAccount = async () => {
   }
 }
 
+/**
+ * This function updates the profile picture field of the user currently logged in
+ * by sending a PUT request.
+ * 
+ * @param userId - The id of the user updating their profile picture.
+ * @param file - The file that will be their new profile picture.
+ * @returns The new signed url to be used to display the change.
+ */
+const updateProfilePicture = async (
+  userId: string,
+  file: File
+) => {
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+    const response = await axiosClient.put<updateProfileResponse>(
+      `/api/${userId}/updatePic`,
+      formData,
+      { withCredentials: true }
+    )
+    return response.data.updatedProfilePictureUrl
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 const authApi = {
   createAccount,
   signIntoAccount,
-  logOutAccount
+  logOutAccount,
+  updateProfilePicture
 }
 
 export default authApi

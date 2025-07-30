@@ -5,10 +5,13 @@ import authServices from '../auth/auth.services'
 import authJwt from '../auth/auth.jwt'
 import { UserRole } from '@prisma/client'
 import { prisma } from '../context/context'
+import gcpBucketUtils from '../gcpbucket/gcpbucket.utils'
+import multer from 'multer'
 
 const router = express.Router()
 const authenticateToken = authJwt.authenticateToken
 const ctx = { prisma }
+const upload = multer({ dest: 'uploads/profile'})
 
 /**
  * This route creates a new class for a professor and validates
@@ -136,6 +139,37 @@ router.get('/:userId/class/:classId', authenticateToken, async (req, res, next) 
       .findClassByUserIdAndClassId(classId, studentId, professorId, ctx)
 
     res.status(200).json({classDetails: selectedClass})
+  } catch (error) {
+    next(error)
+  }
+})
+
+/**
+ * This PUT route updates the user's profile picture by taking in a new file and uploading
+ * it to the user field and the GCP bucket.
+ */
+router.put('/:userId/updatePic', authenticateToken, upload.single('file'), async (req, res, next) => {
+  try {
+    const userId = req.body.params
+
+    const currUser = await authServices.findUserById(userId, ctx)
+    if (!currUser) {
+      res.status(400).json({message: "User does not exist"})
+      throw new Error("User does not exist")
+    }
+
+    const file = req.file
+    if (!file) {
+      res.status(400).json({message: "No file sent on request"})
+      throw new Error('No file sent on request')
+    }
+
+    const updatedProfilePictureUrl = await classUtils.updateProfilePicture(
+      currUser,
+      file
+    )
+
+    res.status(200).json({updatedProfilePictureUrl: updatedProfilePictureUrl})    
   } catch (error) {
     next(error)
   }

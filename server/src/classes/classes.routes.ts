@@ -150,7 +150,7 @@ router.get('/:userId/class/:classId', authenticateToken, async (req, res, next) 
  */
 router.put('/:userId/updatePic', authenticateToken, upload.single('file'), async (req, res, next) => {
   try {
-    const userId = req.body.params
+    const userId = req.params.userId
 
     const currUser = await authServices.findUserById(userId, ctx)
     if (!currUser) {

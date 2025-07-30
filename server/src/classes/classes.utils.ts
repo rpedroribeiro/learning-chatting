@@ -146,7 +146,7 @@ const updateProfilePicture = async (
     )
 
     await gcpBucketUtils.uploadFileToFileSystem(
-      pathToImg,
+      newUrl,
       localFilePath
     )
 

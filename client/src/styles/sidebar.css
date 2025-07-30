@@ -31,6 +31,11 @@
   border-radius: 50%;
   overflow: hidden;
   border: 1px solid #EEEEEE;
+  transition: transform 0.3s ease-in-out;
+}
+
+.sidebar-profile-img-container:hover {
+  transform: scale(1.1);
 }
 
 .sidebar-profile-img-container img {

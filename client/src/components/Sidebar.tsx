@@ -16,7 +16,7 @@ interface navOptions {
 const Sidebar = () => {
   const [baseUrl, setBaseUrl] = useState<string>('')
   const [isHovered, setIsHovered] = useState(false)
-  const { userId, setUserId, setAccountType, accountType, setSocket } = useAuth()
+  const { userId, setUserId, setAccountType, accountType, setSocket, profileImg, setProfileImg } = useAuth()
   const { isClassroom, setCurrFileItem, setIsClassroom, setCurrClass, setCurrFileItemChildren} = useClassroom()
   const navigate = useNavigate()
 
@@ -63,6 +63,15 @@ const Sidebar = () => {
     navigate(`/${userId}/classrooms`)
   }
 
+  const handleFileChange = async (event: any) => {
+    const file = event.target.files?.[0]
+    const profileImg = await authApi.updateProfilePicture(
+      userId,
+      file
+    )
+    setProfileImg(profileImg!)
+  }
+
   return (
     <div 
       className="sidebar-container"
@@ -74,9 +83,14 @@ const Sidebar = () => {
     >
       <div className='sidebar-profile-container'>
         <div className='sidebar-profile-info'>
-          <div className='sidebar-profile-img-container'>
-            <img src={profilePic}/>
-          </div>
+          <input 
+            type='file' id='upload-file-btn' 
+            style={{display: 'none'}} 
+            onChange={handleFileChange}
+          />
+          <label htmlFor="upload-file-btn" className="sidebar-profile-img-container">
+            <img src={profileImg.length > 0 ? profileImg : profilePic} />
+          </label>
           {isHovered && (
             <div 
               className={`sidebar-profile-name${isHovered ? ' hovered' : ''}`}

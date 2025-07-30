@@ -16,17 +16,24 @@ const formatNotificationItem = (
   const currTime = new Date()
   const differenceInSeconds = Math.round((currTime.getTime() - notificationTime.getTime()) / 1000)
   const formattedTimeDifference = formatTimeDifference(differenceInSeconds)
+  const dayAndTime = currTime.toLocaleString('en-US', {
+    month: 'long',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  })
 
   switch (notificationType) {
     case NotificationType.AnnouncementPosted:
-      return [`${notificationItem.data.name}`, formattedTimeDifference]
+      return [`${notificationItem.data.name}`, formattedTimeDifference, dayAndTime]
     case NotificationType.AssignmentPosted:
-      return [`${notificationItem.data.name} was assigned`, formattedTimeDifference]
+      return [`${notificationItem.data.name} was assigned`, formattedTimeDifference, dayAndTime]
     case NotificationType.FileSystemItemCreated:
-      return [`${notificationItem.data.name} was uploaded`, formattedTimeDifference]
+      return [`${notificationItem.data.name} was uploaded`, formattedTimeDifference, dayAndTime]
     case NotificationType.StudentSubmission:
       return [`${notificationItem.data.submissions[0].student.firstName} ${notificationItem.data.submissions[0].student.lastName} 
-      submitted the following assignment:  ${notificationItem.data.name}`, formattedTimeDifference]
+      submitted the following assignment:  ${notificationItem.data.name}`, formattedTimeDifference, dayAndTime]
   }
 }
 

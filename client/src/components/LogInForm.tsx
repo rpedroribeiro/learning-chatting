@@ -54,7 +54,14 @@ const LogInForm = () => {
         <button>Sign Up With Facebook</button>
         <button>Sign Up With Google</button>
       </div>
-      <span>Don't have an Account? <Link to='/signup'>Create An Account</Link></span>
+      <span>Don't have an Account? 
+        <Link 
+          style={{ textDecoration: 'none', color: 'var(--button)', marginLeft:'5px' }} 
+          to='/signup'
+        >
+          Create An Account
+          </Link>
+        </span>
     </div>
   )
 }

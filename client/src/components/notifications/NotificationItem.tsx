@@ -19,17 +19,19 @@ const NotificationItem = ({notification, notificationType}: notificationItemProp
   const [notificationMessage, setNotificationMessage] = useState<string>('')
   const [notificationTime, setNotificationTime] = useState<string>('')
   const [toggleViewAnnouncement, setToggleViewAnnouncement] = useState<boolean>(false)
+  const [dayAndTime, setDayAndTime] = useState<string>('')
   const { userId } = useAuth()
   const { currClass, setCurrFileItem, setCurrFileItemChildren } = useClassroom()
   const navigate = useNavigate()
 
   useEffect(() => {
-    const [formattedMesssage, formattedTime] = notificationsUtils.formatNotificationItem(
+    const [formattedMesssage, formattedTime, dayAndTime] = notificationsUtils.formatNotificationItem(
       notification,
       notificationType
     )
     setNotificationMessage(formattedMesssage)
     setNotificationTime(formattedTime)
+    setDayAndTime(dayAndTime)
   }, [])
 
   const handleNotificationStates = async () => {
@@ -93,12 +95,20 @@ const NotificationItem = ({notification, notificationType}: notificationItemProp
         >
           {notificationMessage}
         </span>
-        <span
-          style={notification.read === false ? {fontWeight: 'bold'} : {fontWeight: 'normal'}} 
-          className="notification-widget-item-text"
-        >
-          {notificationTime}
-        </span>
+        <div style={{display: 'flex', gap: '20px'}}>
+          <span
+            style={notification.read === false ? {fontWeight: 'bold'} : {fontWeight: 'normal'}} 
+            className="notification-widget-item-text"
+          >
+            {notificationTime}
+          </span>
+          <span
+            style={notification.read === false ? {fontWeight: 'bold'} : {fontWeight: 'normal'}} 
+            className="notification-widget-item-text"
+          >
+            {dayAndTime}
+          </span>
+        </div>
       </div>
     </>
   )

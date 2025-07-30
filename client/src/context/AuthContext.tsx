@@ -45,14 +45,11 @@ export const AuthProvider = ({children}: AuthContextChildren) => {
   }, [accountType])
 
   useEffect(() => {
-    if (userId.length === 0) {
-      if (socket) {
-        socket.disconnect()
-        setSocket(null)
-      }
-      return
+    if (socket) {
+      socket.disconnect()
+      setSocket(null)
     }
-    if (!socket) {
+    if (userId.length > 0) {
       const newSocket = io(import.meta.env.VITE_SERVER_URL, {
         withCredentials: true,
         auth: { userId }

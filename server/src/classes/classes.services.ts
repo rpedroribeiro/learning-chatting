@@ -194,6 +194,16 @@ const addStudentToClass = async (id: string, studentId: string, ctx: Context) =>
       }
     }
   })
+  await ctx.prisma.classChat.update({
+    where: {
+      classId: id
+    },
+    data: {
+      participants: {
+        connect: { id: studentId }
+      }
+    }
+  })
   await ctx.prisma.user.update({
     where: {
       id: studentId

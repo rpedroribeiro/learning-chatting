@@ -18,12 +18,12 @@
 }
 
 .notification-widget {
-  max-height: 60vh;
+  max-height: 53vh;
   padding: 3vh 2vw;
   border: 1px solid var(--textColor);
   border-radius: 20px;
   overflow: hidden;
-  transition: max-height 0.6s ease;
+  transition: max-height 1.0s ease;
 }
 
 .notification-widget:hover {

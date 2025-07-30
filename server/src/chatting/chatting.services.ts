@@ -41,7 +41,7 @@ const createNewChat = async (
   data: any,
   ctx: Context
 ) => {
-  return await ctx.prisma.chat.create({
+  const newChat = await ctx.prisma.chat.create({
     data: {
       classChatId: classChatId,
       senderId: senderId,
@@ -53,6 +53,7 @@ const createNewChat = async (
       sender: true
     }
   })
+  return newChat
 }
 
 /**

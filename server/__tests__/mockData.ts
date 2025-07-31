@@ -28,7 +28,8 @@ const mockUser = {
   accountType: UserRole.Professor,
   socketId: null,
   createdAt: currentDate,
-  updatedAt: currentDate
+  updatedAt: currentDate,
+  profileImg: '',
 }
 
 const mockProfessor = {
@@ -39,7 +40,8 @@ const mockProfessor = {
   lastName: 'user',
   accountType: UserRole.Professor,
   createdAt: currentDate,
-  updatedAt: currentDate
+  updatedAt: currentDate,
+  profileImg: '',
 }
 
 const mockStudent = {

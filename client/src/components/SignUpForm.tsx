@@ -20,7 +20,7 @@ const SignUpForm = () => {
   const [checkForSpecial, setCheckForSpecial] = useState<boolean>(false)
   const [showPasswordRequirements, setShowPasswordRequirements] = useState<boolean>(false)
   const [passwordVerified, setPasswordVerified] = useState<boolean>(false)
-  const { setUserId, setAccountType } = useAuth()
+  const { setUserId, setAccountType, setProfileImg } = useAuth()
   const navigate = useNavigate()
 
   /**
@@ -46,10 +46,11 @@ const SignUpForm = () => {
         password: password,
         accountType: userRole
       }
-      const [status, message, userId, accountType] = await authApi.createAccount(userData)
+      const [status, message, userId, accountType, profileImg] = await authApi.createAccount(userData)
       status ? (() => {
         setUserId(userId)
         setAccountType(accountType)
+        setProfileImg(profileImg === null ? '' : profileImg)
         navigate(`/${userId}/classrooms`)
       })() : setErrorMessage(message)
     } else {

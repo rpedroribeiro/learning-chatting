@@ -4,6 +4,7 @@ import authJwt from './auth.jwt'
 import authServices from './auth.services'
 import { prisma } from '../context/context'
 import io from '../sockets/index'
+import gcpBucketUtils from '../gcpbucket/gcpbucket.utils'
 
 const router = express.Router()
 const ctx = { prisma }
@@ -49,7 +50,8 @@ router.post('/register', async (req, res, next) => {
     res.status(200).json({
       userId: user.id,
       message: "User successfuly logged in",
-      accountType: user.accountType
+      accountType: user.accountType,
+      profileImg: user.profileImg
     })
   } catch (error) {
     next(error)
@@ -80,6 +82,10 @@ router.post('/login', async (req, res, next) => {
     const { accessToken, refreshToken } = authJwt.generateTokens(existingUser)
     await authServices.addRefreshTokenToWhiteList(refreshToken, existingUser.id, ctx)
 
+    const profileUrl = existingUser.profileImg ? await gcpBucketUtils.generateV4ReadSignedUrl(
+      existingUser.profileImg
+    ) : existingUser.profileImg
+
     res.cookie('refreshToken', refreshToken, {
       'httpOnly': true,
       'secure': true,
@@ -95,7 +101,8 @@ router.post('/login', async (req, res, next) => {
     res.status(200).json({
       userId: existingUser.id,
       message: "User successfuly logged in",
-      accountType: existingUser.accountType
+      accountType: existingUser.accountType,
+      profileImg: profileUrl
     })
   } catch (error) {
     next(error)

@@ -19,6 +19,7 @@ model User {
   firstName              String
   lastName               String
   password               String
+  profileImg             String?
   accountType            UserRole
   refreshTokens          RefreshToken[]
   socketId               String?

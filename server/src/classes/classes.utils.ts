@@ -1,5 +1,8 @@
 import { prisma } from '../context/context'
 import authServices from "../auth/auth.services"
+import { User } from '@prisma/client'
+import gcpBucketUtils from '../gcpbucket/gcpbucket.utils'
+import fs from 'fs'
 
 const ctx = { prisma }
 interface Dictionary {
@@ -120,10 +123,54 @@ const checkValidClassTimes = async (
   }
 }
 
+/**
+ * This function handles all logic with fetching the locally uploaded file, creating
+ * the new url, uploading the file to the GCP bucket, and updating the user field.
+ * 
+ * @param user - The user updating their profile picture.
+ * @param file - The new profile picture.
+ * @returns The verified url to be used in the client side.
+ */
+const updateProfilePicture = async (
+  user: User,
+  file: Express.Multer.File
+) => {
+  try {
+    const pathToImg = `profiles/${user.firstName}_${user.lastName}/`
+    const localFilePath = file.path
+    const fileName = file.originalname
+    const newUrl = pathToImg + fileName
+
+    user.profileImg === null && await gcpBucketUtils.addFolderToFileSystem(
+      pathToImg
+    )
+
+    await gcpBucketUtils.uploadFileToFileSystem(
+      newUrl,
+      localFilePath
+    )
+
+    await authServices.updateProfilePicture(
+      user.id,
+      newUrl,
+      ctx
+    )
+
+    fs.unlink(localFilePath, (err) => { if (err) { console.error('Failed to delete file', err) } })
+
+    return await gcpBucketUtils.generateV4ReadSignedUrl(
+      newUrl
+    )
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 const classUtils = {
   generateClassCode,
   checkValidClassTimes,
-  weekdayMapping
+  weekdayMapping,
+  updateProfilePicture
 }
 
 export default classUtils

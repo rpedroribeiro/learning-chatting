@@ -184,6 +184,30 @@ const removeSocketIdFromUser = async (
   })
 }
 
+/**
+ * This function queries the user using the provided user id and updates
+ * the url of the profile img.
+ * 
+ * @param userId - The id of the user having their picture updated.
+ * @param newUrl - The url that points to the file in the GCP bucket.
+ * @param ctx - The prisma context that this function is being used in.
+ * @returns The user with the updated profile img.
+ */
+const updateProfilePicture = async (
+  userId: string,
+  newUrl: string,
+  ctx: Context
+) => {
+  return await ctx.prisma.user.update({
+    where: {
+      id: userId
+    },
+    data: {
+      profileImg: newUrl
+    }
+  })
+}
+
 const authServices = {
   findUserByEmail,
   findUserById,
@@ -193,7 +217,8 @@ const authServices = {
   deleteRefreshTokenById,
   revokeTokens,
   addSocketIdToUser,
-  removeSocketIdFromUser
+  removeSocketIdFromUser,
+  updateProfilePicture
 }
 
 export default authServices

@@ -14,7 +14,7 @@ interface navOptions {
 }
 
 const Sidebar = () => {
-  const [baseUrl, setBaseUrl] = useState<string>('')
+  const [_baseUrl, setBaseUrl] = useState<string>('')
   const [isHovered, setIsHovered] = useState(false)
   const { userId, setUserId, setAccountType, accountType, setSocket, profileImg, setProfileImg } = useAuth()
   const { isClassroom, setCurrFileItem, setIsClassroom, setCurrClass, setCurrFileItemChildren} = useClassroom()

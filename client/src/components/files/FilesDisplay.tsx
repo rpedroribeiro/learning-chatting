@@ -12,7 +12,7 @@ import LoadingSpinner from '../LoadingSpinner'
 
 const FilesDisplay = () => {
   const [toggleAddItemForm, setToggleAddItemForm] = useState<boolean>(false)
-  const [errorMessage, setErrorMessage] = useState<string>('')
+  const [_errorMessage, setErrorMessage] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(true)
   const { userId, accountType } = useAuth()
   const { currClass, currFileItem, setCurrFileItem, currFileItemChildren, setCurrFileItemChildren } = useClassroom()

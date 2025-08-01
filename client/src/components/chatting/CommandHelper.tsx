@@ -15,7 +15,6 @@ const CommandHelper = ({
   command,
   className,
   setCommand,
-  setToggleCommandHelper,
   setChatInput
 }: commandHelperProps) => {
   const commands = [[CommandType.CommandBot, faRobot], [CommandType.Ping, faBell]]

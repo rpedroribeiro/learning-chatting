@@ -29,7 +29,7 @@ const ClassPage = () => {
         data,
         notificationType
       )
-      const [classInfo, status, message] = await classesApi.getClassDetails(
+      const [classInfo, status, _message] = await classesApi.getClassDetails(
         userId,
         classId
       )

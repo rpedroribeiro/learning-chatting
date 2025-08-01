@@ -20,7 +20,7 @@ const ChattingContainer = () => {
   const [chatInput, setChatInput] = useState<string>('')
   const [bot, setBot] = useState<commandBot | null>(null)
   const [command, setCommand] = useState<any>(null)
-  const [file, setFile] = useState<null | File>(null)
+  const [_file, setFile] = useState<null | File>(null)
   const [chatList, setChatList] = useState<any[]>([])
   const [classChatId, setClassChatId] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(true)
@@ -149,12 +149,13 @@ const ChattingContainer = () => {
               {(chatList && chatList.length > 0) && chatList.map((chat: any, key: any) => (
                 <>
                   {
-                    chat.command ? <CommandBotResponse 
+                    chat.command ? <CommandBotResponse
+                      key={key}
                       commandBotInfo={chat.commandResponse}
                       senderId={chat.senderId}
                       senderName={`${chat.sender.firstName} ${chat.sender.lastName}`}
                       /> :
-                    <ChatMessage messageData={chat}/>
+                    <ChatMessage key={key} messageData={chat}/>
                   }
                 </>
               ))}

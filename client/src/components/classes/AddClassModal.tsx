@@ -22,7 +22,7 @@ const AddClassModal = ({setToggleAddForm}: addClassModalProps) => {
    */
   const handleAddCourse = async (event: any) => {
     event.preventDefault()
-    const [studentClass, status, message] = await classesApi.addStudentToCourse(
+    const [_studentClass, status, message] = await classesApi.addStudentToCourse(
       userId,
       courseCode
     )

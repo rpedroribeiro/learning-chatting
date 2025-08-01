@@ -12,7 +12,6 @@ import LoadingSpinner from '../LoadingSpinner'
 const AssignmentsDisplay = () => {
   const [assignments, setAssignments] = useState<any>([])
   const [toggleCreateAssignment, setToggleCreateAssignment] = useState<boolean>(false)
-  const [errorMessage, setErrorMessage] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(true)
   const { userId, accountType } = useAuth()
   const { currClass } = useClassroom()

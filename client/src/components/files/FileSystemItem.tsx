@@ -12,8 +12,8 @@ interface fileSytemItemProps {
 }
 
 const FileSystemItem = ({props}: fileSytemItemProps) => {
-  const [errorMessage, setErrorMessage] = useState<string>('')
-  const { currClass, currFileItem, setCurrFileItem, setCurrFileItemChildren } = useClassroom()
+  const [_errorMessage, setErrorMessage] = useState<string>('')
+  const { currClass, setCurrFileItem, setCurrFileItemChildren } = useClassroom()
   const { userId } = useAuth()
 
   const handleItemClick = async () => {

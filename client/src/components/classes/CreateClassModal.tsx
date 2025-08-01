@@ -23,7 +23,7 @@ const CreateClassModal = ({setToggleCreateForm}: createClassModalProps) => {
    * a status message.
    */
   const handleCreateCourse = async () => {
-    const [newClass, status, message] = await classesApi.createCourse(
+    const [_newClass, status, message] = await classesApi.createCourse(
       userId,
       courseName,
       sectionId,
